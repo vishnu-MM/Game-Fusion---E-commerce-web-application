@@ -1,48 +1,14 @@
-/***
- Theme Name: Evara
- Theme URI: http://wp.alithemes.com/html/Evara
- Description: eCommerce HTML + Admin Template
- Author: alithemes.com
- Author URI: http://alithemes.com
- Version: 1.0
- License: GNU General Public License v2 or later
- License URI: http://www.gnu.org/licenses/gpl-2.0.html
-==============================
-TABLE CONTENT
- Import Google Fonts
- Include Third Party CSS Library
- GENERAL
- HEADER
- Offcanvas Sidebar
- Search form
- Main header
- Mega menu
- Header layouts
- Page layouts
- Pagination
- Breadcrumb
- CATEGORY PAGES
- SINGLE POST
- Author box
- comment
- Post share social
- WP STYPE
- Custom amine
-***/
 @import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,300;1,400;1,700;1,900&amp;display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Spartan:wght@300;400;500;600;700&amp;display=swap");
-/*import vendors*/
 @import url(vendors/normalize.css);
 @import url(vendors/bootstrap.min.css);
 @import url(vendors/evara-font.css);
 @import url(vendors/uicons-regular-straight.css);
-/*import plugins*/
 @import url(plugins/jquery-ui.css);
 @import url(plugins/magnific-popup.css);
 @import url(plugins/select2.min.css);
 @import url(plugins/slick.css);
 @import url(plugins/perfect-scrollbar.css);
-/*RESET*/
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -133,22 +99,18 @@ a:hover {
   color: #046963;
 }
 
-/*--- Common Classes---------------------*/
 ::-moz-selection {
   background: #088178;
-  /* WebKit/Blink Browsers */
-  color: #fff;
+    color: #fff;
 }
 ::selection {
   background: #088178;
-  /* WebKit/Blink Browsers */
-  color: #fff;
+    color: #fff;
 }
 
 ::-moz-selection {
   background: #088178;
-  /* Gecko Browsers */
-  color: #fff;
+    color: #fff;
 }
 
 ::-webkit-input-placeholder {
@@ -626,7 +588,6 @@ h4 {
           animation: jump .5s linear alternate infinite;
 }
 
-/*TYPOGRAPHY*/
 body {
   color: #4f5d77;
   font-family: "Lato", sans-serif;
@@ -808,7 +769,6 @@ h5.widget-title {
   font-weight: 700;
 }
 
-/*COMPONENTS -> BUTTONS*/
 .btn-default {
   color: #fff;
   background-color: #088178;
@@ -1009,7 +969,6 @@ button.submit:hover, button[type='submit']:hover {
   float: left;
 }
 
-/*COMPONENTS -> FORM*/
 input:-moz-placeholder,
 textarea:-moz-placeholder {
   opacity: 1;
@@ -1215,7 +1174,6 @@ textarea:focus {
   max-width: 135px;
 }
 
-/*contact form*/
 .contact-from-area .contact-form-style button {
   font-size: 15px;
   font-weight: 500;
@@ -1361,7 +1319,6 @@ label {
   border-width: 1px;
 }
 
-/*comment*/
 .comments-area {
   background: transparent;
   border-top: 1px solid #e2e9e1;
@@ -1584,7 +1541,6 @@ label {
   color: #242424;
 }
 
-/*COMPONENTS -> SLIDER*/
 .single-animation-wrap.slick-active .slider-animated-1 h1 {
   -webkit-animation-delay: 1.4s;
   animation-delay: 1.4s;
@@ -1959,7 +1915,6 @@ label {
   padding-left: 50px;
 }
 
-/*Carausel*/
 .carausel-6-columns-cover .carausel-6-columns {
   overflow: hidden;
   margin: 0 -12px;
@@ -2038,7 +1993,6 @@ label {
   transition: 0.4s;
 }
 
-/*COMPONENTS -> CARD*/
 .card-1 {
   position: relative;
   background: #fff;
@@ -2152,7 +2106,6 @@ label {
   border-radius: 4px;
 }
 
-/*COMPONENTS -> TABS*/
 .nav-tabs {
   margin-bottom: 25px;
   border: 0;
@@ -2286,8 +2239,6 @@ label {
   transition: 0.5s;
 }
 
-/*COMPONENTS -> MISC*/
-/*Countdown*/
 .deals-countdown .countdown-section {
   position: relative;
   font-weight: 400;
@@ -2372,7 +2323,6 @@ label {
   padding: 10px 0;
 }
 
-/*Heading tab*/
 .heading-tab {
   -webkit-box-align: center;
       -ms-flex-align: center;
@@ -2387,7 +2337,6 @@ label {
           justify-content: space-between;
 }
 
-/*page loading*/
 .preloader {
   background-color: #f7f7f7;
   width: 100%;
@@ -2407,7 +2356,6 @@ label {
   max-height: 100px;
 }
 
-/*custom amine*/
 .loader,
 .bar {
   width: 100px;
@@ -2468,7 +2416,6 @@ label {
           animation-delay: 1.50s;
 }
 
-/*page header*/
 .page-header .page-title {
   font-weight: 900;
   font-size: 4rem;
@@ -2784,13 +2731,11 @@ label {
   animation: toTopFromBottom .2s forwards;
 }
 
-/*Map*/
 .leaflet-map {
   height: 350px;
   width: 100%;
 }
 
-/*table*/
 table {
   width: 100%;
   margin-bottom: 1.5rem;
@@ -2822,7 +2767,6 @@ table .product-thumbnail img {
   max-width: 80px;
 }
 
-/*divider*/
 .divider {
   position: relative;
   overflow: hidden;
@@ -2889,7 +2833,6 @@ table .product-thumbnail img {
   background-color: #cee8e0;
 }
 
-/*modal*/
 .custom-modal .modal-dialog {
   max-width: 800px !important;
   border-radius: 0px;
@@ -2913,7 +2856,6 @@ table .product-thumbnail img {
   z-index: 2;
 }
 
-/*COMPONENTS -> BANNERS*/
 .banner-left-icon {
   position: relative;
   background: #fff;
@@ -3035,7 +2977,6 @@ table .product-thumbnail img {
   background: #046963 !important;
 }
 
-/*Deal banners*/
 .deal {
   width: 100%;
   display: -webkit-box;
@@ -3185,7 +3126,6 @@ table .product-thumbnail img {
   color: #088178;
 }
 
-/*Page > About*/
 .hero-2 {
   padding: 160px 0 100px;
   min-height: 640px;
@@ -3370,7 +3310,6 @@ table .product-thumbnail img {
   list-style-type: lower-roman;
 }
 
-/*page 404*/
 .page-404 {
   background-color: #fff;
 }
@@ -3383,7 +3322,6 @@ table .product-thumbnail img {
   max-width: 150px;
 }
 
-/*SHOP*/
 .product-cart-wrap {
   position: relative;
   background-color: #fff;
@@ -4113,7 +4051,6 @@ table .product-thumbnail img {
   color: #ffffff;
 }
 
-/*Product list*/
 .product-list {
   position: relative;
 }
@@ -4202,7 +4139,6 @@ table .product-thumbnail img {
   color: #fff;
 }
 
-/*PRODUCT DETAILS*/
 .detail-gallery {
   position: relative;
 }
@@ -4770,7 +4706,6 @@ table .product-thumbnail img {
   margin-bottom: 15px;
 }
 
-/*BLOG*/
 .post-list article:not(:last-child) {
   margin-bottom: 20px;
 }
@@ -4910,7 +4845,6 @@ table .product-thumbnail img {
   margin-top: 15px;
 }
 
-/*Entry meta*/
 .entry-meta {
   line-height: 1;
 }
@@ -5045,7 +4979,6 @@ h6.post-title {
   padding: 8px 15px;
 }
 
-/*Loop Grid*/
 .loop-grid {
   position: relative;
 }
@@ -5151,8 +5084,6 @@ h6.post-title {
   opacity: 1;
 }
 
-/*LAYOUT -> HEADER STYLE*/
-/*Header default*/
 .header-top-ptb-1 {
   padding: 10px 0;
   border-bottom: 1px solid #e2e9e1;
@@ -6449,7 +6380,6 @@ h6.post-title {
   background-image: none;
 }
 
-/* Header style 2 */
 .header-style-2 .header-top-ptb-1 {
   padding: 10px 0;
   border-bottom: 3px solid #088178 !important;
@@ -6497,7 +6427,6 @@ h6.post-title {
   margin-left: 20px;
 }
 
-/* Header style 3 */
 .header-style-3.header-height-2 {
   border-bottom: none;
 }
@@ -6589,7 +6518,6 @@ h6.post-title {
   margin-left: 20px;
 }
 
-/* Header style 4 */
 .header-style-4 {
   position: relative;
 }
@@ -6771,7 +6699,6 @@ span.fi-rs-apps {
   opacity: 0.7;
 }
 
-/*LAYOUT -> NAVIGATION STYLE*/
 .main-menu.main-menu-mrg-1 {
   margin: 0 0 0 27px;
 }
@@ -7360,7 +7287,6 @@ span.fi-rs-apps {
   content: none;
 }
 
-/*Pagination*/
 .pagination-area .page-item {
   margin: 0 5px;
 }
@@ -7406,7 +7332,6 @@ span.fi-rs-apps {
   letter-spacing: 2px;
 }
 
-/*LAYOUT -> SIDEBAR*/
 .widget-category {
   position: relative;
   padding: 30px;
@@ -7433,7 +7358,6 @@ span.fi-rs-apps {
   color: #088178;
 }
 
-/*Social network widget*/
 .follow-us a {
   display: block;
   padding: 12px 10px;
@@ -7683,7 +7607,6 @@ span.fi-rs-apps {
   margin: 15px 0 20px 0;
 }
 
-/*LAYOUT -> SPACING**/
 .section-padding-30 {
   padding: 30px 0;
 }
@@ -8489,7 +8412,7 @@ span.fi-rs-apps {
 }
 
 /***************************
-    Page section margin 
+    Page section margin
 ****************************/
 .mtb-0 {
   margin: 0;
@@ -9411,7 +9334,6 @@ span.fi-rs-apps {
   }
 }
 
-/*Mobile landscape*/
 @media only screen and (min-width: 576px) and (max-width: 767px) {
   .header-action .header-action-icon {
     margin-right: 20px;
@@ -9451,7 +9373,6 @@ span.fi-rs-apps {
   }
 }
 
-/*Tablet*/
 @media only screen and (min-width: 768px) and (max-width: 991px) {
   .header-action .header-action-icon {
     margin-right: 33px;
@@ -9499,7 +9420,6 @@ span.fi-rs-apps {
   }
 }
 
-/*Desktop*/
 @media only screen and (min-width: 992px) and (max-width: 1199px) {
   .logo.logo-hm3 a img {
     width: 120px;
@@ -9580,7 +9500,6 @@ span.fi-rs-apps {
   }
 }
 
-/*Wide screen*/
 @media only screen and (min-width: 1200px) and (max-width: 1365px) {
   .main-menu.main-menu-padding-1 > nav > ul > li {
     padding: 0 14px;
@@ -9618,7 +9537,6 @@ span.fi-rs-apps {
   }
 }
 
-/*small phone*/
 @media only screen and (max-width: 480px) {
   .post-list .post-thumb {
     max-width: unset;
@@ -9892,7 +9810,6 @@ span.fi-rs-apps {
   }
 }
 
-/*phone landscape*/
 @media only screen and (min-width: 480px) and (max-width: 667px) {
   .header-bottom-bg-color {
     padding: 3px 0;
@@ -9908,7 +9825,6 @@ span.fi-rs-apps {
   }
 }
 
-/*small phone*/
 @media only screen and (max-width: 375px) {
   .entry-meta .hit-count, .entry-meta.meta-2 .font-xs {
     display: none;
@@ -9919,4 +9835,3 @@ span.fi-rs-apps {
 }
 .zoomContainer{ z-index: 9999;}
 .zoomWindow{ z-index: 9999;}
-/*# sourceMappingURL=main.css.map */
