@@ -16,12 +16,14 @@ public class MailServiceImpl implements MailService {
     private String from;
     private final OtpUtil otpUtil;
     private final JavaMailSender javaMailSender;
+    private String currentOtp;
 
     @Autowired
     public MailServiceImpl(JavaMailSender javaMailSender, OtpUtil otpUtil) {
         
         this.javaMailSender = javaMailSender;
         this.otpUtil = otpUtil;
+        this.currentOtp = null;
     }
 
     public void sentMail(UserDto user) {
@@ -36,9 +38,12 @@ public class MailServiceImpl implements MailService {
         javaMailSender.send(message);
     }
 
-    public Boolean otpAuthentication() {
-
-        return true;
+    public Boolean otpAuthentication( String enteredOtp) {
+        if ( enteredOtp.equals(currentOtp) ) {
+            return true;
+        }
+        currentOtp = null;
+        return false;
     }
 
     private String generateEmailBody(String name) {
