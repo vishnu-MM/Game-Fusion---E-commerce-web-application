@@ -1,9 +1,7 @@
 package com.example.gamefusion.Entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import lombok.*;
-import org.springframework.validation.annotation.Validated;
 
 @Entity
 @Table(name = "users")
@@ -11,15 +9,6 @@ import org.springframework.validation.annotation.Validated;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
-
-    public User(String firstName, String lastName, String phone, String username, String password) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phone = phone;
-        this.username = username;
-        this.role = "USER";
-        this.password = password;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +26,8 @@ public class User {
     private String role;
     @Column(name = "password")
     private String password;
+    @Column( name = "active_status")
+    private Boolean isActive;
 
 
 }

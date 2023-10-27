@@ -1,8 +1,9 @@
 package com.example.gamefusion.Controller;
 
 import com.example.gamefusion.Dto.UserDto;
-import com.example.gamefusion.Services.Implementations.MailServiceImpl;
+import com.example.gamefusion.Services.OTPService;
 import com.example.gamefusion.Services.UserService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -21,12 +22,12 @@ import java.util.Collection;
 public class LoginSignUpController {
 
     private final UserService userService;
-    private MailServiceImpl mailService;
+    private final OTPService otpService;
 
     @Autowired
-    public LoginSignUpController(UserService userService, MailServiceImpl mailService) {
+    public LoginSignUpController(UserService userService, OTPService otpService) {
         this.userService = userService;
-        this.mailService = mailService;
+        this.otpService = otpService;
     }
 
     @GetMapping("/")
@@ -47,36 +48,40 @@ public class LoginSignUpController {
     @GetMapping("/login-or-registration")
     public String getLoginForm(Authentication authentication, Model model) {
         if (authentication != null) return "redirect:/";
-        UserDto newUser = new UserDto();
-        model.addAttribute("NewUser", newUser);
+        model.addAttribute("NewUser", new UserDto());
         return "User/page-login-register";
     }
 
     @PostMapping("/user-registration/verify")
-    public String saveNewUser(@Valid @ModelAttribute("NewUser") UserDto userDto, BindingResult result) {
-        System.out.println("ITs here");
+    public String saveNewUser( @Valid @ModelAttribute("NewUser") UserDto userDto,BindingResult result, HttpSession session ) {
         if (userService.isUserExists(userDto.getUsername())) {
-            result.rejectValue("username", String.valueOf(HttpStatus.CONFLICT), "User with this email is already exist");
+            result.rejectValue("username", String.valueOf(HttpStatus.CONFLICT),"User with this email is already exist");
         }
-        if (result.hasErrors()) {
-            System.out.println("error");
+        if (result.hasErrors()) {  
             return "User/page-login-register";
         }
-        System.out.println("no error");
-        mailService.sentMail(userDto);
-        System.out.println("mail sent and redirecting now");
+        session.setAttribute("UserDetails",userDto);
+        return "redirect:/otp-validation";
+    }
+
+    @GetMapping("/otp-validation")
+    public String getOtpForm( HttpSession session, Model model ) {
+        UserDto receiver = (UserDto) session.getAttribute("UserDetails");
+        otpService.sendOTP(receiver);
         return "User/page-otp-verification";
     }
 
-    @GetMapping("/home")
-    public String home() {
-        return "User/index-4";
-    }
+    @PostMapping("/otp-validation/verify")
+    public String validateOTP(@RequestParam("otp") String otp, Model model,HttpSession session ) {
+        UserDto userDto = (UserDto) session.getAttribute("UserDetails");
+        if (!(otpService.verifyOTP(userDto.getUsername(), otp))) {
+            model.addAttribute("error", "Invalid OTP");
+            return "User/page-otp-verification";
+        }
 
-    @ResponseBody
-    @GetMapping("/is-logged-in")
-    public String dummy(Authentication authentication) {
-        return authentication.getName() + " " + authentication.getAuthorities() + " ";
+        System.out.println("activate account");
+        userService.save(userDto);
+        return "redirect:/login-or-register?success=true";
     }
 
     @InitBinder

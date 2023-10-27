@@ -3,6 +3,7 @@ package com.example.gamefusion.Configuration.Security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -15,7 +16,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests( authorizeRequests ->
                 authorizeRequests
-                    .requestMatchers("/","/user-registration/verify","/assets/**").permitAll()
+                    .requestMatchers("/","/user-registration/verify","/otp-validation","/otp-validation/verify","/assets/**").permitAll()
                     .anyRequest().authenticated()
             )
             .formLogin( login ->
@@ -40,6 +41,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
     }
 }

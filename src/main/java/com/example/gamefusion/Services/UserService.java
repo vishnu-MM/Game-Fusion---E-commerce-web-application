@@ -6,4 +6,5 @@ public interface UserService {
 
     void save( UserDto newUser );
     Boolean isUserExists(String username);
+    void activateAccount(String receiver);
 }

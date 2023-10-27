@@ -5,6 +5,7 @@ import com.example.gamefusion.Entity.User;
 import com.example.gamefusion.Repository.UserRepository;
 import com.example.gamefusion.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,15 +28,25 @@ public class UserServiceImpl implements UserService {
         user.setPhone(newUser.getPhone());
         user.setUsername(newUser.getUsername());
         user.setRole("USER");
+        user.setIsActive(true);
         user.setPassword(
                 passwordEncoder.encode(newUser.getPassword())
         );
-
         userRepository.save(user);
     }
 
     @Override
     public Boolean isUserExists(String username) {
         return userRepository.existsByUsername(username);
+    }
+
+    @Override
+    public void activateAccount(String receiver) {
+        if (isUserExists(receiver)) {
+            userRepository.unBlock(receiver);
+        }
+        else {
+            throw new UsernameNotFoundException("User not exist.");
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.gamefusion.Configuration.UserConfig;
 
+import com.example.gamefusion.Configuration.ExceptionHandlerConfig.UserBlockedException;
 import com.example.gamefusion.Entity.User;
 import com.example.gamefusion.Repository.UserRepository;
 import jakarta.servlet.ServletOutputStream;
@@ -25,22 +26,26 @@ public class CustomUserDetailsService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    //todo: what is GrantedAuthority
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findUserByUsername(username);
-        if (user != null) {
+        if (user == null) {
+            System.out.println("user==null");
+            throw new UsernameNotFoundException("Invalid username or password");
+        }
+        else if (user.getIsActive()) {
+            System.out.println("user blocked");
+            throw new UserBlockedException("You are blocked from accessing this web site");
+        }
+        else {
             List<GrantedAuthority> authorities = new ArrayList<>();
             authorities.add(new SimpleGrantedAuthority(user.getRole()));
-            log.info("User Name : "+user.getUsername()+" Password : "+user.getPassword()+" Authorities : "+authorities);
+            log.info("User Name : " + user.getUsername() + " Password : " + user.getPassword() + " Authorities : " + authorities);
             return new CustomUserConfig(
                     user.getUsername(),
                     user.getPassword(),
                     authorities
             );
-        }
-        else {
-            throw new UsernameNotFoundException("Invalid username or password");
         }
     }
 }

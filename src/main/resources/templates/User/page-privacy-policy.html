@@ -14,9 +14,9 @@
     <meta property="og:url" content="">
     <meta property="og:image" content="">
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/x-icon" th:href="@{assets/imgs/theme/favicon.svg}">
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/imgs/theme/favicon.svg}">
     <!-- Template CSS -->
-    <link rel="stylesheet" th:href="@{assets/css/main.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/main.css}">
 </head>
 
 <body>
@@ -49,9 +49,9 @@
                                 <li>
                                     <a class="language-dropdown-active" href="#"> <i class="fi-rs-world"></i> English <i class="fi-rs-angle-small-down"></i></a>
                                     <ul class="language-dropdown">
-                                        <li><a href="#"><img th:src="@{assets/imgs/theme/flag-fr.png}" alt="">Français</a></li>
-                                        <li><a href="#"><img th:src="@{assets/imgs/theme/flag-dt.png}" alt="">Deutsch</a></li>
-                                        <li><a href="#"><img th:src="@{assets/imgs/theme/flag-ru.png}" alt="">Pусский</a></li>
+                                        <li><a href="#"><img th:src="@{/assets/imgs/theme/flag-fr.png}" alt="">Français</a></li>
+                                        <li><a href="#"><img th:src="@{/assets/imgs/theme/flag-dt.png}" alt="">Deutsch</a></li>
+                                        <li><a href="#"><img th:src="@{/assets/imgs/theme/flag-ru.png}" alt="">Pусский</a></li>
                                     </ul>
                                 </li>
                                 <li><i class="fi-rs-user"></i><a th:href="@{User/page-login-register.html}">Log In / Sign Up</a></li>
@@ -65,7 +65,7 @@
             <div class="container">
                 <div class="header-wrap header-space-between position-relative">
                     <div class="logo logo-width-1">
-                        <a th:href="@{User/index.html}"><img th:src="@{assets/imgs/theme/logo.svg}" alt="logo"></a>
+                        <a th:href="@{User/index.html}"><img th:src="@{/assets/imgs/theme/logo.svg}" alt="logo"></a>
                     </div>
                     <div class="main-menu main-menu-grow main-menu-padding-1 main-menu-lh-1 main-menu-mrg-1 hm3-menu-padding d-none d-lg-block hover-boder">
                         <nav>
@@ -135,7 +135,7 @@
                                         </li>
                                         <li class="sub-mega-menu sub-mega-menu-width-34">
                                             <div class="menu-banner-wrap">
-                                                <a th:href="@{User/shop-product-right.html}"><img th:src="@{assets/imgs/banner/menu-banner.jpg}" alt="Evara"></a>
+                                                <a th:href="@{User/shop-product-right.html}"><img th:src="@{/assets/imgs/banner/menu-banner.jpg}" alt="Evara"></a>
                                                 <div class="menu-banner-content">
                                                     <h4>Hot deals</h4>
                                                     <h3>Don't miss<br> Trending</h3>
@@ -211,20 +211,20 @@
                         <div class="header-action-2">
                             <div class="header-action-icon-2">
                                 <a th:href="@{User/shop-wishlist.html}">
-                                    <img class="svgInject" alt="Evara" th:src="@{assets/imgs/theme/icons/icon-heart.svg}">
+                                    <img class="svgInject" alt="Evara" th:src="@{/assets/imgs/theme/icons/icon-heart.svg}">
                                     <span class="pro-count blue">4</span>
                                 </a>
                             </div>
                             <div class="header-action-icon-2">
                                 <a class="mini-cart-icon" th:href="@{User/shop-cart.html}">
-                                    <img alt="Evara" th:src="@{assets/imgs/theme/icons/icon-cart.svg}">
+                                    <img alt="Evara" th:src="@{/assets/imgs/theme/icons/icon-cart.svg}">
                                     <span class="pro-count blue">2</span>
                                 </a>
                                 <div class="cart-dropdown-wrap cart-dropdown-hm2">
                                     <ul>
                                         <li>
                                             <div class="shopping-cart-img">
-                                                <a th:href="@{User/shop-product-right.html}"><img alt="Evara" th:src="@{assets/imgs/shop/thumbnail-3.jpg}"></a>
+                                                <a th:href="@{User/shop-product-right.html}"><img alt="Evara" th:src="@{/assets/imgs/shop/thumbnail-3.jpg}"></a>
                                             </div>
                                             <div class="shopping-cart-title">
                                                 <h4><a th:href="@{User/shop-product-right.html}">Plain Striola Shirts</a></h4>
@@ -236,7 +236,7 @@
                                         </li>
                                         <li>
                                             <div class="shopping-cart-img">
-                                                <a th:href="@{User/shop-product-right.html}"><img alt="Evara" th:src="@{assets/imgs/shop/thumbnail-1.jpg}"></a>
+                                                <a th:href="@{User/shop-product-right.html}"><img alt="Evara" th:src="@{/assets/imgs/shop/thumbnail-1.jpg}"></a>
                                             </div>
                                             <div class="shopping-cart-title">
                                                 <h4><a th:href="@{User/shop-product-right.html}">Macbook Pro 2022</a></h4>
@@ -275,7 +275,7 @@
         <div class="mobile-header-wrapper-inner">
             <div class="mobile-header-top">
                 <div class="mobile-header-logo">
-                    <a th:href="@{User/index.html}"><img th:src="@{assets/imgs/theme/logo.svg}" alt="logo"></a>
+                    <a th:href="@{User/index.html}"><img th:src="@{/assets/imgs/theme/logo.svg}" alt="logo"></a>
                 </div>
                 <div class="mobile-menu-close close-style-wrap close-style-position-inherit">
                     <button class="close-style search-close">
@@ -422,11 +422,11 @@
                 </div>
                 <div class="mobile-social-icon">
                     <h5 class="mb-15 text-grey-4">Follow Us</h5>
-                    <a href="#"><img th:src="@{assets/imgs/theme/icons/icon-facebook.svg}" alt=""></a>
-                    <a href="#"><img th:src="@{assets/imgs/theme/icons/icon-twitter.svg}" alt=""></a>
-                    <a href="#"><img th:src="@{assets/imgs/theme/icons/icon-instagram.svg}" alt=""></a>
-                    <a href="#"><img th:src="@{assets/imgs/theme/icons/icon-pinterest.svg}" alt=""></a>
-                    <a href="#"><img th:src="@{assets/imgs/theme/icons/icon-youtube.svg}" alt=""></a>
+                    <a href="#"><img th:src="@{/assets/imgs/theme/icons/icon-facebook.svg}" alt=""></a>
+                    <a href="#"><img th:src="@{/assets/imgs/theme/icons/icon-twitter.svg}" alt=""></a>
+                    <a href="#"><img th:src="@{/assets/imgs/theme/icons/icon-instagram.svg}" alt=""></a>
+                    <a href="#"><img th:src="@{/assets/imgs/theme/icons/icon-pinterest.svg}" alt=""></a>
+                    <a href="#"><img th:src="@{/assets/imgs/theme/icons/icon-youtube.svg}" alt=""></a>
                 </div>
             </div>
         </div>
@@ -636,7 +636,7 @@
                                     <div class="col-12 sm-grid-content mb-30">
                                         <div class="post-thumb d-flex border-radius-5 img-hover-scale mb-15">
                                             <a th:href="@{User/blog-post-fullwidth.html}">
-                                                <img th:src="@{assets/imgs/blog/blog-1.jpg}" alt="">
+                                                <img th:src="@{/assets/imgs/blog/blog-1.jpg}" alt="">
                                             </a>
                                         </div>
                                         <div class="post-content media-body">
@@ -650,7 +650,7 @@
                                     <div class="col-md-6 col-sm-6 sm-grid-content mb-30">
                                         <div class="post-thumb d-flex border-radius-5 img-hover-scale mb-15">
                                             <a th:href="@{User/blog-post-fullwidth.html}">
-                                                <img th:src="@{assets/imgs/blog/blog-3.jpg}" alt="">
+                                                <img th:src="@{/assets/imgs/blog/blog-3.jpg}" alt="">
                                             </a>
                                         </div>
                                         <div class="post-content media-body">
@@ -664,7 +664,7 @@
                                     <div class="col-md-6 col-sm-6 sm-grid-content mb-30">
                                         <div class="post-thumb d-flex border-radius-5 img-hover-scale mb-15">
                                             <a th:href="@{User/blog-post-fullwidth.html}">
-                                                <img th:src="@{assets/imgs/blog/blog-4.jpg}" alt="">
+                                                <img th:src="@{/assets/imgs/blog/blog-4.jpg}" alt="">
                                             </a>
                                         </div>
                                         <div class="post-content media-body">
@@ -678,7 +678,7 @@
                                     <div class="col-md-6 col-sm-6 sm-grid-content mb-30">
                                         <div class="post-thumb d-flex border-radius-5 img-hover-scale mb-15">
                                             <a th:href="@{User/blog-post-fullwidth.html}">
-                                                <img th:src="@{assets/imgs/blog/blog-5.jpg}" alt="">
+                                                <img th:src="@{/assets/imgs/blog/blog-5.jpg}" alt="">
                                             </a>
                                         </div>
                                         <div class="post-content media-body">
@@ -692,7 +692,7 @@
                                     <div class="col-md-6 col-sm-6 sm-grid-content mb-30">
                                         <div class="post-thumb d-flex border-radius-5 img-hover-scale mb-15">
                                             <a th:href="@{User/blog-post-fullwidth.html}">
-                                                <img th:src="@{assets/imgs/blog/blog-6.jpg}" alt="">
+                                                <img th:src="@{/assets/imgs/blog/blog-6.jpg}" alt="">
                                             </a>
                                         </div>
                                         <div class="post-content media-body">
@@ -707,7 +707,7 @@
                             </div>
                             <!--Widget ads-->
                             <div class="banner-img wow fadeIn mb-45 animated d-lg-block d-none animated">
-                                <img th:src="@{assets/imgs/banner/banner-11.jpg}" alt="">
+                                <img th:src="@{/assets/imgs/banner/banner-11.jpg}" alt="">
                                 <div class="banner-text">
                                     <span>Women Zone</span>
                                     <h4>Save 17% on <br>Office Dress</h4>
@@ -742,7 +742,7 @@
                     <div class="col-lg-7 mb-md-3 mb-lg-0">
                         <div class="row align-items-center">
                             <div class="col flex-horizontal-center">
-                                <img class="icon-email" th:src="@{assets/imgs/theme/icons/icon-email.svg}" alt="">
+                                <img class="icon-email" th:src="@{/assets/imgs/theme/icons/icon-email.svg}" alt="">
                                 <h4 class="font-size-20 mb-0 ml-3">Sign up to Newsletter</h4>
                             </div>
                             <div class="col my-4 my-md-0 des">
@@ -767,7 +767,7 @@
                     <div class="col-lg-4 col-md-6">
                         <div class="widget-about font-md mb-md-5 mb-lg-0">
                             <div class="logo logo-width-1 wow fadeIn animated">
-                                <a th:href="@{User/index.html}"><img th:src="@{assets/imgs/theme/logo.svg}" alt="logo"></a>
+                                <a th:href="@{User/index.html}"><img th:src="@{/assets/imgs/theme/logo.svg}" alt="logo"></a>
                             </div>
                             <h5 class="mt-20 mb-10 fw-600 text-grey-4 wow fadeIn animated">Contact</h5>
                             <p class="wow fadeIn animated">
@@ -781,11 +781,11 @@
                             </p>
                             <h5 class="mb-10 mt-30 fw-600 text-grey-4 wow fadeIn animated">Follow Us</h5>
                             <div class="mobile-social-icon wow fadeIn animated mb-sm-5 mb-md-0">
-                                <a href="#"><img th:src="@{assets/imgs/theme/icons/icon-facebook.svg}" alt=""></a>
-                                <a href="#"><img th:src="@{assets/imgs/theme/icons/icon-twitter.svg}" alt=""></a>
-                                <a href="#"><img th:src="@{assets/imgs/theme/icons/icon-instagram.svg}" alt=""></a>
-                                <a href="#"><img th:src="@{assets/imgs/theme/icons/icon-pinterest.svg}" alt=""></a>
-                                <a href="#"><img th:src="@{assets/imgs/theme/icons/icon-youtube.svg}" alt=""></a>
+                                <a href="#"><img th:src="@{/assets/imgs/theme/icons/icon-facebook.svg}" alt=""></a>
+                                <a href="#"><img th:src="@{/assets/imgs/theme/icons/icon-twitter.svg}" alt=""></a>
+                                <a href="#"><img th:src="@{/assets/imgs/theme/icons/icon-instagram.svg}" alt=""></a>
+                                <a href="#"><img th:src="@{/assets/imgs/theme/icons/icon-pinterest.svg}" alt=""></a>
+                                <a href="#"><img th:src="@{/assets/imgs/theme/icons/icon-youtube.svg}" alt=""></a>
                             </div>
                         </div>
                     </div>
@@ -817,13 +817,13 @@
                             <div class="col-md-8 col-lg-12">
                                 <p class="wow fadeIn animated">From App Store or Google Play</p>
                                 <div class="download-app wow fadeIn animated">
-                                    <a href="#" class="hover-up mb-sm-4 mb-lg-0"><img class="active" th:src="@{assets/imgs/theme/app-store.jpg}" alt=""></a>
-                                    <a href="#" class="hover-up"><img th:src="@{assets/imgs/theme/google-play.jpg}" alt=""></a>
+                                    <a href="#" class="hover-up mb-sm-4 mb-lg-0"><img class="active" th:src="@{/assets/imgs/theme/app-store.jpg}" alt=""></a>
+                                    <a href="#" class="hover-up"><img th:src="@{/assets/imgs/theme/google-play.jpg}" alt=""></a>
                                 </div>
                             </div>
                             <div class="col-md-4 col-lg-12 mt-md-3 mt-lg-0">
                                 <p class="mb-20 wow fadeIn animated">Secured Payment Gateways</p>
-                                <img class="wow fadeIn animated" th:src="@{assets/imgs/theme/payment-method.png}" alt="">
+                                <img class="wow fadeIn animated" th:src="@{/assets/imgs/theme/payment-method.png}" alt="">
                             </div>
                         </div>
                     </div>
@@ -862,27 +862,27 @@
         </div>
     </div>
     <!-- Vendor JS-->
-    <script data-cfasync="false" th:src="@{../../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js}"></script><script th:src="@{assets/js/vendor/modernizr-3.6.0.min.js}"></script>
-    <script th:src="@{assets/js/vendor/jquery-3.6.0.min.js}"></script>
-    <script th:src="@{assets/js/vendor/jquery-migrate-3.3.0.min.js}"></script>
-    <script th:src="@{assets/js/vendor/bootstrap.bundle.min.js}"></script>
-    <script th:src="@{assets/js/plugins/slick.js}"></script>
-    <script th:src="@{assets/js/plugins/jquery.syotimer.min.js}"></script>
-    <script th:src="@{assets/js/plugins/wow.js}"></script>
-    <script th:src="@{assets/js/plugins/jquery-ui.js}"></script>
-    <script th:src="@{assets/js/plugins/perfect-scrollbar.js}"></script>
-    <script th:src="@{assets/js/plugins/magnific-popup.js}"></script>
-    <script th:src="@{assets/js/plugins/select2.min.js}"></script>
-    <script th:src="@{assets/js/plugins/waypoints.js}"></script>
-    <script th:src="@{assets/js/plugins/counterup.js}"></script>
-    <script th:src="@{assets/js/plugins/jquery.countdown.min.js}"></script>
-    <script th:src="@{assets/js/plugins/images-loaded.js}"></script>
-    <script th:src="@{assets/js/plugins/isotope.js}"></script>
-    <script th:src="@{assets/js/plugins/scrollup.js}"></script>
-    <script th:src="@{assets/js/plugins/jquery.vticker-min.js}"></script>
-    <script th:src="@{assets/js/plugins/jquery.theia.sticky.js}"></script>
+    <script data-cfasync="false" th:src="@{../../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js}"></script><script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/jquery-migrate-3.3.0.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/slick.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.syotimer.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/wow.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery-ui.js}"></script>
+    <script th:src="@{/assets/js/plugins/perfect-scrollbar.js}"></script>
+    <script th:src="@{/assets/js/plugins/magnific-popup.js}"></script>
+    <script th:src="@{/assets/js/plugins/select2.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/waypoints.js}"></script>
+    <script th:src="@{/assets/js/plugins/counterup.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.countdown.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/images-loaded.js}"></script>
+    <script th:src="@{/assets/js/plugins/isotope.js}"></script>
+    <script th:src="@{/assets/js/plugins/scrollup.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.vticker-min.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.theia.sticky.js}"></script>
     <!-- Template  JS -->
-    <script th:src="@{assets/js/main.js}"></script>
+    <script th:src="@{/assets/js/main.js}"></script>
 </body>
 
 

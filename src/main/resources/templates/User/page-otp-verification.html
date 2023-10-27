@@ -10,8 +10,19 @@
     <meta property="og:type" content="" />
     <meta property="og:url" content="" />
     <meta property="og:image" content="" />
-    <link rel="shortcut icon" type="image/x-icon" th:href="@{assets/imgs/theme/favicon.svg}" />
-    <link rel="stylesheet" th:href="@{assets/css/main.css}" />
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/imgs/theme/favicon.svg}" />
+    <link rel="stylesheet" th:href="@{/assets/css/main.css}" />
+    <script>
+      function validateForm() {
+        let otpValue = document.getElementById("otpField").value;
+        if (otpValue.trim() === "") {
+          alert("OTP field cannot be empty");
+          return false;
+        }
+        return true;
+      }
+    </script>
+
   </head>
 
   <body>
@@ -62,7 +73,7 @@
                       <li>
                         <a href="#"
                           ><img
-                            th:src="@{assets/imgs/theme/flag-fr.png}"
+                            th:src="@{/assets/imgs/theme/flag-fr.png}"
                             alt=""
                           />Français</a
                         >
@@ -70,7 +81,7 @@
                       <li>
                         <a href="#"
                           ><img
-                            th:src="@{assets/imgs/theme/flag-dt.png}"
+                            th:src="@{/assets/imgs/theme/flag-dt.png}"
                             alt=""
                           />Deutsch</a
                         >
@@ -78,7 +89,7 @@
                       <li>
                         <a href="#"
                           ><img
-                            th:src="@{assets/imgs/theme/flag-ru.png}"
+                            th:src="@{/assets/imgs/theme/flag-ru.png}"
                             alt=""
                           />Pусский</a
                         >
@@ -100,7 +111,7 @@
           <div class="header-wrap header-space-between position-relative">
             <div class="logo logo-width-1">
               <a th:href="@{User/index.html}"
-                ><img th:src="@{assets/imgs/theme/logo.svg}" alt="logo"
+                ><img th:src="@{/assets/imgs/theme/logo.svg}" alt="logo"
               /></a>
             </div>
             <div
@@ -259,7 +270,7 @@
                         <div class="menu-banner-wrap">
                           <a th:href="@{User/shop-product-right.html}"
                             ><img
-                              th:src="@{assets/imgs/banner/menu-banner.jpg}"
+                              th:src="@{/assets/imgs/banner/menu-banner.jpg}"
                               alt="Evara"
                           /></a>
                           <div class="menu-banner-content">
@@ -374,7 +385,7 @@
                     <img
                       class="svgInject"
                       alt="Evara"
-                      th:src="@{assets/imgs/theme/icons/icon-heart.svg}"
+                      th:src="@{/assets/imgs/theme/icons/icon-heart.svg}"
                     />
                     <span class="pro-count blue">4</span>
                   </a>
@@ -383,7 +394,7 @@
                   <a class="mini-cart-icon" th:href="@{User/shop-cart.html}">
                     <img
                       alt="Evara"
-                      th:src="@{assets/imgs/theme/icons/icon-cart.svg}"
+                      th:src="@{/assets/imgs/theme/icons/icon-cart.svg}"
                     />
                     <span class="pro-count blue">2</span>
                   </a>
@@ -394,7 +405,7 @@
                           <a th:href="@{User/shop-product-right.html}"
                             ><img
                               alt="Evara"
-                              th:src="@{assets/imgs/shop/thumbnail-3.jpg}"
+                              th:src="@{/assets/imgs/shop/thumbnail-3.jpg}"
                           /></a>
                         </div>
                         <div class="shopping-cart-title">
@@ -414,7 +425,7 @@
                           <a th:href="@{User/shop-product-right.html}"
                             ><img
                               alt="Evara"
-                              th:src="@{assets/imgs/shop/thumbnail-1.jpg}"
+                              th:src="@{/assets/imgs/shop/thumbnail-1.jpg}"
                           /></a>
                         </div>
                         <div class="shopping-cart-title">
@@ -458,7 +469,7 @@
       <div class="mobile-header-wrapper-inner">
         <div class="mobile-header-top">
           <div class="mobile-header-logo">
-            <a th:href="@{User/index.html}" ><img th:src="@{assets/imgs/theme/logo.svg}" alt="logo" /> </a>
+            <a th:href="@{User/index.html}" ><img th:src="@{/assets/imgs/theme/logo.svg}" alt="logo" /> </a>
           </div>
           <div  class="mobile-menu-close close-style-wrap close-style-position-inherit" >
             <button class="close-style search-close">
@@ -733,19 +744,19 @@
           <div class="mobile-social-icon">
             <h5 class="mb-15 text-grey-4">Follow Us</h5>
             <a href="#"
-              ><img th:src="@{assets/imgs/theme/icons/icon-facebook.svg}" alt=""
+              ><img th:src="@{/assets/imgs/theme/icons/icon-facebook.svg}" alt=""
             /></a>
             <a href="#"
-              ><img th:src="@{assets/imgs/theme/icons/icon-twitter.svg}" alt=""
+              ><img th:src="@{/assets/imgs/theme/icons/icon-twitter.svg}" alt=""
             /></a>
             <a href="#"
-              ><img th:src="@{assets/imgs/theme/icons/icon-instagram.svg}" alt=""
+              ><img th:src="@{/assets/imgs/theme/icons/icon-instagram.svg}" alt=""
             /></a>
             <a href="#"
-              ><img th:src="@{assets/imgs/theme/icons/icon-pinterest.svg}" alt=""
+              ><img th:src="@{/assets/imgs/theme/icons/icon-pinterest.svg}" alt=""
             /></a>
             <a href="#"
-              ><img th:src="@{assets/imgs/theme/icons/icon-youtube.svg}" alt=""
+              ><img th:src="@{/assets/imgs/theme/icons/icon-youtube.svg}" alt=""
             /></a>
           </div>
         </div>
@@ -764,34 +775,19 @@
         <div class="container">
           <div class="col-lg-10 m-auto">
             <div class="col-lg-5">
-              <div
-                class="login_wrap widget-taber-content p-30 background-white border-radius-10 mb-md-5 mb-lg-0 mb-sm-5"
-              >
+              <div class="login_wrap widget-taber-content p-30 background-white border-radius-10 mb-md-5 mb-lg-0 mb-sm-5">
                 <div class="padding_eight_all bg-white">
                   <div class="heading_s1">
                     <h3 class="mb-30">OTP Verification</h3>
                   </div>
-                  <form method="post">
+                  <form th:action="@{/otp-validation/verify}" method="post" onsubmit="return validateForm()">
+                    <div class="form-group"><p>OTP has been sent via Email to<span>User Email</span></p></div>
+                    <div class="form-group" th:text="${error}"></div>
                     <div class="form-group">
-                      <p>
-                        OTP has been sent via Email to <span> User Email</span>
-                      </p>
+                      <input type="text" name="otp" id="otpField" placeholder="Enter Verification Code"/>
                     </div>
                     <div class="form-group">
-                      <input
-                        type="number"
-                        name="otp"
-                        placeholder="Enter Verification Code"
-                      />
-                    </div>
-                    <div class="form-group">
-                      <button
-                        type="submit"
-                        class="btn btn-fill-out btn-block hover-up"
-                        name="login"
-                      >
-                        Verify
-                      </button>
+                      <button type="submit" class="btn btn-fill-out btn-block hover-up" name="submit">Verify</button>
                     </div>
                   </form>
                 </div>
@@ -810,7 +806,7 @@
                 <div class="col flex-horizontal-center">
                   <img
                     class="icon-email"
-                    th:src="@{assets/imgs/theme/icons/icon-email.svg}"
+                    th:src="@{/assets/imgs/theme/icons/icon-email.svg}"
                     alt=""
                   />
                   <h4 class="font-size-20 mb-0 ml-3">Sign up to Newsletter</h4>
@@ -845,7 +841,7 @@
               <div class="widget-about font-md mb-md-5 mb-lg-0">
                 <div class="logo logo-width-1 wow fadeIn animated">
                   <a th:href="@{User/index.html}"
-                    ><img th:src="@{assets/imgs/theme/logo.svg}" alt="logo"
+                    ><img th:src="@{/assets/imgs/theme/logo.svg}" alt="logo"
                   /></a>
                 </div>
                 <h5 class="mt-20 mb-10 fw-600 text-grey-4 wow fadeIn animated">
@@ -869,24 +865,24 @@
                 >
                   <a href="#"
                     ><img
-                      th:src="@{assets/imgs/theme/icons/icon-facebook.svg}"
+                      th:src="@{/assets/imgs/theme/icons/icon-facebook.svg}"
                       alt=""
                   /></a>
                   <a href="#"
-                    ><img th:src="@{assets/imgs/theme/icons/icon-twitter.svg}" alt=""
+                    ><img th:src="@{/assets/imgs/theme/icons/icon-twitter.svg}" alt=""
                   /></a>
                   <a href="#"
                     ><img
-                      th:src="@{assets/imgs/theme/icons/icon-instagram.svg}"
+                      th:src="@{/assets/imgs/theme/icons/icon-instagram.svg}"
                       alt=""
                   /></a>
                   <a href="#"
                     ><img
-                      th:src="@{assets/imgs/theme/icons/icon-pinterest.svg}"
+                      th:src="@{/assets/imgs/theme/icons/icon-pinterest.svg}"
                       alt=""
                   /></a>
                   <a href="#"
-                    ><img th:src="@{assets/imgs/theme/icons/icon-youtube.svg}" alt=""
+                    ><img th:src="@{/assets/imgs/theme/icons/icon-youtube.svg}" alt=""
                   /></a>
                 </div>
               </div>
@@ -924,11 +920,11 @@
                     <a href="#" class="hover-up mb-sm-4 mb-lg-0"
                       ><img
                         class="active"
-                        th:src="@{assets/imgs/theme/app-store.jpg}"
+                        th:src="@{/assets/imgs/theme/app-store.jpg}"
                         alt=""
                     /></a>
                     <a href="#" class="hover-up"
-                      ><img th:src="@{assets/imgs/theme/google-play.jpg}" alt=""
+                      ><img th:src="@{/assets/imgs/theme/google-play.jpg}" alt=""
                     /></a>
                   </div>
                 </div>
@@ -938,7 +934,7 @@
                   </p>
                   <img
                     class="wow fadeIn animated"
-                    th:src="@{assets/imgs/theme/payment-method.png}"
+                    th:src="@{/assets/imgs/theme/payment-method.png}"
                     alt=""
                   />
                 </div>
@@ -984,25 +980,25 @@
       </div>
     </div>
 
-    <script th:src="@{assets/js/vendor/modernizr-3.6.0.min.js}"></script>
-    <script th:src="@{assets/js/vendor/jquery-3.6.0.min.js}"></script>
-    <script th:src="@{assets/js/vendor/jquery-migrate-3.3.0.min.js}"></script>
-    <script th:src="@{assets/js/vendor/bootstrap.bundle.min.js}"></script>
-    <script th:src="@{assets/js/plugins/slick.js}"></script>
-    <script th:src="@{assets/js/plugins/jquery.syotimer.min.js}"></script>
-    <script th:src="@{assets/js/plugins/wow.js}"></script>
-    <script th:src="@{assets/js/plugins/jquery-ui.js}"></script>
-    <script th:src="@{assets/js/plugins/perfect-scrollbar.js}"></script>
-    <script th:src="@{assets/js/plugins/magnific-popup.js}"></script>
-    <script th:src="@{assets/js/plugins/select2.min.js}"></script>
-    <script th:src="@{assets/js/plugins/waypoints.js}"></script>
-    <script th:src="@{assets/js/plugins/counterup.js}"></script>
-    <script th:src="@{assets/js/plugins/jquery.countdown.min.js}"></script>
-    <script th:src="@{assets/js/plugins/images-loaded.js}"></script>
-    <script th:src="@{assets/js/plugins/isotope.js}"></script>
-    <script th:src="@{assets/js/plugins/scrollup.js}"></script>
-    <script th:src="@{assets/js/plugins/jquery.vticker-min.js}"></script>
-    <script th:src="@{assets/js/plugins/jquery.theia.sticky.js}"></script>
-    <script th:src="@{assets/js/main.js}"></script>
+    <script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/jquery-migrate-3.3.0.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/slick.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.syotimer.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/wow.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery-ui.js}"></script>
+    <script th:src="@{/assets/js/plugins/perfect-scrollbar.js}"></script>
+    <script th:src="@{/assets/js/plugins/magnific-popup.js}"></script>
+    <script th:src="@{/assets/js/plugins/select2.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/waypoints.js}"></script>
+    <script th:src="@{/assets/js/plugins/counterup.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.countdown.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/images-loaded.js}"></script>
+    <script th:src="@{/assets/js/plugins/isotope.js}"></script>
+    <script th:src="@{/assets/js/plugins/scrollup.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.vticker-min.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.theia.sticky.js}"></script>
+    <script th:src="@{/assets/js/main.js}"></script>
   </body>
 </html>

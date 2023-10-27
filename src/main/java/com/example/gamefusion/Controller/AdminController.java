@@ -1,2 +1,4 @@
-package com.example.gamefusion.Controller;public class AdminController {
+package com.example.gamefusion.Controller;
+
+public class AdminController {
 }
