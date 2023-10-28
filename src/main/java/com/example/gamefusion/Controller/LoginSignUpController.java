@@ -3,6 +3,7 @@ package com.example.gamefusion.Controller;
 import com.example.gamefusion.Dto.UserDto;
 import com.example.gamefusion.Services.OTPService;
 import com.example.gamefusion.Services.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +47,9 @@ public class LoginSignUpController {
     }
 
     @GetMapping("/login-or-registration")
-    public String getLoginForm(Authentication authentication, Model model) {
+    public String getLoginForm(Authentication authentication, Model model, HttpServletRequest request) {
         if (authentication != null) return "redirect:/";
+        request.getSession(true);
         model.addAttribute("NewUser", new UserDto());
         return "User/page-login-register";
     }

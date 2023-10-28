@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void activateAccount(String receiver) {
         if (isUserExists(receiver)) {
-            userRepository.unBlock(receiver);
+            userRepository.unBlockUser(receiver);
         }
         else {
             throw new UsernameNotFoundException("User not exist.");

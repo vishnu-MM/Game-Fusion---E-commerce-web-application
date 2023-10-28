@@ -17,12 +17,14 @@ public class SecurityConfig {
             .authorizeHttpRequests( authorizeRequests ->
                 authorizeRequests
                     .requestMatchers("/","/user-registration/verify","/otp-validation","/otp-validation/verify","/assets/**").permitAll()
+                    .requestMatchers("/dashboard/**").hasAuthority("ADMIN")
                     .anyRequest().authenticated()
             )
             .formLogin( login ->
                 login
                     .loginPage("/login-or-registration")
                     .loginProcessingUrl("/UserAuthentication")
+                    .defaultSuccessUrl("/")
                     .permitAll()
             )
             .exceptionHandling( handler ->
