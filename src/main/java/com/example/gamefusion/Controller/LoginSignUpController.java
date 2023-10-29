@@ -56,7 +56,7 @@ public class LoginSignUpController {
 
     @PostMapping("/user-registration/verify")
     public String saveNewUser( @Valid @ModelAttribute("NewUser") UserDto userDto,BindingResult result, HttpSession session ) {
-        if (userService.isUserExists(userDto.getUsername())) {
+        if (userService.isExistsByUsername(userDto.getUsername())) {
             result.rejectValue("username", String.valueOf(HttpStatus.CONFLICT),"User with this email is already exist");
         }
         if (result.hasErrors()) {  

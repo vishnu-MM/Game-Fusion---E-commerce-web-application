@@ -1,19 +1,25 @@
 package com.example.gamefusion.Services.Implementations;
 
+import com.example.gamefusion.Dto.PaginationInfo;
 import com.example.gamefusion.Dto.UserDto;
 import com.example.gamefusion.Entity.User;
 import com.example.gamefusion.Repository.UserRepository;
 import com.example.gamefusion.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     @Autowired
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -36,17 +42,57 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean isUserExists(String username) {
+    public Boolean isExistsByUsername(String username) {
         return userRepository.existsByUsername(username);
     }
 
     @Override
-    public void activateAccount(String receiver) {
-        if (isUserExists(receiver)) {
-            userRepository.unBlockUser(receiver);
+    public Boolean isExistsById(Integer id) {
+        return userRepository.existsById(id);
+    }
+
+    @Override
+    public Boolean isBlocked(Integer id) {
+        return userRepository.findIsActiveById(id);
+    }
+
+    @Override
+    public PaginationInfo findAllUsers(Integer pageNo, Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id"));
+        Page<User> users = userRepository.findUsersByRole("USER",pageable);
+        List<User> listOfUser = users.getContent();
+        List<UserDto> contents = listOfUser.stream().map(this::mapToDto).toList();
+
+        return new PaginationInfo(
+                contents,users.getNumber(),users.getSize(),
+                users.getTotalElements(),users.getTotalPages(),
+                users.isLast(),users.hasNext()
+        );
+    }
+
+    @Override
+    public void block(Integer id) {
+        if (isExistsById(id) && isBlocked(id)) {
+            userRepository.blockUser(id);
         }
-        else {
-            throw new UsernameNotFoundException("User not exist.");
+    }
+
+    @Override
+    public void unBlock(Integer id) {
+        if (isExistsById(id) && !isBlocked(id)) {
+            userRepository.unBlockUser(id);
         }
+    }
+
+    private UserDto mapToDto(User user) {
+        UserDto dto = new UserDto();
+        dto.setId(user.getId());
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
+        dto.setUsername(user.getUsername());
+        dto.setPhone(user.getPhone());
+        dto.setRole(user.getRole());
+        dto.setIsActive(user.getIsActive());
+        return dto;
     }
 }

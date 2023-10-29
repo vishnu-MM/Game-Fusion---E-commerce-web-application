@@ -7,12 +7,9 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Data
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class UserDto {
 
+    private Integer Id;
     @NotBlank(message = "Name cannot be blank")
     private String firstName;
     private String lastName;
@@ -25,6 +22,5 @@ public class UserDto {
     @NotBlank
     @Size(min = 8 , message = "Password should be greater than 8 characters")
     private String password;
-
-    private String otp;
+    private Boolean isActive;
 }
