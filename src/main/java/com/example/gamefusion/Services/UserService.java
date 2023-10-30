@@ -2,6 +2,7 @@ package com.example.gamefusion.Services;
 
 import com.example.gamefusion.Dto.PaginationInfo;
 import com.example.gamefusion.Dto.UserDto;
+import com.example.gamefusion.Entity.User;
 
 public interface UserService {
 
@@ -15,5 +16,8 @@ public interface UserService {
 
     void block(Integer id);
     void unBlock(Integer id);
+
+    User dtoToEntity(UserDto dto);
+    UserDto entityToDto(User entity);
 }
 

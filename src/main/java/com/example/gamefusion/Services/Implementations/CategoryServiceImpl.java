@@ -29,17 +29,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void save(CategoryDto dto) {
-        Category category = categoryRepository.findById(dto.getId()).orElse(null);
-        if (category == null)
-            category = new Category();
-
-        category.setName(dto.getName());
-        category.setStatus(dto.getStatus());
-        if (dto.getParentId() != null)
-            category.setParentCategory(categoryRepository.findById(dto.getParentId()).orElse(null));
-        else
-            category.setParentCategory(null);
-
+        Category category = mapToEntity(dto);
         categoryRepository.save(category);
     }
 
@@ -47,15 +37,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto findById(Long id) {
         Optional<Category> category = categoryRepository.findById(id);
         if (category.isPresent()) {
-            Long parentId = null;
-            if (category.get().getParentCategory() != null)
-                parentId = category.get().getParentCategory().getId();
-            return new CategoryDto(
-                    category.get().getId(),
-                    category.get().getName(),
-                    category.get().getStatus(),
-                    parentId
-            );
+            return mapToDto(category.get());
         } else {
             throw new EntityNotFoundException("Category not found");
         }
@@ -71,7 +53,8 @@ public class CategoryServiceImpl implements CategoryService {
         return new PaginationInfo(
                 contents, categories.getNumber(), categories.getSize(),
                 categories.getTotalElements(), categories.getTotalPages(),
-                categories.isLast(), categories.hasNext());
+                categories.isLast(), categories.hasNext()
+        );
     }
 
     @Override
@@ -114,13 +97,29 @@ public class CategoryServiceImpl implements CategoryService {
             throw new EntityNotFoundException("Category not found");
     }
 
-    private CategoryDto mapToDto(Category category) {
-        CategoryDto dto = new CategoryDto();
-        dto.setId(category.getId());
-        dto.setName(category.getName());
-        dto.setStatus(category.getStatus());
-        if (category.getParentCategory() != null)
-            dto.setParentId(category.getParentCategory().getId());
-        return dto;
+    @Override
+    public CategoryDto mapToDto(Category category) {
+        Category parent = category.getParentCategory();
+        return new CategoryDto(
+            category.getId(),
+            category.getName(),
+            category.getStatus(),
+            parent != null? parent.getId() :  null
+        );
+    }
+
+    @Override
+    public Category mapToEntity(CategoryDto dto) {
+        Category category = new Category();
+        Long parentId = dto.getParentId();
+        category.setName(dto.getName());
+        category.setStatus(dto.getStatus());
+        category.setParentCategory(
+                parentId == null ? null :
+                categoryRepository.findById(parentId).orElse(null)
+        );
+        if (dto.getId() != null)
+            category.setId(dto.getId());
+        return category;
     }
 }

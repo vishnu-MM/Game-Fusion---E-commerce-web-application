@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id"));
         Page<User> users = userRepository.findUsersByRole("USER",pageable);
         List<User> listOfUser = users.getContent();
-        List<UserDto> contents = listOfUser.stream().map(this::mapToDto).toList();
+        List<UserDto> contents = listOfUser.stream().map(this::entityToDto).toList();
 
         return new PaginationInfo(
                 contents,users.getNumber(),users.getSize(),
@@ -84,15 +84,31 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private UserDto mapToDto(User user) {
-        UserDto dto = new UserDto();
-        dto.setId(user.getId());
-        dto.setFirstName(user.getFirstName());
-        dto.setLastName(user.getLastName());
-        dto.setUsername(user.getUsername());
-        dto.setPhone(user.getPhone());
-        dto.setRole(user.getRole());
-        dto.setIsActive(user.getIsActive());
-        return dto;
+    @Override
+    public User dtoToEntity(UserDto dto) {
+        return new User(
+                dto.getId(),
+                dto.getFirstName(),
+                dto.getLastName(),
+                dto.getPhone(),
+                dto.getUsername(),
+                dto.getRole(),
+                dto.getPassword(),
+                dto.getIsActive()
+        );
+    }
+
+    @Override
+    public UserDto entityToDto(User user) {
+        return new UserDto(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getPhone(),
+                user.getUsername(),
+                user.getRole(),
+                user.getPassword(),
+                user.getIsActive()
+        );
     }
 }

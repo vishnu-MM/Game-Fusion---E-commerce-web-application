@@ -2,26 +2,43 @@ package com.example.gamefusion.Services.Implementations;
 
 import com.example.gamefusion.Dto.CategoryDto;
 import com.example.gamefusion.Dto.PaginationInfo;
-import com.example.gamefusion.Services.AdminService;
-import com.example.gamefusion.Services.CategoryService;
-import com.example.gamefusion.Services.UserService;
+import com.example.gamefusion.Dto.ProductDto;
+import com.example.gamefusion.Entity.Images;
+import com.example.gamefusion.Entity.Product;
+import com.example.gamefusion.Services.*;
 import jakarta.transaction.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class AdminServiceImpl implements AdminService {
-
     private final UserService userService;
+    private final ProductService productService;
     private final CategoryService categoryService;
+    private final StorageService storageService;
+    private final ImagesService imagesService;
+    private final BrandService brandService;
+
     @Autowired
-    public AdminServiceImpl(UserService userService, CategoryService categoryService) {
+    public AdminServiceImpl(
+            UserService userService,
+            @Lazy ProductService productService,
+            CategoryService categoryService,
+            StorageService storageService,
+            ImagesService imagesService,
+            BrandService brandService
+    ) {
         this.userService = userService;
+        this.productService = productService;
         this.categoryService = categoryService;
+        this.storageService = storageService;
+        this.imagesService = imagesService;
+        this.brandService = brandService;
     }
 
     //* User Ops
@@ -87,5 +104,33 @@ public class AdminServiceImpl implements AdminService {
             categoryService.deActivateCategory(id);
         else
             categoryService.activateCategory(id);
+    }
+
+    @Override
+    public Long addNewProduct(ProductDto productDto) {
+        return productService.save(productDto);
+    }
+
+    @Override
+    public List<String> uploadImage(List<MultipartFile> file, Long id) {
+        ProductDto productDto = productService.getProductById(id);
+        List<Images> images = new ArrayList<>();
+        for (Long imgId : productDto.getImageIds() ) {
+            images.add(
+                    imagesService.mapToEntity(imagesService.findImageById(imgId))
+            );
+        }
+        Product product = new Product(
+                productDto.getId(), productDto.getName(),
+                productDto.getDescription(), productDto.getPrice(),
+                productDto.getQty(), productDto.getStatus(),
+                brandService.mapToEntity(
+                        brandService.findById(productDto.getBrandId())
+                ),
+                categoryService.mapToEntity(
+                        categoryService.findById(productDto.getCategoryId())
+                ), images
+        );
+        return storageService.uploadImagesToFileSystem(file,product);
     }
 }

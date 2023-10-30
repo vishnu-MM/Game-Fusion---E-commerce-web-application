@@ -1,21 +1,28 @@
 package com.example.gamefusion.Controller;
 
 import com.example.gamefusion.Dto.CategoryDto;
+import com.example.gamefusion.Dto.ImagesDto;
+import com.example.gamefusion.Dto.ProductDto;
 import com.example.gamefusion.Services.AdminService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 
 @Controller
 @RequestMapping("/dashboard")
 public class AdminController {
 
-    //Logger log = LoggerFactory.getLogger(AdminController.class);
+    Logger log = LoggerFactory.getLogger(AdminController.class);
     private final AdminService adminService;
 
     @Autowired
@@ -119,8 +126,33 @@ public class AdminController {
     }
 
     @GetMapping("/add-product")
-    public String getAddProductForm() {
-        return "";
+    public String getAddProductForm(Model model) {
+        model.addAttribute("NewProduct",new ProductDto());
+        return "Admin/page-add-product";
+    }
+
+    @PostMapping("/add-product/save")
+    public String addNewProduct(@Valid @ModelAttribute("NewProduct") ProductDto productDto, BindingResult result,
+                                Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("NewProduct",productDto);
+            return "Admin/page-add-product";
+        }
+        Long productId = adminService.addNewProduct(productDto);
+        return "redirect:/dashboard/upload-images/" + productId;
+    }
+
+    @GetMapping("/upload-images/{productId}")
+    public String getAddImageForm(@PathVariable Long productId, Model model) {
+        model.addAttribute("productId",productId);
+        return "Admin/page-add-images";
+    }
+
+    @PostMapping("/upload-images/save")
+    public String addProductImages(@RequestParam("imageFiles") List<MultipartFile> file,
+                                   @RequestParam("productId") Long productId ) {
+        log.info(adminService.uploadImage(file,productId).toString());
+        return "redirect:/dashboard";
     }
 
     @GetMapping("/edit-product")
@@ -130,11 +162,6 @@ public class AdminController {
 
     @PutMapping("/delete-product")
     public String deleteProduct() {
-        return "";
-    }
-
-    @PostMapping("/add-product/save")
-    public String addNewProduct() {
         return "";
     }
 

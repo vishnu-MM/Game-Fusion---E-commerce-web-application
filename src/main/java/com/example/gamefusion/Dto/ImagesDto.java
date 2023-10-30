@@ -12,7 +12,11 @@ public class ImagesDto {
 
     private Long id;
     @NotNull
-    private byte[] image;
+    private String name;
+    @NotNull
+    private String type;
+    @NotNull
+    private String filePath;
     @NotNull
     private Long productId;
 }

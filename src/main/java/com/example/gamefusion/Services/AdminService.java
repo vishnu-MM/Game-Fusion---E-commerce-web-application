@@ -2,6 +2,8 @@ package com.example.gamefusion.Services;
 
 import com.example.gamefusion.Dto.CategoryDto;
 import com.example.gamefusion.Dto.PaginationInfo;
+import com.example.gamefusion.Dto.ProductDto;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -14,7 +16,7 @@ public interface AdminService {
      void blockUser(Integer id);
      void unBlockUser(Integer id);
 
-     //! Category
+     //? Category
      void addNewCategory(CategoryDto categoryDto);
      void updateCategory(CategoryDto categoryDto);
      PaginationInfo getAllCategory(Integer pageNo, Integer pageSize);
@@ -22,9 +24,11 @@ public interface AdminService {
      CategoryDto getCategoryInfo(Long id);
      void toggleCategoryStatus(Long id);
 
-     //! products
+
+    //! products
      //todo: view
-     //todo: add
+     Long addNewProduct(ProductDto productDto);
+     List<String> uploadImage(List<MultipartFile> file, Long productId);
      //todo: edit
      //todo: soft delete
 
