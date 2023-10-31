@@ -127,15 +127,16 @@ public class AdminController {
 
     @GetMapping("/add-product")
     public String getAddProductForm(Model model) {
-        model.addAttribute("NewProduct",new ProductDto());
+        AddProductCommonAttributes(model);
         return "Admin/page-add-product";
     }
 
     @PostMapping("/add-product/save")
-    public String addNewProduct(@Valid @ModelAttribute("NewProduct") ProductDto productDto, BindingResult result,
-                                Model model) {
+    public String addNewProduct(@Valid @ModelAttribute("NewProduct") ProductDto productDto,
+                                BindingResult result, Model model) {
         if (result.hasErrors()) {
-            model.addAttribute("NewProduct",productDto);
+            System.out.println(result);
+            AddProductCommonAttributes(model);
             return "Admin/page-add-product";
         }
         Long productId = adminService.addNewProduct(productDto);
@@ -168,5 +169,11 @@ public class AdminController {
     @PutMapping("/edit-product/update")
     public String editProduct() {
         return "";
+    }
+
+    private void AddProductCommonAttributes(Model model) {
+        model.addAttribute("CategoryList", adminService.getAllCategory());
+        model.addAttribute("brandList", adminService.getAllBrands());
+        model.addAttribute("NewProduct",new ProductDto());
     }
 }

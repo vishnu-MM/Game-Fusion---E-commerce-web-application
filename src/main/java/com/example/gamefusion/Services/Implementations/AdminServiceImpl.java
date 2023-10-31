@@ -1,5 +1,6 @@
 package com.example.gamefusion.Services.Implementations;
 
+import com.example.gamefusion.Dto.BrandDto;
 import com.example.gamefusion.Dto.CategoryDto;
 import com.example.gamefusion.Dto.PaginationInfo;
 import com.example.gamefusion.Dto.ProductDto;
@@ -132,5 +133,10 @@ public class AdminServiceImpl implements AdminService {
                 ), images
         );
         return storageService.uploadImagesToFileSystem(file,product);
+    }
+
+    @Override
+    public List<BrandDto> getAllBrands() {
+        return brandService.getAll();
     }
 }

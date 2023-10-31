@@ -12,6 +12,9 @@
     <meta property="og:image" content="">
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/admin-assets/imgs/theme/favicon.svg}">
     <link th:href="@{/assets/admin-assets/css/main.css}" rel="stylesheet" type="text/css" />
+
+
+
 </head>
 <body>
 <div class="screen-overlay"></div>
@@ -127,16 +130,23 @@
                                     <!-- Form  -->
                                     <form method="post" th:action="@{/dashboard/add-product/save}" th:object="${NewProduct}">
                                         <div class="row mb-4">
-                                            <label class="col-lg-3 col-form-label">Product name*</label>
+                                            <label class="col-lg-3 col-form-label" for="name">Product name*</label>
                                             <div class="col-lg-9">
-                                                <input type="text" th:field="*{name}" class="form-control" placeholder="Type here">
+                                                <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}">
+                                                    Name cannot be empty
+                                                </span>
+                                                <input type="text" th:field="*{name}" class="form-control" id="name"
+                                                       name="name" placeholder="Type here">
                                             </div>
                                         </div>
                                         <div class="row mb-4">
                                             <label class="col-lg-3 col-form-label">Description*</label>
                                             <div class="col-lg-9">
-                                                <textarea class="form-control" th:field="*{description}" placeholder="Type here"
-                                                          rows="4"></textarea>
+                                                <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}">
+                                                    Name cannot be empty
+                                                </span>
+                                                <textarea class="form-control" th:field="*{description}" name="description"
+                                                          placeholder="Type here" rows="4"></textarea>
                                             </div>
                                         </div>
                                         <div class="row mb-4">
@@ -145,15 +155,24 @@
                                             <label class="col-lg-5 col-form-label">Category</label>
                                             <div class="col-lg-5">
                                                 <!-- BRAND LOOP -->
+                                                <span th:if="${#fields.hasErrors('brandId')}" th:errors="*{brandId}">
+                                                    Name cannot be empty
+                                                </span>
                                                 <select size="5" th:field="*{brandId}" class="form-control select-multiple">
-                                                    <option th:value="${1}">Adidas</option>
+                                                    <option th:each="brand : ${brandList}" th:value="${brand.id}"
+                                                            th:text="${brand.name}" name="brandId">
+                                                    </option>
                                                 </select>
                                             </div>
                                             <div class="col-lg-2"></div>
                                             <div class="col-lg-5">
                                                 <!-- CATEGORY LOOP -->
+                                                <span th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}">
+                                                    Name cannot be empty
+                                                </span>
                                                 <select size="5" th:field="*{categoryId}" class="form-control select-multiple">
-                                                    <option th:value="${1}">Adidas</option>
+                                                    <option th:each="category : ${CategoryList}" th:value="${category.id}"
+                                                            th:text="${category.name}" name="categoryId"></option>
                                                 </select>
                                             </div>
                                         </div>
@@ -161,11 +180,18 @@
                                             <label class="col-lg-6 col-form-label">Price*</label>
                                             <label class="col-lg-6 col-form-label">Quantity*</label>
                                             <div class="col-lg-6">
+                                                <span th:if="${#fields.hasErrors('price')}" th:errors="*{price}">
+                                                    Name cannot be empty
+                                                </span>
                                                 <input type="number" th:field="*{price}" class="form-control"
-                                                       placeholder="Unit Price">
+                                                       placeholder="Unit Price" name="price">
                                             </div>
                                             <div class="col-lg-6">
-                                                <input type="number" th:field="*{qty}" class="form-control" placeholder="Total Quantity">
+                                                <span th:if="${#fields.hasErrors('qty')}" th:errors="*{qty}">
+                                                    Name cannot be empty
+                                                </span>
+                                                <input type="number" th:field="*{qty}" class="form-control"
+                                                       placeholder="Total Quantity" name="qty">
                                             </div>
                                         </div>
                                         <div class="row mb-4">

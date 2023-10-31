@@ -1,5 +1,6 @@
 package com.example.gamefusion.Services;
 
+import com.example.gamefusion.Dto.BrandDto;
 import com.example.gamefusion.Dto.CategoryDto;
 import com.example.gamefusion.Dto.PaginationInfo;
 import com.example.gamefusion.Dto.ProductDto;
@@ -29,7 +30,9 @@ public interface AdminService {
      //todo: view
      Long addNewProduct(ProductDto productDto);
      List<String> uploadImage(List<MultipartFile> file, Long productId);
-     //todo: edit
+
+    //todo: edit
      //todo: soft delete
 
+    List<BrandDto> getAllBrands();
 }

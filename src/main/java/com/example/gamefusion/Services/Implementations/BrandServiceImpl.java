@@ -6,7 +6,10 @@ import com.example.gamefusion.Entity.Brand;
 import com.example.gamefusion.Repository.BrandRepository;
 import com.example.gamefusion.Services.BrandService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -45,6 +48,12 @@ public class BrandServiceImpl implements BrandService {
                 dto.isStatus(),
                 dto.getLogo()
         );
+    }
+
+    @Override
+    public List<BrandDto> getAll() {
+        List<Brand> brands = brandRepository.findAll(Sort.by("id"));
+        return brands.stream().map(this::mapToDto).toList();
     }
 
 
