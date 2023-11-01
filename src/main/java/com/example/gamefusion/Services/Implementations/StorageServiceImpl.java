@@ -1,12 +1,13 @@
 package com.example.gamefusion.Services.Implementations;
 
 import com.example.gamefusion.Configuration.ExceptionHandlerConfig.EntityNotFoundException;
-import com.example.gamefusion.Dto.ProductDto;
 import com.example.gamefusion.Entity.Images;
 import com.example.gamefusion.Entity.Product;
 import com.example.gamefusion.Repository.ImagesRepository;
 import com.example.gamefusion.Services.StorageService;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,7 +21,7 @@ import java.util.Optional;
 @Service
 public class StorageServiceImpl implements StorageService {
 
-
+    Logger log = LoggerFactory.getLogger(StorageService.class);
     private final ImagesRepository imagesRepository;
     @Autowired
     public StorageServiceImpl(ImagesRepository imagesRepository) {
@@ -38,34 +39,52 @@ public class StorageServiceImpl implements StorageService {
 
             try {
                 Images img = Images.builder()
-                            .name(file.getOriginalFilename())
-                            .type(file.getContentType())
-                            .filePath(filePath)
-                            .build();
+                        .name(file.getOriginalFilename())
+                        .type(file.getContentType())
+                        .filePath(filePath)
+                        .build();
                 img.setProduct(product);
                 imagesRepository.save(img);
                 file.transferTo(new File(filePath));
                 filePaths.add("File uploaded successfully: " + filePath);
-            }
-            catch (IOException e) {
+                log.info(filePath);
+
+            } catch (IOException e) {
                 filePaths.add("Error uploading the file: " + e.getMessage());
-            }
-            catch (Exception ex) {
+                log.error(e.getMessage());
+            } catch (Exception ex) {
                 filePaths.add("An error occurred: " + ex.getMessage());
+                log.error(ex.getMessage());
             }
         }
         return filePaths;
     }
 
+
     @Override
-    public byte[] downloadImageFromFileSystem(String fileName) throws IOException {
-        Optional<Images> imageData = imagesRepository.findByName(fileName);
+    public byte[] downloadImageFromFileSystem(Long id) throws IOException {
+        Optional<Images> imageData = imagesRepository.findById(id);
+        log.info("downloadImageFromFileSystem"+Long.toString(id));
         if (imageData.isPresent()){
             String filePath = imageData.get().getFilePath();
+            log.info("File "+filePath);
+            log.info(new File(filePath).toPath().toString());
             return Files.readAllBytes(new File(filePath).toPath());
         }
         else {
             throw new EntityNotFoundException("Image Not Fount");
+        }
+    }
+
+    @Override
+    public boolean deleteImage(Long id) throws IOException {
+        Optional<Images> imageData = imagesRepository.findById(id);
+        if (imageData.isPresent()) {
+            String filePath = imageData.get().getFilePath();
+            File file = new File(filePath);
+            return file.delete();
+        } else {
+            throw new EntityNotFoundException("Image Not Found");
         }
     }
 

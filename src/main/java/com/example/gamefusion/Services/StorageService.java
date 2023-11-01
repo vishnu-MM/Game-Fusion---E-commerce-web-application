@@ -9,7 +9,8 @@ import java.util.List;
 
 public interface StorageService {
     List<String> uploadImagesToFileSystem(List<MultipartFile> files, Product id);
-    byte[] downloadImageFromFileSystem(String fileName) throws IOException;
+    byte[] downloadImageFromFileSystem(Long id) throws IOException;
 
 
+    boolean deleteImage(Long id) throws IOException;
 }

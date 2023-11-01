@@ -39,7 +39,7 @@ public class LoginSignUpController {
                 if (authority.getAuthority().equals("ADMIN")) {
                     return "redirect:/dashboard";
                 } else if (authority.getAuthority().equals("USER")) {
-                    return "redirect:/home";
+                    return "redirect:/user/home";
                 }
             }
         }

@@ -1,6 +1,7 @@
 package com.example.gamefusion.Services.Implementations;
 
 import com.example.gamefusion.Configuration.ExceptionHandlerConfig.EntityNotFoundException;
+import com.example.gamefusion.Dto.PaginationInfo;
 import com.example.gamefusion.Dto.ProductDto;
 import com.example.gamefusion.Entity.Images;
 import com.example.gamefusion.Entity.Product;
@@ -9,15 +10,22 @@ import com.example.gamefusion.Services.BrandService;
 import com.example.gamefusion.Services.CategoryService;
 import com.example.gamefusion.Services.ImagesService;
 import com.example.gamefusion.Services.ProductService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
+
     private final ProductRepository productRepository;
     private final CategoryService categoryService;
     private final BrandService brandService;
@@ -35,8 +43,39 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public PaginationInfo getAllProducts(Integer pageNo, Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id"));
+        Page<Product> products = productRepository.findAll(pageable);
+        List<Product> listOfProducts = products.getContent();
+        List<ProductDto> contents = listOfProducts.stream().map(this::entityToDto).toList();
+
+        return new PaginationInfo(
+                contents,products.getNumber(),products.getSize(),
+                products.getTotalElements(),products.getTotalPages(),
+                products.isLast(),products.hasNext()
+        );
+    }
+
+    @Override
+    public PaginationInfo getAllActiveProducts(Integer pageNo, Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNo,pageSize);
+        Page<Product> products = productRepository.findByStatus(true,pageable);
+        List<Product> listOfProducts = products.getContent();
+        List<ProductDto> contents = listOfProducts.stream().map(this::entityToDto).toList();
+
+        return new PaginationInfo(
+                contents,products.getNumber(),products.getSize(),
+                products.getTotalElements(),products.getTotalPages(),
+                products.isLast(),products.hasNext()
+        );
+    }
+
+    @Override
     public Long save(ProductDto dto) {
         Product newProduct = new Product();
+        if (dto.getId() != null ) {
+            newProduct.setId(dto.getId());
+        }
         newProduct.setName(dto.getName());
         newProduct.setDescription(dto.getDescription());
         newProduct.setPrice(dto.getPrice());
@@ -58,11 +97,38 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto getProductById(Long id) {
         Optional<Product> product = productRepository.findById(id);
+        System.out.println(product);
         if (product.isPresent()){
             return entityToDto(product.get());
         }
         else {
             throw new EntityNotFoundException("Product not fount");
+        }
+    }
+
+    @Override
+    public Boolean isProductActive(Long id) {
+        return productRepository.findStatusById(id);
+    }
+
+    @Override
+    public Boolean isProductExists(Long id) {
+        return productRepository.existsById(id);
+    }
+
+    @Override
+    @Transactional
+    public void activateProduct(Long id) {
+        if (productRepository.existsById(id) && !isProductActive(id) ){
+            productRepository.unBlockProduct(id);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deActivateProduct(Long id) {
+        if (productRepository.existsById(id) && isProductActive(id) ){
+            productRepository.blockProduct(id);
         }
     }
 

@@ -1,18 +1,17 @@
 package com.example.gamefusion.Services.Implementations;
 
-import com.example.gamefusion.Dto.BrandDto;
-import com.example.gamefusion.Dto.CategoryDto;
-import com.example.gamefusion.Dto.PaginationInfo;
-import com.example.gamefusion.Dto.ProductDto;
+import com.example.gamefusion.Dto.*;
 import com.example.gamefusion.Entity.Images;
 import com.example.gamefusion.Entity.Product;
 import com.example.gamefusion.Services.*;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +31,7 @@ public class AdminServiceImpl implements AdminService {
             CategoryService categoryService,
             StorageService storageService,
             ImagesService imagesService,
-            BrandService brandService
+            BrandService brandService 
     ) {
         this.userService = userService;
         this.productService = productService;
@@ -42,7 +41,7 @@ public class AdminServiceImpl implements AdminService {
         this.brandService = brandService;
     }
 
-    //* User Ops
+    //* USER OPS
 
     @Override
     public PaginationInfo getAllUsers(Integer pageNo, Integer pageSize) {
@@ -72,7 +71,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
 
-    //* Category Ops
+    //* CATEGORY OPS
 
     @Override
     public void addNewCategory(CategoryDto categoryDto) {
@@ -107,8 +106,10 @@ public class AdminServiceImpl implements AdminService {
             categoryService.activateCategory(id);
     }
 
+    // PRODUCT OPS
+
     @Override
-    public Long addNewProduct(ProductDto productDto) {
+    public Long addOrUpdateProduct(ProductDto productDto) {
         return productService.save(productDto);
     }
 
@@ -136,7 +137,56 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public ProductDto getProduct(Long id) {
+        return productService.getProductById(id);
+    }
+
+    @Override
+    public void toggleStatus(Long id) {
+        if (!productService.isProductExists(id)){
+            throw new EntityNotFoundException("Product not found");
+        }
+        if (productService.isProductActive(id)) {
+            productService.deActivateProduct(id);
+        }
+        else {
+            productService.activateProduct(id);
+        }
+    }
+
+    @Override
     public List<BrandDto> getAllBrands() {
         return brandService.getAll();
+    }
+
+    @Override
+    public byte[] getImages(Long imageId) {
+        try{
+            return storageService.downloadImageFromFileSystem(imageId);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<byte[]> getImageOfSingleProduct(Long productId) {
+        return imagesService.getImageOfSingleProduct(productId);
+    }
+
+    @Override
+    public void deleteImage(Long imageId) {
+        try {
+            if (!imagesService.isImageExists(imageId))
+                throw new EntityNotFoundException("Image not found");
+            if (storageService.deleteImage(imageId)) {
+            imagesService.deleteImageById(imageId);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public PaginationInfo getAllProduct(Integer pageNo, Integer pageSize) {
+        return productService.getAllProducts(pageNo,pageSize);
     }
 }

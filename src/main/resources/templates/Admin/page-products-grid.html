@@ -135,18 +135,42 @@
             <div class="card-body">
                 <div class="row gx-3 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 row-cols-xxl-5">
                     <!-- LOOP STARTS HERE -->
-                    <div class="col">
+                    <div class="col" th:each="product : ${ProductPage.contents}">
                         <div class="card card-product-grid">
-                            <a href="#" class="img-wrap"> <img th:src="@{/assets/admin-assets/imgs/items/1.jpg}" alt="Product"> </a>
+                            <a href="#" class="img-wrap">
+                                <span th:if="${#lists.isEmpty(product.imageIds)}">
+                                <img th:src="@{/assets/admin-assets/imgs/items/No-Image.png}" alt="No Image">
+                                </span>
+                                <span th:unless="${#lists.isEmpty(product.imageIds)}">
+                                <img th:src="@{/images/{imgId}(imgId=${product.imageIds[0]})}" alt="Product Image" />
+                                </span>
+                            </a>
                             <div class="info-wrap">
-                                <a href="#" class="title text-truncate">Just another product name</a>
-                                <div class="price mb-2">$179.00</div>
-                                <a href="#" class="btn btn-sm font-sm rounded btn-brand">
-                                    <i class="material-icons md-edit"></i> Edit
-                                </a>
-                                <a href="#" class="btn btn-sm font-sm btn-light rounded">
-                                    <i class="material-icons md-delete_forever"></i> Delete
-                                </a>
+                                <a href="#" class="title text-truncate" th:text="${product.name}"></a>
+                                <div class="price mb-2" th:text="${'&#8377'+product.price}"></div>
+                                <div class="price mb-2"
+                                     th:style="${product.qty == 0 ? 'color: red;' : 'color: #5D6A82;'}"
+                                     th:text="${product.qty == 0 ? 'Out Of Stock' : 'Quantity :'+ product.qty}"></div>
+                                <div class="price mb-2">
+                                    <span th:style="${product.status == true ? 'color: green;' : 'color: red;'}"
+                                          th:text="${product.status == true ? 'Active' : 'In Active'}">
+                                    </span>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <form th:method="put" th:action="@{/dashboard/delete-product}">
+                                            <input type="hidden" name="id" th:value="${product.id}">
+                                            <button class="btn btn-sm font-sm rounded btn-brand">Delete</button>
+                                        </form>
+                                    </div>
+                                    <div class="col-6">
+                                        <form method="get" th:action="@{/dashboard/edit-product}">
+                                            <input type="hidden" name="id" th:value="${product.id}">
+                                            <button class="btn btn-sm font-sm btn-light rounded">Edit</button>
+                                        </form>
+                                    </div>
+
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -155,25 +179,26 @@
             </div>
         </div>
         <!-- PAGINATION STARTS HERE -->
-<!--        <div class="pagination-area mt-30 mb-50">-->
-<!--            <nav aria-label="Page navigation example">-->
-<!--                <ul class="pagination justify-content-start">-->
-<!--                    <li class="page-item" th:each="page, iterStat : ${#numbers.sequence(0, CategoryList.totalPages - 1)}"-->
-<!--                        th:class="${page == CategoryList.pageNo} ? 'page-item active' : 'page-item'">-->
-<!--                        <a class="page-link" th:href="@{/dashboard/view-categories(pageNo=${page},pageSize=${CategoryList.pageSize})}"-->
-<!--                           th:text="${page + 1}"></a>-->
-<!--                    </li>-->
-<!--                    <li class="page-item"><a class="page-link dot" href="#">...</a></li>-->
-<!--                    <li class="page-item">-->
-<!--                        <a class="page-link" th:if="${CategoryList.hasNext}"-->
-<!--                           th:href="@{/dashboard/view-categories(pageNo=${CategoryList.totalPages - 1},pageSize=${CategoryList.pageSize})}">-->
-<!--                            <i class="material-icons md-chevron_right"></i>-->
-<!--                        </a>-->
-<!--                    </li>-->
+        <div class="pagination-area mt-30 mb-50">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-start">
+                    <li class="page-item" th:each="page, iterStat : ${#numbers.sequence(0, ProductPage.totalPages - 1)}"
+                        th:class="${page == ProductPage.pageNo} ? 'page-item active' : 'page-item'">
+                        <a class="page-link"
+                           th:href="@{/dashboard/view-products (pageNo=${page},pageSize=${ProductPage.pageSize})}"
+                           th:text="${page + 1}"></a>
+                    </li>
+                    <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                    <li class="page-item">
+                        <a class="page-link" th:if="${ProductPage.hasNext}"
+                           th:href="@{/dashboard/view-categories(pageNo=${ProductPage.totalPages - 1},pageSize=${ProductPage.pageSize})}">
+                            <i class="material-icons md-chevron_right"></i>
+                        </a>
+                    </li>
 
-<!--                </ul>-->
-<!--            </nav>-->
-<!--        </div>-->
+                </ul>
+            </nav>
+        </div>
         <!-- PAGINATION ENDS HERE -->
     </section>
 </main>

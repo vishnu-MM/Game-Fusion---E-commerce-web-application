@@ -162,7 +162,7 @@ if ( typeof Object.create !== 'function' ) {
 
 
 				//if inner  zoom    
-				if(self.options.zoomType == "inner") {
+				if(self.options.zoomType === "inner") {
 					//has a border been put on the image? Lets cater for this
 
 					var borderWidth = self.$elem.css("border-left-width");
@@ -184,7 +184,7 @@ if ( typeof Object.create !== 'function' ) {
 
 
 				//lens style for window zoom
-				if(self.options.zoomType == "window") {
+				if(self.options.zoomType === "window") {
 
 
 					// adjust images less than the window height

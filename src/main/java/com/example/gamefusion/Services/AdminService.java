@@ -27,12 +27,19 @@ public interface AdminService {
 
 
     //! products
-     //todo: view
-     Long addNewProduct(ProductDto productDto);
-     List<String> uploadImage(List<MultipartFile> file, Long productId);
+    PaginationInfo getAllProduct(Integer pageNo, Integer pageSize);
+    Long addOrUpdateProduct(ProductDto productDto);
+    List<String> uploadImage(List<MultipartFile> file, Long productId);
 
     //todo: edit
-     //todo: soft delete
+    ProductDto getProduct(Long id);
+    void toggleStatus(Long id);
 
     List<BrandDto> getAllBrands();
+    byte[] getImages(Long imageId);
+
+
+    List<byte[]> getImageOfSingleProduct(Long productId);
+
+    void deleteImage(Long imageId);
 }

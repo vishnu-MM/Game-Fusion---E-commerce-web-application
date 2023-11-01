@@ -1,7 +1,6 @@
 package com.example.gamefusion.Controller;
 
 import com.example.gamefusion.Dto.CategoryDto;
-import com.example.gamefusion.Dto.ImagesDto;
 import com.example.gamefusion.Dto.ProductDto;
 import com.example.gamefusion.Services.AdminService;
 import jakarta.validation.Valid;
@@ -12,11 +11,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
-
 
 @Controller
 @RequestMapping("/dashboard")
@@ -36,7 +34,7 @@ public class AdminController {
         return "Admin/index";
     }
 
-    //? USER MANAGEMENT
+    //* USER MANAGEMENT
 
     @GetMapping("/view-users")
     public String getListOfAllUsers(Model model,
@@ -66,7 +64,7 @@ public class AdminController {
         return "redirect:/dashboard/view-users?success";
     }
 
-    //? CATEGORY MANAGEMENT
+    //* CATEGORY MANAGEMENT
 
     @GetMapping("/view-categories")
     public String getListOfAllCategory(Model model,
@@ -118,16 +116,20 @@ public class AdminController {
         return "redirect:/dashboard/view-categories";
     }
 
-    //? PRODUCT MANAGEMENT
+    //* PRODUCT MANAGEMENT
 
     @GetMapping("/view-products")
-    public String getProductsPage() {
+    public String getProductsPage(Model model,
+                                  @RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
+                                  @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
+        model.addAttribute("ProductPage", adminService.getAllProduct(pageNo,pageSize));
         return "Admin/page-products-grid";
     }
 
     @GetMapping("/add-product")
     public String getAddProductForm(Model model) {
-        AddProductCommonAttributes(model);
+        productCommonAttributes(model);
+        model.addAttribute("NewProduct",new ProductDto());
         return "Admin/page-add-product";
     }
 
@@ -135,11 +137,11 @@ public class AdminController {
     public String addNewProduct(@Valid @ModelAttribute("NewProduct") ProductDto productDto,
                                 BindingResult result, Model model) {
         if (result.hasErrors()) {
-            System.out.println(result);
-            AddProductCommonAttributes(model);
+            productCommonAttributes(model);
+            model.addAttribute("NewProduct",new ProductDto());
             return "Admin/page-add-product";
         }
-        Long productId = adminService.addNewProduct(productDto);
+        Long productId = adminService.addOrUpdateProduct(productDto);
         return "redirect:/dashboard/upload-images/" + productId;
     }
 
@@ -152,28 +154,58 @@ public class AdminController {
     @PostMapping("/upload-images/save")
     public String addProductImages(@RequestParam("imageFiles") List<MultipartFile> file,
                                    @RequestParam("productId") Long productId ) {
-        log.info(adminService.uploadImage(file,productId).toString());
-        return "redirect:/dashboard";
-    }
-
-    @GetMapping("/edit-product")
-    public String getEditProductPage() {
-        return "";
+        adminService.uploadImage(file,productId);
+        return "redirect:/dashboard/view-products";
     }
 
     @PutMapping("/delete-product")
-    public String deleteProduct() {
-        return "";
+    public String deleteProduct(@RequestParam("id") Long id) {
+        adminService.toggleStatus(id);
+        return "redirect:/dashboard/view-products";
+    }
+
+    @GetMapping("/edit-product")
+    public String getEditProductPage(@RequestParam("id") Long id, Model model) {
+        productCommonAttributes(model);
+        model.addAttribute("Product", adminService.getProduct(id));
+        return "Admin/page-edit-product";
+    }
+
+    @GetMapping("/update-images/{productId}")
+    public String getEditImageForm(@PathVariable Long productId, Model model, RestTemplate restTemplate) {
+        model.addAttribute("Product",adminService.getProduct(productId));
+        return "Admin/page-edit-images";
     }
 
     @PutMapping("/edit-product/update")
-    public String editProduct() {
-        return "";
+    public String editProduct(@Valid @ModelAttribute("Product") ProductDto productDto,
+                              BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            System.out.println(result);
+            productCommonAttributes(model);
+            model.addAttribute("Product",productDto);
+            return "Admin/page-edit-product";
+        }
+        Long productId = adminService.addOrUpdateProduct(productDto);
+        return "redirect:/dashboard/update-images/" + productId;
     }
 
-    private void AddProductCommonAttributes(Model model) {
+    @PostMapping("/update-images/save")
+    public String editProductImages(@RequestParam("imageFiles") List<MultipartFile> file,
+                                   @RequestParam("productId") Long productId ) {
+        log.info(adminService.uploadImage(file,productId).toString());
+        return "redirect:/dashboard/view-products";
+    }
+
+    @DeleteMapping("/delete-image")
+    public String deleteImage(@RequestParam("imageId") Long imageId,
+                              @RequestParam("productId") Long productId ) {
+        adminService.deleteImage(imageId);
+        return "redirect:/dashboard/update-images/"+productId;
+    }
+
+    private void productCommonAttributes(Model model) {
         model.addAttribute("CategoryList", adminService.getAllCategory());
         model.addAttribute("brandList", adminService.getAllBrands());
-        model.addAttribute("NewProduct",new ProductDto());
     }
 }
