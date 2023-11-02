@@ -13,7 +13,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 
 @Controller
@@ -30,7 +29,6 @@ public class AdminController {
 
     @GetMapping("")
     public String home() {
-
         return "Admin/index";
     }
 
@@ -38,8 +36,10 @@ public class AdminController {
 
     @GetMapping("/view-users")
     public String getListOfAllUsers(Model model,
+                                    @RequestParam(value = "error", defaultValue = "false", required = false) Boolean error,
                                     @RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
                                     @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize) {
+        model.addAttribute("Error",error);
         model.addAttribute("UserList", adminService.getAllUsers(pageNo, pageSize));
         return "Admin/page-users-list";
     }
@@ -47,21 +47,12 @@ public class AdminController {
     @PutMapping("/block-unblock-user/{id}")
     public String UnBlockUser(@PathVariable("id") Integer id) {
         if (!adminService.isUserExists(id))
-            return "redirect:/dashboard/view-users?error";
+            return "redirect:/dashboard/view-users?error="+true;
         if (!adminService.isUserBlocked(id))
             adminService.unBlockUser(id);
         else if (adminService.isUserBlocked(id))
             adminService.blockUser(id);
-        return "redirect:/dashboard/view-users?success";
-    }
-
-    @PutMapping("/block-user/{id}")
-    public String blockUser(@PathVariable("id") Integer id) {
-        if (!adminService.isUserExists(id))
-            return "redirect:/dashboard/view-users?error";
-        if (adminService.isUserBlocked(id))
-            adminService.blockUser(id);
-        return "redirect:/dashboard/view-users?success";
+        return "redirect:/dashboard/view-users";
     }
 
     //* CATEGORY MANAGEMENT
@@ -101,13 +92,17 @@ public class AdminController {
     @PutMapping("/edit-category/update")
     public String editCategory(@Valid @ModelAttribute("NewCategory") CategoryDto newCategory,
                                BindingResult result, Model model) {
+        boolean isSuccess;
         if (result.hasErrors()) {
             model.addAttribute("parentList", adminService.getAllCategory());
             model.addAttribute("CategoryDetails", adminService.getCategoryInfo(newCategory.getId()));
-            return "Admin/page-add-category";
+            isSuccess = false;
+        } else {
+            adminService.updateCategory(newCategory);
+            isSuccess = true;
         }
-        adminService.updateCategory(newCategory);
-        return "redirect:/dashboard/view-categories?success";
+        model.addAttribute("success",isSuccess);
+        return "Admin/page-edit-category";
     }
 
     @PutMapping("/update-status/{id}")

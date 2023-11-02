@@ -12,6 +12,23 @@
     <meta property="og:image" content="">
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/admin-assets/imgs/theme/favicon.svg}">
     <link th:href="@{/assets/admin-assets/css/main.css}" rel="stylesheet" type="text/css"/>
+    <script>
+        function confirmBlock(form) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you want to Block this user?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Block',
+                cancelButtonText: 'No, cancel',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If the user confirms, submit the form
+                    form.submit();
+                }
+            });
+        }
+    </script>
 </head>
 <body>
 <div class="screen-overlay"></div>
@@ -140,11 +157,12 @@
                             <span th:text="${user.phone}"></span>
                         </div>
                         <div class="col-lg-2 col-sm-2 col-4 ">
-                            <form th:method="PUT" th:action="@{/dashboard/block-unblock-user/{userId}(userId=${user.id})}">
-                                <button type="submit" class="rounded-pill alert-success" th:if="${user.isActive}" th:text="${user.isActive}">
+                            <form th:method="PUT" th:action="@{/dashboard/block-unblock-user/{userId}(userId=${user.id})}" onsubmit="return false;">
+                                <!-- Add an event handler for button click -->
+                                <button type="button" class="rounded-pill alert-success" th:if="${user.isActive}" th:text="${user.isActive}" onclick="confirmBlock(this.form)">
                                     Active
                                 </button>
-                                <button type="submit" class="rounded-pill alert-danger" th:if="${!user.isActive}" th:text="${user.isActive}">
+                                <button type="button" class="rounded-pill alert-danger" th:if="${!user.isActive}" th:text="${user.isActive}" onclick="confirmBlock(this.form)">
                                     Blocked
                                 </button>
                             </form>
@@ -177,6 +195,12 @@
         </div>
     </section>
 </main>
+<div th:if="${Error}">
+    <script th:inline="text">
+        alert('Some thing went wrong, Try again');
+    </script>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script th:src="@{/assets/admin-assets/js/vendors/jquery-3.6.0.min.js}"></script>
 <script th:src="@{/assets/admin-assets/js/vendors/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/assets/admin-assets/js/vendors/select2.min.js}"></script>

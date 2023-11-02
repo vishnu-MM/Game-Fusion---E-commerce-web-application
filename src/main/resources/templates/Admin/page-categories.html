@@ -17,6 +17,38 @@
         .row { display: flex;}
         .column {flex: 1; padding: 10px; text-align: center;}
     </style>
+    <script>
+        function confirmActivate(form) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you want to Activate this category?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, ',
+                cancelButtonText: 'No, cancel',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If the user confirms, submit the form
+                    form.submit();
+                }
+            });
+        }
+        function confirmDeactivate(form) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you want to De-Activate this category?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No, cancel',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If the user confirms, submit the form
+                    form.submit();
+                }
+            });
+        }
+    </script>
 </head>
 <body>
 <div class="screen-overlay"></div>
@@ -144,9 +176,13 @@
                                     <td><h4 th:text="${category.Id}"></h4></td>
                                     <td><h4 th:text="${category.name}"></h4></td>
                                     <td>
-                                        <form th:method="PUT" th:action="@{/dashboard/update-status/{categoryId}(categoryId=${category.id})}">
-                                            <button type="submit" class="rounded-pill alert-success" th:if="${category.status}">Active</button>
-                                            <button type="submit" class="rounded-pill alert-danger" th:if="${!category.status}" >InActive</button>
+                                        <form th:method="PUT"
+                                              th:action="@{/dashboard/update-status/{categoryId}(categoryId=${category.id})}" onsubmit="return false;">
+                                            <button type="submit" class="rounded-pill alert-success"
+                                                    th:if="${category.status}" onclick="confirmDeactivate(this.form)">Active</button>
+                                            <button type="submit" class="rounded-pill alert-danger"
+                                                    th:if="${!category.status}" onclick="confirmActivate(this.form)">
+                                                InActive</button>
                                         </form>
                                     </td>
                                     <td><h4 th:text="${category.parentId}"></h4></td>
@@ -187,6 +223,7 @@
         </div>
     </section>
 </main>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script th:src="@{assets/admin-assets/js/vendors/jquery-3.6.0.min.js}"></script>
 <script th:src="@{assets/admin-assets/js/vendors/bootstrap.bundle.min.js}"></script>
 <script th:src="@{assets/admin-assets/js/vendors/select2.min.js}"></script>

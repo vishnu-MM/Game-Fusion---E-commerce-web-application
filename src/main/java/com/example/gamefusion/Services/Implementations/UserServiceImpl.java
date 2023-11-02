@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
@@ -20,6 +19,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    
     @Autowired
     public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -91,21 +91,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Override
-    public User dtoToEntity(UserDto dto) {
-        return new User(
-                dto.getId(),
-                dto.getFirstName(),
-                dto.getLastName(),
-                dto.getPhone(),
-                dto.getUsername(),
-                dto.getRole(),
-                dto.getPassword(),
-                dto.getIsActive()
-        );
-    }
-
-    @Override
     public UserDto entityToDto(User user) {
         return new UserDto(
                 user.getId(),

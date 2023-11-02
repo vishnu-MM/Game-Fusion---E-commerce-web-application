@@ -43,6 +43,7 @@ public class UserHomeController {
 
     @GetMapping("/view-product/{id}")
     public String getSingleProduct(@PathVariable("id") Long id, Model model) {
+
         ProductDto productDto = productService.getProductById(id);
         CategoryDto categoryDto = categoryService.findById(productDto.getCategoryId());
         BrandDto brandDto = brandService.findById(productDto.getBrandId());

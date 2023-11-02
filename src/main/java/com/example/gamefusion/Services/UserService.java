@@ -18,8 +18,5 @@ public interface UserService {
 
     void block(Integer id);
     void unBlock(Integer id);
-
-    User dtoToEntity(UserDto dto);
-    UserDto entityToDto(User entity);
 }
 

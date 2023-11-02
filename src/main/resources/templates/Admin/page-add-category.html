@@ -160,6 +160,12 @@
         </div>
     </section>
 </main>
+<div th:if="${success}">
+    <script th:inline="text">
+        alert('Changes saved successfully');
+        window.location.href = '/dashboard/view-categories';
+    </script>
+</div>
 <script th:src="@{assets/admin-assets/js/vendors/jquery-3.6.0.min.js}"></script>
 <script th:src="@{assets/admin-assets/js/vendors/bootstrap.bundle.min.js}"></script>
 <script th:src="@{assets/admin-assets/js/vendors/select2.min.js}"></script>

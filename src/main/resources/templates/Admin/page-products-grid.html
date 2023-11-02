@@ -12,6 +12,38 @@
     <meta property="og:image" content="">
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/admin-assets/imgs/theme/favicon.svg}">
     <link th:href="@{/assets/admin-assets/css/main.css}" rel="stylesheet" type="text/css" />
+    <script>
+        function confirmRemove(form) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you want to Remove this product from users?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Remove',
+                cancelButtonText: 'No, cancel',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If the user confirms, submit the form
+                    form.submit();
+                }
+            });
+        }
+        function confirmRestore(form) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you want to Restore this product to users?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Restore',
+                cancelButtonText: 'No, cancel',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If the user confirms, submit the form
+                    form.submit();
+                }
+            });
+        }
+    </script>
 </head>
 <body>
 <div class="screen-overlay"></div>
@@ -146,27 +178,33 @@
                                 </span>
                             </a>
                             <div class="info-wrap">
-                                <a href="#" class="title text-truncate" th:text="${product.name}"></a>
-                                <div class="price mb-2" th:text="${'&#8377'+product.price}"></div>
-                                <div class="price mb-2"
+                                <a href="#" class="title text-truncate font-xl" th:text="${product.name}"></a>
+                                <div class="price mb-2 font-xxl" th:text="${'&#8377'+product.price}"></div>
+                                <div class="price mb-2 font-xxl"
                                      th:style="${product.qty == 0 ? 'color: red;' : 'color: #5D6A82;'}"
                                      th:text="${product.qty == 0 ? 'Out Of Stock' : 'Quantity :'+ product.qty}"></div>
                                 <div class="price mb-2">
-                                    <span th:style="${product.status == true ? 'color: green;' : 'color: red;'}"
+                                    <span class="font-xxl"
+                                          th:style="${product.status == true ? 'color: green;' : 'color: red;'}"
                                           th:text="${product.status == true ? 'Active' : 'In Active'}">
                                     </span>
                                 </div>
                                 <div class="row">
                                     <div class="col-6">
-                                        <form th:method="put" th:action="@{/dashboard/delete-product}">
+                                        <form th:method="put" th:action="@{/dashboard/delete-product}" onsubmit="return false;">
                                             <input type="hidden" name="id" th:value="${product.id}">
-                                            <button class="btn btn-sm font-sm rounded btn-brand">Delete</button>
+                                            <button th:if="${product.status == true}" onclick="confirmRemove(this.form)"
+                                                    class="btn btn-lg font-lg rounded btn-outline-warning">Remove
+                                            </button>
+                                            <button th:if="${product.status != true}" onclick="confirmRestore(this.form)"
+                                                    class="btn btn-lg font-lg rounded btn-brand">Restore
+                                            </button>
                                         </form>
                                     </div>
                                     <div class="col-6">
-                                        <form method="get" th:action="@{/dashboard/edit-product}">
+                                        <form method="get" th:action="@{/dashboard/edit-product}" >
                                             <input type="hidden" name="id" th:value="${product.id}">
-                                            <button class="btn btn-sm font-sm btn-light rounded">Edit</button>
+                                            <button class="btn btn-lg font-lg btn-light rounded">Edit</button>
                                         </form>
                                     </div>
 
@@ -202,6 +240,7 @@
         <!-- PAGINATION ENDS HERE -->
     </section>
 </main>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script th:src="@{/assets/admin-assets/js/vendors/jquery-3.6.0.min.js}"></script>
 <script th:src="@{/assets/admin-assets/js/vendors/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/assets/admin-assets/js/vendors/select2.min.js}"></script>
