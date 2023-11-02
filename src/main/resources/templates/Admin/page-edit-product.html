@@ -12,6 +12,13 @@
     <meta property="og:image" content="">
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/admin-assets/imgs/theme/favicon.svg}">
     <link th:href="@{/assets/admin-assets/css/main.css}" rel="stylesheet" type="text/css" />
+    <script>
+        function submitFormAndRedirect(form) {
+                form.action = '/dashboard/edit-product/update';
+                form.submit();
+        }
+    </script>
+
 </head>
 <body>
 <div class="screen-overlay"></div>
@@ -26,12 +33,12 @@
     </div>
     <nav>
         <ul class="menu-aside">
-            <li class="menu-item active">
+            <li class="menu-item ">
                 <a class="menu-link" th:href="@{/dashboard}">
                     <i class="icon material-icons md-home"></i><span class="text">Dashboard</span>
                 </a>
             </li>
-            <li class="menu-item ">
+            <li class="menu-item  active">
                 <a class="menu-link" th:href="@{/dashboard/view-products}">
                     <i class="icon material-icons md-shopping_bag"></i><span class="text">Products</span>
                 </a>
@@ -107,8 +114,8 @@
                 <div class="content-header" >
                     <h2 class="content-title">Edit Product</h2>
                     <div>
-                        <a th:href="@{/dashboard/view-products}" class="btn btn-md rounded font-sm hover-up">View
-                            Products</a>
+                        <a th:href="@{/dashboard/view-products}" class="btn btn-md rounded font-xxl hover-up">Cancel
+                            & Exit</a>
                     </div>
                 </div>
             </div>
@@ -125,8 +132,7 @@
                             <div class="col-lg-9">
                                 <section class="content-body p-xl-4">
                                     <!-- Form  -->
-                                    <form th:method="put" th:action="@{/dashboard/edit-product/update}"
-                                          th:object="${Product}">
+                                    <form th:method="put" th:object="${Product}" th:action="@{/dashboard/save-and-exit}">
                                         <div class="row mb-4">
                                             <label class="col-lg-3 col-form-label" for="name">Product name*</label>
                                             <div class="col-lg-9">
@@ -203,7 +209,21 @@
                                             </div>
                                         </div>
                                         <br>
-                                        <button class="btn btn-primary" type="submit"> Continue to next</button>
+                                        <div class="row ">
+                                            <div class="col-lg-1"></div>
+                                            <div class="col-lg-4">
+                                                <button class="btn btn-primary" type="submit" >
+                                                    Save and Exit
+                                                </button>
+                                            </div>
+                                            <div class="col-lg-3"></div>
+                                            <div class="col-lg-4">
+                                                <button class="btn btn-primary" type="button"
+                                                        onclick="submitFormAndRedirect(this.form)">
+                                                        Continue to Edit
+                                                </button>
+                                            </div>
+                                        </div>
                                     </form>
                                 </section>
                             </div>

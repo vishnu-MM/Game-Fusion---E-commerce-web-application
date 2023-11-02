@@ -12,6 +12,22 @@
     <meta property="og:image" content="">
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/admin-assets/imgs/theme/favicon.svg}">
     <link th:href="@{/assets/admin-assets/css/main.css}" rel="stylesheet" type="text/css" />
+    <script>
+        function confirmDelete(form) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you want to Delete this image?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Delete',
+                cancelButtonText: 'No, cancel',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        }
+    </script>
 </head>
 <body>
 <div class="screen-overlay"></div>
@@ -26,12 +42,12 @@
     </div>
     <nav>
         <ul class="menu-aside">
-            <li class="menu-item active">
+            <li class="menu-item">
                 <a class="menu-link" th:href="@{/dashboard}">
                     <i class="icon material-icons md-home"></i><span class="text">Dashboard</span>
                 </a>
             </li>
-            <li class="menu-item ">
+            <li class="menu-item  active">
                 <a class="menu-link" th:href="@{/dashboard/view-products}">
                     <i class="icon material-icons md-shopping_bag"></i><span class="text">Products</span>
                 </a>
@@ -130,7 +146,7 @@
                                                 <div class="input-upload">
                                                     <!-- ADD NEW IMAGE-->
                                                     <img th:src="@{/assets/admin-assets/imgs/theme/upload.svg}" alt="">
-                                                    <form th:action="@{/dashboard/upload-images/save}" method="post" enctype="multipart/form-data">
+                                                    <form th:action="@{/dashboard/update-images/save}" method="post" enctype="multipart/form-data">
                                                         <input type="hidden" name="productId" th:value="${productId}">
                                                         <input class="form-control" type="file" id="imageFiles" name="imageFiles" multiple="multiple" required="required">
                                                         <div style="height: 50px"></div>
@@ -152,12 +168,13 @@
                                                         <img th:src="@{/images/{imgId}(imgId=${imageId})}" />
                                                     </div>
                                                     <div class="col-2">
-                                                        <form th:method="delete" th:action="@{/dashboard/delete-image}">
+                                                        <form th:method="delete"
+                                                              th:action="@{/dashboard/delete-image}" onsubmit="return false;">
                                                             <input type="hidden" name="imageId" th:value="${imageId}" />
-                                                            <input type="hidden" name="productId"
-                                                                   th:value="${Product.id}" />
-                                                            <button class="btn btn-lg font-lg btn-outline-danger">
-                                                                Delete</button>
+                                                            <input type="hidden" name="productId" th:value="${Product.id}" />
+                                                            <button class="btn btn-lg font-lg btn-outline-danger" onclick="confirmDelete(this.form)">
+                                                                Delete
+                                                            </button>
                                                         </form>
                                                     </div>
                                                 </div>
@@ -174,6 +191,7 @@
         </div>
     </section>
 </main>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script th:src="@{/assets/admin-assets/js/vendors/jquery-3.6.0.min.js}"></script>
 <script th:src="@{/assets/admin-assets/js/vendors/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/assets/admin-assets/js/vendors/select2.min.js}"></script>

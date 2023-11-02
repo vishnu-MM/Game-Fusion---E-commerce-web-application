@@ -38,6 +38,7 @@ public class UserHomeController {
                        @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize) {
         PaginationInfo info = productService.getAllActiveProducts(pageNo,pageSize);
         model.addAttribute("ProductPage",info);
+        model.addAttribute("CategoryList",categoryService.getAll());
         return "User/index-4";
     }
 
@@ -49,7 +50,8 @@ public class UserHomeController {
         BrandDto brandDto = brandService.findById(productDto.getBrandId());
         List<ImagesDto> images = imagesService.findImageByProduct(productDto.getId());
 
-
+        model.addAttribute("CategoryDetails", categoryDto);
+        model.addAttribute("BrandDetails", brandDto);
         model.addAttribute("ProductDetails",productDto);
         return "User/shop-product";
     }

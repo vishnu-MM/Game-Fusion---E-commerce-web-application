@@ -164,9 +164,9 @@
     <div class="page-header breadcrumb-wrap">
         <div class="container">
             <div class="breadcrumb">
-                <a href="#" rel="nofollow">Home</a>
-                <span></span> Category name
-                <span></span> <span th:text="${ProductDetails.name}"></span>
+                <a rel="nofollow">Home</a>
+                <span th:text="'  '+ ${CategoryDetails.name}"></span>
+                <span th:text="'  '+ ${ProductDetails.name}"></span>
             </div>
         </div>
     </div>
@@ -202,7 +202,8 @@
                                     <h2 class="title-detail" th:text="${ProductDetails.name}"></h2>
                                     <div class="product-detail-rating">
                                         <div class="pro-details-brand">
-                                            <span> Brands: <a href="#">BRAND 1</a></span>
+                                            <span> Brands:
+                                                <a href="#"> <span th:text="${BrandDetails.name}"></span></a></span>
                                         </div>
                                         <div class="product-rate-cover text-end">
                                             <div class="product-rate d-inline-block">

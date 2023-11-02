@@ -185,11 +185,24 @@ public class AdminController {
         return "redirect:/dashboard/update-images/" + productId;
     }
 
+    @PutMapping("/save-and-exit")
+    public String editAndExit(@Valid @ModelAttribute("Product") ProductDto productDto,
+                              BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            System.out.println(result);
+            productCommonAttributes(model);
+            model.addAttribute("Product",productDto);
+            return "Admin/page-edit-product";
+        }
+        Long productId = adminService.addOrUpdateProduct(productDto);
+        return "redirect:/dashboard/view-products";
+    }
+
     @PostMapping("/update-images/save")
     public String editProductImages(@RequestParam("imageFiles") List<MultipartFile> file,
                                    @RequestParam("productId") Long productId ) {
         log.info(adminService.uploadImage(file,productId).toString());
-        return "redirect:/dashboard/view-products";
+        return "redirect:/dashboard/update-images/" + productId;
     }
 
     @DeleteMapping("/delete-image")
