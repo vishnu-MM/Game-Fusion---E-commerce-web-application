@@ -16,7 +16,8 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests( authorizeRequests ->
                 authorizeRequests
-                    .requestMatchers("/","/user-registration/verify","/otp-validation","/otp-validation/verify","/assets/**").permitAll()
+                    .requestMatchers("/","/user-registration/verify","/otp-validation","/otp-validation/verify",
+                            "/sent-otp","/assets/**").permitAll()
                     .requestMatchers("/dashboard/**").hasAuthority("ADMIN")
                     .anyRequest().authenticated()
             )

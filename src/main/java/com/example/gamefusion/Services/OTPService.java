@@ -6,7 +6,7 @@ public interface OTPService {
 
     String generateOTP();
 
-    boolean verifyOTP(String recipient, String otp);
+    String verifyOTP(String recipient, String otp);
 
     void sendOTP(UserDto recipient);
 }

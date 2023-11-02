@@ -10,6 +10,8 @@ public interface UserService {
 
     PaginationInfo findAllUsers(Integer pageNo, Integer pageSize);
 
+    UserDto findByUsername(String receiver);
+
     Boolean isExistsByUsername(String username);
     Boolean isExistsById(Integer id);
     Boolean isBlocked(Integer id);

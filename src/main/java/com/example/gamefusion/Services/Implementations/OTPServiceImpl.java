@@ -1,7 +1,7 @@
 package com.example.gamefusion.Services.Implementations;
 
+import com.example.gamefusion.Configuration.UtilityClasses.OtpUtil;
 import com.example.gamefusion.Dto.UserDto;
-import com.example.gamefusion.Repository.UserRepository;
 import com.example.gamefusion.Services.OTPService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,24 +11,22 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 @Service
 public class OTPServiceImpl implements OTPService {
 
+    private static final long OTP_VALIDITY_DURATION = 5* 60* 1000;
     Logger log = LoggerFactory.getLogger(OTPServiceImpl.class);
-    Map<String,String> otpStore = new HashMap<>();
+
+    private OtpUtil otpUtil;
     private final JavaMailSender javaMailSender;
-    private final UserRepository userRepository;
     @Value("${spring.mail.username}")
     private String from;
 
     @Autowired
-    public OTPServiceImpl(JavaMailSender javaMailSender, UserRepository userRepository) {
+    public OTPServiceImpl(JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;
-        this.userRepository = userRepository;
     }
 
     @Override
@@ -41,21 +39,11 @@ public class OTPServiceImpl implements OTPService {
     }
 
     @Override
-    public boolean verifyOTP(String recipient, String enteredOtp) {
-        String expectedOtp = otpStore.get(recipient);
-        if ( (enteredOtp != null && expectedOtp != null ) && expectedOtp.equals(enteredOtp) ) {
-            log.info("OTP Verified.");
-            return true;
-        }
-        otpStore.remove(recipient);
-        return false;
-    }
-
-    @Override
     public void sendOTP(UserDto recipient) {
+        String username = recipient.getUsername();
         String otp = generateOTP();
-        otpStore.put( recipient.getUsername(), otp );
-
+        Long timeOfCreation = System.currentTimeMillis();
+        otpUtil = new OtpUtil(username,otp,timeOfCreation);
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(from);
@@ -63,7 +51,7 @@ public class OTPServiceImpl implements OTPService {
         message.setText(
                 generateEmailBody(recipient.getFirstName()+" "+recipient.getLastName(),otp )
         );
-        message.setTo(recipient.getUsername());
+        message.setTo(username);
         try {
             javaMailSender.send(message);
         }catch (Exception e){
@@ -71,6 +59,19 @@ public class OTPServiceImpl implements OTPService {
             log.warn("Error Occurred");
         }
         log.info("send Email Successfully");
+    }
+
+    @Override
+    public String verifyOTP(String recipient, String enteredOtp) {
+        if (!recipient.equals(otpUtil.username()))
+            return "USER-NOT-FOUNT";
+        if (System.currentTimeMillis() - otpUtil.timeOfCreation() > OTP_VALIDITY_DURATION)
+            return "TIMEOUT";
+        if (enteredOtp == null || otpUtil.otp() == null )
+            return "EMPTY";
+        if (!enteredOtp.equals(otpUtil.otp()))
+            return "INVALID";
+        return "SUCCESS";
     }
 
     private String generateEmailBody(String name, String otp ) {

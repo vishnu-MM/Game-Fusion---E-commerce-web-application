@@ -41,6 +41,13 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+
+    @Override
+    public UserDto findByUsername(String receiver) {
+        User user = userRepository.findByUsername(receiver);
+        return entityToDto(user);
+    }
+
     @Override
     public Boolean isExistsByUsername(String username) {
         return userRepository.existsByUsername(username);
