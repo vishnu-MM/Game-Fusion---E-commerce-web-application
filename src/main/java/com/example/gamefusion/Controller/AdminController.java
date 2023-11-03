@@ -11,8 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 @Controller
@@ -167,7 +167,7 @@ public class AdminController {
     }
 
     @GetMapping("/update-images/{productId}")
-    public String getEditImageForm(@PathVariable Long productId, Model model, RestTemplate restTemplate) {
+    public String getEditImageForm(@PathVariable Long productId, Model model) {
         model.addAttribute("Product",adminService.getProduct(productId));
         return "Admin/page-edit-images";
     }
@@ -194,7 +194,7 @@ public class AdminController {
             model.addAttribute("Product",productDto);
             return "Admin/page-edit-product";
         }
-        Long productId = adminService.addOrUpdateProduct(productDto);
+        adminService.addOrUpdateProduct(productDto);
         return "redirect:/dashboard/view-products";
     }
 

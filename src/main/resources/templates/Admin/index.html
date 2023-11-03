@@ -19,7 +19,7 @@
 <aside class="navbar-aside" id="offcanvas_aside">
     <div class="aside-top">
         <a href="#" class="brand-wrap">
-            <img th:src="@{/assets/admin-assets/imgs/theme/logo.svg}" class="logo" alt="Evara Dashboard">
+            <img th:src="@{/assets/admin-assets/imgs/theme/New-logo.svg}" class="logo" alt="Evara Dashboard">
         </a>
         <div>
             <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button>
@@ -85,8 +85,16 @@
                     <a href="#" class="requestfullscreen nav-link btn-icon"><i class="material-icons md-cast"></i></a>
                 </li>
                 <li class="dropdown nav-item">
-                <!--Profile -->
                     <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false"> <img class="img-xs rounded-circle" th:src="@{/assets/admin-assets/imgs/people/avatar-2-admin.png}" alt="User"></a>
+                </li>
+                <li class="nav-item">
+                    <form th:action="@{/logout}" method="post">
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+                        <button type="submit" class="dropdown-item text-danger"><i class="material-icons md-exit_to_app"></i>Logout</button>
+                    </form>
+                </li>
+                <!--Profile -->
+                <li class="dropdown nav-item">
                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
                         <a class="dropdown-item" href="#"><i class="material-icons md-perm_identity"></i>Edit Profile</a>
                         <a class="dropdown-item" href="#"><i class="material-icons md-settings"></i>Change Password</a>
