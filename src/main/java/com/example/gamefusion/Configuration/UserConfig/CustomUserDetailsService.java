@@ -1,12 +1,9 @@
 package com.example.gamefusion.Configuration.UserConfig;
 
-import com.example.gamefusion.Configuration.ExceptionHandlerConfig.UserBlockedException;
 import com.example.gamefusion.Entity.User;
 import com.example.gamefusion.Repository.UserRepository;
-import jakarta.servlet.ServletOutputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,13 +23,14 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException,LockedException {
         User user = userRepository.findByUsername(username);
         if (user == null) {
+            System.out.println("its exe");
             throw new UsernameNotFoundException("Invalid username or password");
         }
         else if (!user.getIsActive()) {
-            throw new UserBlockedException("You are blocked from accessing this web site");
+            throw new LockedException("You are blocked from accessing this web site");
         }
         else {
             List<GrantedAuthority> authorities = new ArrayList<>();

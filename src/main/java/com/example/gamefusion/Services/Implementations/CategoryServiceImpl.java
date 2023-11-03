@@ -1,6 +1,6 @@
 package com.example.gamefusion.Services.Implementations;
 
-import com.example.gamefusion.Configuration.ExceptionHandlerConfig.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import com.example.gamefusion.Dto.CategoryDto;
 import com.example.gamefusion.Dto.PaginationInfo;
 import com.example.gamefusion.Entity.Category;

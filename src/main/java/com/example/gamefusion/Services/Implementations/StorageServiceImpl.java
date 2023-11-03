@@ -1,6 +1,6 @@
 package com.example.gamefusion.Services.Implementations;
 
-import com.example.gamefusion.Configuration.ExceptionHandlerConfig.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import com.example.gamefusion.Entity.Images;
 import com.example.gamefusion.Entity.Product;
 import com.example.gamefusion.Repository.ImagesRepository;

@@ -1,14 +1,14 @@
 package com.example.gamefusion.Services.Implementations;
 
-import com.example.gamefusion.Configuration.ExceptionHandlerConfig.EntityNotFoundException;
+
 import com.example.gamefusion.Dto.BrandDto;
 import com.example.gamefusion.Entity.Brand;
 import com.example.gamefusion.Repository.BrandRepository;
 import com.example.gamefusion.Services.BrandService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
