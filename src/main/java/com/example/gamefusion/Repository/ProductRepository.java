@@ -23,5 +23,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     void unBlockProduct(Long id);
 
     Page<Product> findByStatus(boolean status, Pageable pageable);
+    Page<Product> findByStatusAndCategoryStatus(boolean product_status,boolean Category_status, Pageable pageable);
 }
 

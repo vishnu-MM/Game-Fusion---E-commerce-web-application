@@ -184,6 +184,11 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
+    @Override
+    public Boolean isCategoryNameExist(String name) {
+        return categoryService.isExistsByName(name);
+    }
+
     public PaginationInfo getAllProduct(Integer pageNo, Integer pageSize) {
         return productService.getAllProducts(pageNo,pageSize);
     }

@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -66,6 +67,18 @@ public class AdminController {
         return "Admin/page-categories";
     }
 
+    @GetMapping("/get-category/{parentId}")
+    @ResponseBody
+    public ResponseEntity<String> fetchParentCategoryName(@PathVariable Long parentId) {
+        if (parentId != null) {
+            CategoryDto parentCategory = adminService.getCategoryInfo(parentId);
+            if (parentCategory != null) {
+                return ResponseEntity.ok(parentCategory.getName());
+            }
+        }
+        return ResponseEntity.notFound().build();
+    }
+
     @GetMapping("/add-category")
     public String getAddCategoryForm(Model model, @ModelAttribute("CategoryDetails") CategoryDto categoryDto) {
         model.addAttribute("NewCategory", new CategoryDto());
@@ -75,6 +88,9 @@ public class AdminController {
 
     @PostMapping("/add-category/save")
     public String addNewCategory(@Valid @ModelAttribute("NewCategory") CategoryDto newCategory, BindingResult result) {
+        if(adminService.isCategoryNameExist(newCategory.getName())){
+            result.rejectValue("name",null,"Category with the same name exists");
+        }
         if (result.hasErrors()) {
             return "Admin/page-add-category";
         }

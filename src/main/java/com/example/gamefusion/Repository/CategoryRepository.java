@@ -19,6 +19,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     @Query("SELECT c.status FROM Category c WHERE c.id = :id")
     Boolean findStatusById(Long id);
+    Boolean existsByName(String name);
 
     @Modifying
     @Query("update Category c set c.status = false where c.id = ?1 or c.parentCategory.id = ?1")

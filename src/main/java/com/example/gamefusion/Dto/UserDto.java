@@ -12,16 +12,16 @@ import lombok.*;
 public class UserDto {
 
     private Integer Id;
-    @NotBlank(message = "Name cannot be blank")
+    @NotBlank(message = " First Name cannot be blank")
     private String firstName;
     private String lastName;
-    @NotBlank(message = "Phone cannot be blank ")
+    @NotBlank(message = "Phone cannot be blank")
     private String phone;
-    @NotBlank(message = "Email cannot be blank ")
+    @NotBlank(message = "Email cannot be blank")
     @Email(message = "Invalid Email ID")
     private String username;
     private String role;
-    @NotBlank
+    @NotBlank(message = "Password cannot be blank")
     @Size(min = 8 , message = "Password should be greater than 8 characters")
     private String password;
     private Boolean isActive;

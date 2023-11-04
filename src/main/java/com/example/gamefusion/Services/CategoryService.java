@@ -14,6 +14,9 @@ public interface CategoryService {
 
     CategoryDto findById(Long id);
     PaginationInfo findAll(Integer pageNo, Integer pageSize);
+
+    Boolean isExistsByName(String name);
+
     List<CategoryDto> getAll();
     List<String> getAllNames();
     

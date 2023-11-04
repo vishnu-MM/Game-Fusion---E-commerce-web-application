@@ -34,7 +34,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryDto findById(Long id) {
+    public CategoryDto findById(Long id) throws EntityNotFoundException{
         Optional<Category> category = categoryRepository.findById(id);
         if (category.isPresent()) {
             return mapToDto(category.get());
@@ -55,6 +55,11 @@ public class CategoryServiceImpl implements CategoryService {
                 categories.getTotalElements(), categories.getTotalPages(),
                 categories.isLast(), categories.hasNext()
         );
+    }
+
+    @Override
+    public Boolean isExistsByName(String name) {
+        return categoryRepository.existsByName(name);
     }
 
     @Override

@@ -13,6 +13,28 @@
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/imgs/theme/favicon.svg}">
     <link rel="stylesheet" th:href="@{/assets/css/main.css}">
     <link rel="stylesheet" th:href="@{/assets/css/signup-page.css}">
+    <style>
+        .error {
+            border: 2px solid red;
+        }
+        .error-msg{
+            color: red;
+        }
+        .error-msg::before{
+            content: '!';
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 2px solid red;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+            background-color: red;
+            color: white;
+            font-weight: bold
+        }
+    </style>
     <script>
         function checkPasswordMatch() {
             let password = document.getElementById("password-org").value;
@@ -202,12 +224,18 @@
                             <div class="login_wrap widget-taber-content p-30 background-white border-radius-10 mb-md-5 mb-lg-0 mb-sm-5">
                                 <div class="padding_eight_all bg-white">
                                     <div class="heading_s1"><h3 class="mb-30">Login</h3></div>
-                                    <div th:if="${param.error}" class="alert alert-danger v1">
+                                    <div th:if="${param.error}" class="error-msg">
                                         <p th:text="${session.SPRING_SECURITY_LAST_EXCEPTION.message}"></p>
                                     </div>
                                     <form th:action="@{/UserAuthentication}" method="post">
-                                        <div class="form-group"><input type="text" name="username" placeholder="Your Email"></div>
-                                        <div class="form-group"><input type="password" name="password" placeholder="Password"></div>
+                                        <div class="form-group">
+                                            <label for="username"></label>
+                                            <input type="text" name="username" id="username" placeholder="Your Email">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="password_"></label>
+                                            <input type="password" name="password" id="password_" placeholder="Password">
+                                        </div>
                                         <div class="login_footer form-group"><a class="text-muted" href="#">Forgot password?</a></div>
                                         <div class="form-group">
                                             <button type="submit" class="btn btn-fill-out btn-block hover-up" name="login">Log in</button>
@@ -219,10 +247,6 @@
                         <div class="col-lg-6">
                             <div class="login_wrap widget-taber-content p-30 background-white border-radius-5">
                                 <div class="padding_eight_all bg-white">
-                                    <div class="alert alert-danger v1" th:if="${#fields.hasErrors('NewUser.firstName')}" th:errors="*{NewUser.firstName}" ></div>
-                                    <div class="alert alert-danger v1" th:if="${#fields.hasErrors('NewUser.username')}" th:errors="*{NewUser.username}" ></div>
-                                    <div class="alert alert-danger v1" th:if="${#fields.hasErrors('NewUser.phone')}" th:errors="*{NewUser.phone}" ></div>
-                                    <div class="alert alert-danger v1" th:if="${#fields.hasErrors('NewUser.password')}" th:errors="*{NewUser.password}" ></div>
                                     <div class="heading_s1"><h3 class="mb-30">Create an Account</h3></div>
                                     <form method="post" th:action="@{/user-registration/verify}" th:object="${NewUser}" onsubmit="return checkPasswordMatch()">
                                         <div class="form-group container-custom">
@@ -231,17 +255,21 @@
                                             <label for="last-name"></label>
                                             <input type="text" id="last-name" th:field="*{lastName}" name="lastName" class="text-box" placeholder="Last name">
                                         </div>
+                                        <div class="error-msg" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" ></div>
                                         <div class="form-group">
                                             <label for="phone"></label>
                                             <input type="tel" id="phone" th:field="*{phone}" name="phone" placeholder="Phone number">
+                                            <div class="error-msg" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" ></div>
                                         </div>
                                         <div class="form-group">
                                             <label for="email"></label>
                                             <input type="email" id="email" th:field="*{username}" name="username" placeholder="Email ID">
+                                            <div class="error-msg" th:if="${#fields.hasErrors('username')}" th:errors="*{username}" ></div>
                                         </div>
                                         <div class="form-group">
                                             <label for="password-org"></label>
                                             <input type="password" id="password-org" th:field="*{password}" name="password" placeholder="Password">
+                                            <div class="error-msg" th:if="${#fields.hasErrors('password')}" th:errors="*{password}" ></div>
                                         </div>
                                         <div class="form-group">
                                             <label for="confirm-password"></label>
@@ -278,7 +306,9 @@
                 <div class="col-lg-5">
                     <!-- Subscribe Form -->
                     <form class="form-subcriber d-flex wow fadeIn animated">
-                        <input type="email" class="form-control bg-white font-small" placeholder="Enter your email">
+                        <label for="letter"></label>
+                        <input type="email" id="letter"  class="form-control bg-white font-small"
+                               placeholder="Enter your email">
                         <button class="btn bg-dark text-white" type="submit">Subscribe</button>
                     </form>
                     <!-- End Subscribe Form -->
@@ -343,7 +373,6 @@
                     </div>
                 </div>
             </div>
-        </div>
         </div>
     </section>
 </footer>

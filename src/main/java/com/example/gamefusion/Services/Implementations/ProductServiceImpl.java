@@ -59,7 +59,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public PaginationInfo getAllActiveProducts(Integer pageNo, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNo,pageSize);
-        Page<Product> products = productRepository.findByStatus(true,pageable);
+        Page<Product> products = productRepository.findByStatusAndCategoryStatus(true,true,pageable);
         List<Product> listOfProducts = products.getContent();
         List<ProductDto> contents = listOfProducts.stream().map(this::entityToDto).toList();
 

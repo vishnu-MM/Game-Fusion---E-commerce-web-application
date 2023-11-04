@@ -42,4 +42,6 @@ public interface AdminService {
     List<byte[]> getImageOfSingleProduct(Long productId);
 
     void deleteImage(Long imageId);
+
+    Boolean isCategoryNameExist(String name);
 }
