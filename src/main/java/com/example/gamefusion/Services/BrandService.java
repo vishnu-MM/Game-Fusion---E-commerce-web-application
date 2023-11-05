@@ -7,9 +7,5 @@ import java.util.List;
 
 public interface BrandService {
     BrandDto findById(Long brandId);
-
-    BrandDto mapToDto(Brand entity);
-    Brand mapToEntity(BrandDto dto);
-
     List<BrandDto> getAll();
 }

@@ -1,25 +1,21 @@
 package com.example.gamefusion.Services.Implementations;
 
-import jakarta.persistence.EntityNotFoundException;
+import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
+import com.example.gamefusion.Dto.CategoryDto;
 import com.example.gamefusion.Dto.PaginationInfo;
 import com.example.gamefusion.Dto.ProductDto;
-import com.example.gamefusion.Entity.Images;
 import com.example.gamefusion.Entity.Product;
 import com.example.gamefusion.Repository.ProductRepository;
-import com.example.gamefusion.Services.BrandService;
-import com.example.gamefusion.Services.CategoryService;
-import com.example.gamefusion.Services.ImagesService;
 import com.example.gamefusion.Services.ProductService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,19 +23,13 @@ import java.util.Optional;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
-    private final CategoryService categoryService;
-    private final BrandService brandService;
-    private final ImagesService imagesService;
-
+    private final EntityDtoConversionUtil conversionUtil;
     @Autowired
     public ProductServiceImpl(
-            ProductRepository productRepository, @Lazy CategoryService categoryService,
-            @Lazy BrandService brandService, @Lazy ImagesService imagesService ) {
+            ProductRepository productRepository, EntityDtoConversionUtil conversionUtil) {
 
         this.productRepository = productRepository;
-        this.categoryService = categoryService;
-        this.brandService = brandService;
-        this.imagesService = imagesService;
+        this.conversionUtil = conversionUtil;
     }
 
     @Override
@@ -47,8 +37,8 @@ public class ProductServiceImpl implements ProductService {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id"));
         Page<Product> products = productRepository.findAll(pageable);
         List<Product> listOfProducts = products.getContent();
-        List<ProductDto> contents = listOfProducts.stream().map(this::entityToDto).toList();
-
+        List<ProductDto> contents = listOfProducts.stream().map(conversionUtil::entityToDto).toList();
+        System.out.println(contents);
         return new PaginationInfo(
                 contents,products.getNumber(),products.getSize(),
                 products.getTotalElements(),products.getTotalPages(),
@@ -61,7 +51,7 @@ public class ProductServiceImpl implements ProductService {
         Pageable pageable = PageRequest.of(pageNo,pageSize);
         Page<Product> products = productRepository.findByStatusAndCategoryStatus(true,true,pageable);
         List<Product> listOfProducts = products.getContent();
-        List<ProductDto> contents = listOfProducts.stream().map(this::entityToDto).toList();
+        List<ProductDto> contents = listOfProducts.stream().map(conversionUtil::entityToDto).toList();
 
         return new PaginationInfo(
                 contents,products.getNumber(),products.getSize(),
@@ -71,26 +61,25 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public PaginationInfo getAllActiveProductsFromCategory(CategoryDto categoryDto, Integer pageNo, Integer pageSize) {
+
+        Pageable pageable = PageRequest.of(pageNo,pageSize);
+        Page<Product> page = productRepository.findByCategoryAndStatusAndCategoryStatus(
+                            conversionUtil.dtoToEntity(categoryDto),
+                            true, true, pageable
+        );
+        List<Product> listProduct = page.getContent();
+        List<ProductDto> listOfProductDto = listProduct.stream().map(conversionUtil::entityToDto).toList();
+
+        return new PaginationInfo(
+                listOfProductDto,pageNo,pageSize,
+                page.getTotalElements(),page.getTotalPages(),page.isLast(),page.hasNext()
+        );
+    }
+
+    @Override
     public Long save(ProductDto dto) {
-        Product newProduct = new Product();
-        if (dto.getId() != null ) {
-            newProduct.setId(dto.getId());
-        }
-        newProduct.setName(dto.getName());
-        newProduct.setDescription(dto.getDescription());
-        newProduct.setPrice(dto.getPrice());
-        newProduct.setQty(dto.getQty());
-        newProduct.setStatus(dto.getStatus());
-        newProduct.setCategory(
-            categoryService.mapToEntity(
-                categoryService.findById(dto.getCategoryId())
-            )
-        );
-        newProduct.setBrand(
-            brandService.mapToEntity(
-                brandService.findById(dto.getBrandId())
-            )
-        );
+        Product newProduct = conversionUtil.dtoToEntity(dto);
         return productRepository.save(newProduct).getId();
     }
 
@@ -99,7 +88,7 @@ public class ProductServiceImpl implements ProductService {
         Optional<Product> product = productRepository.findById(id);
         System.out.println(product);
         if (product.isPresent()){
-            return entityToDto(product.get());
+            return conversionUtil.entityToDto(product.get());
         }
         else {
             throw new EntityNotFoundException("Product not fount");
@@ -130,48 +119,5 @@ public class ProductServiceImpl implements ProductService {
         if (productRepository.existsById(id) && isProductActive(id) ){
             productRepository.blockProduct(id);
         }
-    }
-
-    @Override
-    public ProductDto entityToDto(Product product) {
-        List<Long> imageIds = new ArrayList<>();
-        for (Images image : product.getImages() )
-            imageIds.add(image.getId());
-
-        return new ProductDto(
-                product.getId(),
-                product.getName(),
-                product.getDescription(),
-                product.getPrice(),
-                product.getQty(),
-                product.getBrand().getId(),
-                product.getCategory().getId(),
-                product.getStatus(),
-                imageIds
-        );
-    }
-
-    @Override
-    public Product dtoToEntity(ProductDto dto) {
-        List<Images> images = new ArrayList<>();
-        for (Long imgId : dto.getImageIds() )
-            images.add(
-                imagesService.mapToEntity( imagesService.findImageById(imgId) )
-            );
-        return new Product(
-                dto.getId(),
-                dto.getName(),
-                dto.getDescription(),
-                dto.getPrice(),
-                dto.getQty(),
-                dto.getStatus(),
-                brandService.mapToEntity(
-                    brandService.findById(dto.getBrandId())
-                ),
-                categoryService.mapToEntity(
-                    categoryService.findById(dto.getCategoryId())
-                ),
-                images
-        );
     }
 }

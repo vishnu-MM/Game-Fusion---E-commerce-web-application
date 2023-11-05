@@ -1,5 +1,7 @@
 package com.example.gamefusion.Repository;
 
+import com.example.gamefusion.Entity.Brand;
+import com.example.gamefusion.Entity.Category;
 import com.example.gamefusion.Entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     void unBlockProduct(Long id);
 
     Page<Product> findByStatus(boolean status, Pageable pageable);
+    Page<Product> findByCategoryAndStatusAndCategoryStatus(Category category, Boolean status, Boolean categoryStatus,
+                                                           Pageable pageable);
+    Page<Product> findByBrandAndStatusAndCategoryStatus(Brand brand, Boolean status, Boolean brandStatus,
+                                                        Pageable pageable);
     Page<Product> findByStatusAndCategoryStatus(boolean product_status,boolean Category_status, Pageable pageable);
 }
 

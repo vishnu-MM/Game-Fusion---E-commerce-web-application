@@ -16,8 +16,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.util.Collection;
 
 @Controller
@@ -50,7 +48,7 @@ public class LoginSignUpController {
     @GetMapping("/login-or-registration")
     public String getLoginForm(Authentication authentication, Model model, HttpServletRequest request) {
         if (authentication != null) return "redirect:/";
-        HttpSession session = request.getSession(true);
+        request.getSession(true);
         model.addAttribute("NewUser", new UserDto());
         return "User/page-login-register";
     }

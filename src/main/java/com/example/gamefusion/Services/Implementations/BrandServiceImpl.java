@@ -1,6 +1,7 @@
 package com.example.gamefusion.Services.Implementations;
 
 
+import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
 import com.example.gamefusion.Dto.BrandDto;
 import com.example.gamefusion.Entity.Brand;
 import com.example.gamefusion.Repository.BrandRepository;
@@ -9,6 +10,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -16,45 +18,25 @@ import java.util.Optional;
 public class BrandServiceImpl implements BrandService {
 
     private final BrandRepository brandRepository;
+    private final EntityDtoConversionUtil conversionUtil;
     @Autowired
-    public BrandServiceImpl(BrandRepository brandRepository) {
+    public BrandServiceImpl(BrandRepository brandRepository, EntityDtoConversionUtil conversionUtil) {
         this.brandRepository = brandRepository;
+        this.conversionUtil = conversionUtil;
     }
 
     @Override
     public BrandDto findById(Long id) {
         Optional<Brand> brand = brandRepository.findById(id);
         if (brand.isPresent())
-            return mapToDto(brand.get());
+            return conversionUtil.entityToDto(brand.get());
         else
             throw new EntityNotFoundException("Brand Not Found");
     }
 
     @Override
-    public BrandDto mapToDto(Brand entity) {
-        return new BrandDto(
-                entity.getId(),
-                entity.getName(),
-                entity.isStatus(),
-                entity.getLogo()
-        );
-    }
-
-    @Override
-    public Brand mapToEntity(BrandDto dto) {
-        return new Brand(
-                dto.getId(),
-                dto.getName(),
-                dto.isStatus(),
-                dto.getLogo()
-        );
-    }
-
-    @Override
     public List<BrandDto> getAll() {
         List<Brand> brands = brandRepository.findAll(Sort.by("id"));
-        return brands.stream().map(this::mapToDto).toList();
+        return brands.stream().map(conversionUtil::entityToDto).toList();
     }
-
-
 }

@@ -1,7 +1,7 @@
 package com.example.gamefusion.Services.Implementations;
 
+import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
 import com.example.gamefusion.Dto.*;
-import com.example.gamefusion.Entity.Images;
 import com.example.gamefusion.Entity.Product;
 import com.example.gamefusion.Services.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,6 +21,7 @@ public class AdminServiceImpl implements AdminService {
     private final StorageService storageService;
     private final ImagesService imagesService;
     private final BrandService brandService;
+    private final EntityDtoConversionUtil conversionUtil;
 
     @Autowired
     public AdminServiceImpl(
@@ -30,13 +30,14 @@ public class AdminServiceImpl implements AdminService {
             CategoryService categoryService,
             StorageService storageService,
             ImagesService imagesService,
-            BrandService brandService       ) {
+            BrandService brandService, EntityDtoConversionUtil conversionUtil) {
         this.userService = userService;
         this.productService = productService;
         this.categoryService = categoryService;
         this.storageService = storageService;
         this.imagesService = imagesService;
         this.brandService = brandService;
+        this.conversionUtil = conversionUtil;
     }
 
     //* USER OPS
@@ -113,24 +114,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public List<String> uploadImage(List<MultipartFile> file, Long id) {
-        ProductDto productDto = productService.getProductById(id);
-        List<Images> images = new ArrayList<>();
-        for (Long imgId : productDto.getImageIds() ) {
-            images.add(
-                    imagesService.mapToEntity(imagesService.findImageById(imgId))
-            );
-        }
-        Product product = new Product(
-                productDto.getId(), productDto.getName(),
-                productDto.getDescription(), productDto.getPrice(),
-                productDto.getQty(), productDto.getStatus(),
-                brandService.mapToEntity(
-                        brandService.findById(productDto.getBrandId())
-                ),
-                categoryService.mapToEntity(
-                        categoryService.findById(productDto.getCategoryId())
-                ), images
-        );
+        Product product =conversionUtil.dtoToEntity( productService.getProductById(id));
         return storageService.uploadImagesToFileSystem(file,product);
     }
 

@@ -13,6 +13,7 @@
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/admin-assets/imgs/theme/favicon.svg}">
     <link th:href="@{/assets/admin-assets/css/main.css}" rel="stylesheet" type="text/css" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <style>
         .container { display: flex; flex-direction: column;}
         .row { display: flex;}
@@ -25,7 +26,7 @@
                 text: 'Do you want to Activate this category?',
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonText: 'Yes, ',
+                confirmButtonText: 'Yes', // Removed the extra comma
                 cancelButtonText: 'No, cancel',
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -174,7 +175,7 @@
                                 <!-- Loop Start -->
                                 <tr th:each="category : ${CategoryList.contents}">
                                     <td></td>
-                                    <td><h4 th:text="${category.Id}"></h4></td>
+                                    <td><h4 th:text="${category.id}"></h4></td>
                                     <td><h4 th:text="${category.name}"></h4></td>
                                     <td>
                                         <form th:method="PUT"

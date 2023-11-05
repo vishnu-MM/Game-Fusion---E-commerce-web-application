@@ -1,5 +1,6 @@
 package com.example.gamefusion.Services.Implementations;
 
+import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
 import jakarta.persistence.EntityNotFoundException;
 import com.example.gamefusion.Dto.CategoryDto;
 import com.example.gamefusion.Dto.PaginationInfo;
@@ -21,15 +22,16 @@ import java.util.Optional;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
-
+    private final EntityDtoConversionUtil conversionUtil;
     @Autowired
-    public CategoryServiceImpl(CategoryRepository categoryRepository) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository, EntityDtoConversionUtil conversionUtil) {
         this.categoryRepository = categoryRepository;
+        this.conversionUtil = conversionUtil;
     }
 
     @Override
     public void save(CategoryDto dto) {
-        Category category = mapToEntity(dto);
+        Category category = conversionUtil.dtoToEntity(dto);
         categoryRepository.save(category);
     }
 
@@ -37,7 +39,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto findById(Long id) throws EntityNotFoundException{
         Optional<Category> category = categoryRepository.findById(id);
         if (category.isPresent()) {
-            return mapToDto(category.get());
+            return conversionUtil.entityToDto(category.get());
         } else {
             throw new EntityNotFoundException("Category not found");
         }
@@ -48,7 +50,7 @@ public class CategoryServiceImpl implements CategoryService {
         Pageable page = PageRequest.of(pageNo, pageSize, Sort.by("id"));
         Page<Category> categories = categoryRepository.findAll(page);
         List<Category> listOfCategories = categories.getContent();
-        List<CategoryDto> contents = listOfCategories.stream().map(this::mapToDto).toList();
+        List<CategoryDto> contents = listOfCategories.stream().map(conversionUtil::entityToDto).toList();
 
         return new PaginationInfo(
                 contents, categories.getNumber(), categories.getSize(),
@@ -65,7 +67,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<CategoryDto> getAll() {
         return categoryRepository.findAll(Sort.by("id"))
-                .stream().map(this::mapToDto).toList();
+                .stream().map(conversionUtil::entityToDto).toList();
     }
 
     @Override
@@ -100,31 +102,5 @@ public class CategoryServiceImpl implements CategoryService {
             return categoryRepository.findStatusById(id);
         else
             throw new EntityNotFoundException("Category not found");
-    }
-
-    @Override
-    public CategoryDto mapToDto(Category category) {
-        Category parent = category.getParentCategory();
-        return new CategoryDto(
-            category.getId(),
-            category.getName(),
-            category.getStatus(),
-            parent != null? parent.getId() :  null
-        );
-    }
-
-    @Override
-    public Category mapToEntity(CategoryDto dto) {
-        Category category = new Category();
-        Long parentId = dto.getParentId();
-        category.setName(dto.getName());
-        category.setStatus(dto.getStatus());
-        category.setParentCategory(
-                parentId == null ? null :
-                categoryRepository.findById(parentId).orElse(null)
-        );
-        if (dto.getId() != null)
-            category.setId(dto.getId());
-        return category;
     }
 }

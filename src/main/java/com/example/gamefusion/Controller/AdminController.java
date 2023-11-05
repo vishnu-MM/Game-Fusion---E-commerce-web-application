@@ -1,12 +1,14 @@
 package com.example.gamefusion.Controller;
 
 import com.example.gamefusion.Dto.CategoryDto;
+import com.example.gamefusion.Dto.PaginationInfo;
 import com.example.gamefusion.Dto.ProductDto;
 import com.example.gamefusion.Services.AdminService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -62,8 +64,8 @@ public class AdminController {
     public String getListOfAllCategory(Model model,
                                        @RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
                                        @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize) {
-
-        model.addAttribute("CategoryList", adminService.getAllCategory(pageNo, pageSize));
+        PaginationInfo paginationInfo = adminService.getAllCategory(pageNo, pageSize);
+        model.addAttribute("CategoryList", paginationInfo);
         return "Admin/page-categories";
     }
 
@@ -89,7 +91,7 @@ public class AdminController {
     @PostMapping("/add-category/save")
     public String addNewCategory(@Valid @ModelAttribute("NewCategory") CategoryDto newCategory, BindingResult result) {
         if(adminService.isCategoryNameExist(newCategory.getName())){
-            result.rejectValue("name",null,"Category with the same name exists");
+            result.rejectValue("name", String.valueOf(HttpStatus.CONFLICT),"Category with the same name exists");
         }
         if (result.hasErrors()) {
             return "Admin/page-add-category";

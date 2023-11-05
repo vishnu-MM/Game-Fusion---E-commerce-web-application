@@ -64,7 +64,7 @@ public class StorageServiceImpl implements StorageService {
     @Override
     public byte[] downloadImageFromFileSystem(Long id) throws IOException {
         Optional<Images> imageData = imagesRepository.findById(id);
-        log.info("downloadImageFromFileSystem"+Long.toString(id));
+        log.info("downloadImageFromFileSystem"+id);
         if (imageData.isPresent()){
             String filePath = imageData.get().getFilePath();
             log.info("File "+filePath);
@@ -77,7 +77,7 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public boolean deleteImage(Long id) throws IOException {
+    public boolean deleteImage(Long id){
         Optional<Images> imageData = imagesRepository.findById(id);
         if (imageData.isPresent()) {
             String filePath = imageData.get().getFilePath();
