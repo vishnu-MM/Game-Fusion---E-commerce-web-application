@@ -8,6 +8,7 @@ public interface UserService {
     void save( UserDto newUser );
     PaginationInfo findAllUsers(Integer pageNo, Integer pageSize);
     UserDto findByUsername(String receiver);
+    UserDto findById(Integer id);
     Boolean isExistsByUsername(String username);
     Boolean isExistsById(Integer id);
     Boolean isBlocked(Integer id);

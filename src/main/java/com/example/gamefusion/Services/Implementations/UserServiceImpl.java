@@ -1,10 +1,12 @@
 package com.example.gamefusion.Services.Implementations;
 
+import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
 import com.example.gamefusion.Dto.PaginationInfo;
 import com.example.gamefusion.Dto.UserDto;
 import com.example.gamefusion.Entity.User;
 import com.example.gamefusion.Repository.UserRepository;
 import com.example.gamefusion.Services.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,17 +15,19 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    
+    private final EntityDtoConversionUtil conversionUtil;
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, EntityDtoConversionUtil conversionUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.conversionUtil = conversionUtil;
     }
 
     @Override
@@ -46,6 +50,15 @@ public class UserServiceImpl implements UserService {
     public UserDto findByUsername(String receiver) {
         User user = userRepository.findByUsername(receiver);
         return entityToDto(user);
+    }
+
+    @Override
+    public UserDto findById(Integer id) {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isPresent())
+            return conversionUtil.entityToDto(user.get());
+        else
+            throw new EntityNotFoundException("User not found");
     }
 
     @Override

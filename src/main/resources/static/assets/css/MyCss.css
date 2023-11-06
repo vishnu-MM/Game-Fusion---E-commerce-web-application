@@ -1,0 +1,18 @@
+.two-line-ellipsis {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Number of lines to show */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dropdown-menu-v1 h4 {
+    display: inline;
+    margin: 20px; /* Adjust the margin as needed for spacing */
+    font-size: 14px; /* Adjust the font size as needed */
+    font-weight: bold;
+}
+.dropdown-menu {
+    left: auto; /* Reset left positioning */
+    width: max-content;
+    padding: 20px; /* Adjust the padding as needed */
+}

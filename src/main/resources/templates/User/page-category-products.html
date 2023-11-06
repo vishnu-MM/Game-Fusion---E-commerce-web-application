@@ -3,20 +3,15 @@
 <th:block th:replace="Fragments/UserFragments.html::head-tag"></th:block>
 <body>
     <div th:replace="Fragments/UserFragments.html::preloader"></div>
-    <div th:replace="Fragments/UserFragments.html::header"> </div>
+    <div th:replace="Fragments/UserFragments.html::header"></div>
     <div th:replace="Fragments/UserFragments.html::mobile-view"></div>
     <main class="main">
-        <div th:replace="Fragments/UserFragments.html::banner-slider"></div>
+        <!--PRODUCTS STARTS-->
         <section class="product-tabs pt-25 pb-20 wow fadeIn animated">
             <div class="container">
                 <div class="row">
+                    <!--SIDE FILTER STARTS-->
                     <div class="col-lg-3">
-                        <div class="widget-category mb-30">
-                            <h5 class="section-title style-1 mb-30 wow fadeIn animated">Category</h5>
-                            <ul class="categories">
-                                <li><a th:href="@{User/shop-grid-right.html}">CATEGORY LIST</a></li>
-                            </ul>
-                        </div>
                         <div class="widget-category mb-30">
                             <h5 class="section-title style-1 mb-30 wow fadeIn animated">Sort by</h5>
                             <ul class="categories">
@@ -35,15 +30,19 @@
                             </ul>
                         </div>
                     </div>
-
-                    <!--PRODUCTS STARTS-->
+                    <!--SIDE FILTER ENDS-->
+                    <!--PRODUCT DIV STARTS-->
                     <div class="col-lg-9" >
                         <div class="tab-content wow fadeIn animated" id="myTabContent" >
                             <div class="tab-pane fade show active" id="tab-one" role="tabpanel"
                                  aria-labelledby="tab-one" >
                                 <!-- PRODUCT LOOP -->
+                                <div th:if="${ProductDetails == null}">
+                                    No Product in this category
+                                </div>
                                 <div class="row product-grid-4" >
-                                    <div class="col-lg-4 col-md-4 col-12 col-sm-6" th:each="product : ${ProductPage.contents}">
+                                    <div class="col-lg-4 col-md-4 col-12 col-sm-6" th:if="${ProductDetails != null}"
+                                         th:each="product : ${ProductDetails.contents}">
                                         <div class="product-cart-wrap">
                                             <div class="product-img-action-wrap">
                                                 <div class="product-img product-img-zoom">
@@ -92,30 +91,59 @@
                                 <!-- PRODUCT LOOP ENDS HERE-->
                             </div>
                         </div>
-                        <!--PRODUCTS ENDS HERE -->
                     </div>
                 </div>
             </div>
         </section>
-        <!-- CATEGORY LIST SECTION-->
+        <!--PRODUCTS ENDS HERE -->
+        <!-- PAGINATION STARTS HERE -->
+        <section class="product-tabs pt-25 pb-20 wow fadeIn animated">
+            <div class="container">
+                <div class="row">
+                <!-- PAGINATION LOOP -->
+                    <div class="col-lg-3"></div>
+                    <div class="pagination-area mt-30 mb-50 col-lg-9">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-start">
+                                <li class="page-item" th:each="page, iterStat : ${#numbers.sequence(0, ProductDetails.totalPages - 1)}"
+                                    th:class="${page == ProductDetails.pageNo} ? 'page-item active' : 'page-item'">
+                                    <a class="page-link"
+                                       th:href="@{/user/category-filter/{id}(id=${ID},pageNo=${page},pageSize=${ProductDetails.pageSize})}"
+                                       th:text="${page + 1}"></a>
+                                </li>
+                                <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" th:if="${ProductDetails.hasNext}"
+                                       th:href="@{/user/category-filter/{id}(id=${ID},pageNo=${ProductDetails.totalPages - 1},pageSize=${ProductDetails.pageSize})}">
+                                        <i class="material-icons md-chevron_right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                <!-- PAGINATION LOOP ENDS -->
+                </div>
+            </div>
+        </section>
+        <!-- PAGINATION ENDS HERE -->
+        <!-- CATEGORY LIST -->
         <section class="popular-categories section-padding mt-15">
             <div class="container wow fadeIn animated">
                 <h3 class="section-title mb-20"><span>Popular</span> Categories</h3>
                 <div class="carausel-6-columns-cover position-relative">
                     <div class="slider-arrow slider-arrow-2 carausel-6-columns-arrow" id="carausel-6-columns-arrows"></div>
                     <div class="carausel-6-columns" id="carausel-6-columns">
-                        <!-- CATEGORY NAME LOOP -->
                         <div class="card-1" th:each=" category : ${CategoryList}">
-                           <a th:href="@{/user/category-filter/{categoryId}(categoryId = ${category.id})}">
+                           <a>
                                <h5 th:text="${category.name}"></h5>
                            </a>
                         </div>
-                        <!-- CATEGORY NAME LOOP ENDS HERE -->
                     </div>
                 </div>
             </div>
         </section>
-        <!-- BRANDS LIST SECTION  -->
+        <!-- CATEGORY LIST ENDS HERE -->
+        <!-- BRAND LIST -->
         <section class="section-padding">
             <div class="container pb-20">
                 <h3 class="section-title mb-20 wow fadeIn animated"><span>Featured</span> Brands</h3>
@@ -129,7 +157,49 @@
                 </div>
             </div>
         </section>
-        <div th:replace="Fragments/UserFragments.html::feature-list"></div>
+        <!-- BRAND LIST ENDS HERE -->
+        <section class="featured section-padding">
+            <div class="container pb-25">
+                <div class="row">
+                    <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
+                        <div class="banner-features wow fadeIn animated hover-up">
+                            <img th:src="@{/assets/imgs/theme/icons/feature-1.png}" alt="">
+                            <h4 class="bg-1">Free Shipping</h4>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
+                        <div class="banner-features wow fadeIn animated hover-up">
+                            <img th:src="@{/assets/imgs/theme/icons/feature-2.png}" alt="">
+                            <h4 class="bg-3">Online Order</h4>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
+                        <div class="banner-features wow fadeIn animated hover-up">
+                            <img th:src="@{/assets/imgs/theme/icons/feature-3.png}" alt="">
+                            <h4 class="bg-2">Save Money</h4>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
+                        <div class="banner-features wow fadeIn animated hover-up">
+                            <img th:src="@{/assets/imgs/theme/icons/feature-4.png}" alt="">
+                            <h4 class="bg-4">Promotions</h4>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
+                        <div class="banner-features wow fadeIn animated hover-up">
+                            <img th:src="@{/assets/imgs/theme/icons/feature-5.png}" alt="">
+                            <h4 class="bg-5">Happy Sell</h4>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 mb-md-3 mb-lg-0">
+                        <div class="banner-features wow fadeIn animated hover-up">
+                            <img th:src="@{/assets/imgs/theme/icons/feature-6.png}" alt="">
+                            <h4 class="bg-6">24/7 Support</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
     <div th:replace="Fragments/UserFragments.html::footer"></div>
     <!-- JS -->
