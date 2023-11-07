@@ -1,16 +1,19 @@
 package com.example.gamefusion.Controller;
 
 import com.example.gamefusion.Dto.*;
-import com.example.gamefusion.Services.BrandService;
-import com.example.gamefusion.Services.CategoryService;
-import com.example.gamefusion.Services.ProductService;
-import com.example.gamefusion.Services.UserService;
+import com.example.gamefusion.Services.*;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 @RequestMapping("/user")
@@ -19,13 +22,15 @@ public class UserHomeController {
     private final UserService userService;
     private final CategoryService categoryService;
     private final BrandService brandService;
+    private final AddressService addressService;
     @Autowired
     public UserHomeController(ProductService productService, UserService userService,
-                              CategoryService categoryService, BrandService brandService) {
+                              CategoryService categoryService, BrandService brandService, AddressService addressService) {
         this.productService = productService;
         this.userService = userService;
         this.categoryService = categoryService;
         this.brandService = brandService;
+        this.addressService = addressService;
     }
 
 
@@ -36,7 +41,7 @@ public class UserHomeController {
         PaginationInfo info = productService.getAllActiveProducts(pageNo,pageSize);
         model.addAttribute("ProductPage",info);
         model.addAttribute("CategoryList",categoryService.getAll());
-        return "User/index-4";
+        return "User/index-home";
     }
 
     @GetMapping("/view-product/{id}")
@@ -48,7 +53,7 @@ public class UserHomeController {
         model.addAttribute("CategoryDetails", categoryDto);
         model.addAttribute("BrandDetails", brandDto);
         model.addAttribute("ProductDetails",productDto);
-        return "User/shop-product";
+        return "User/page-shop-product";
     }
 
     @GetMapping("/category-filter/{id}")
@@ -76,52 +81,111 @@ public class UserHomeController {
         }
     }
 
-    @GetMapping("/edit-profile/{id}")
-    public String showEditProfileForm(@PathVariable("id") Integer id, Model model){
-        if(userService.isExistsById(id)) {
-            model.addAttribute("UserDetails", userService.findById(id));
+    @GetMapping("/edit-profile")
+    public String showEditProfileForm(Principal principal, Model model){
+        String username = principal.getName();
+        if( username != null  && userService.isExistsByUsername(username)) {
+            model.addAttribute("UserDetails", userService.findByUsername(username));
         }
-        return "User/";
+        return "User/page-edit-profile";
     }
 
-    @GetMapping("/my-orders/{id}")
-    public String showUserOrders(@PathVariable("id") String id) {
-        return  "";
+    @PutMapping("/edit-profile/update")
+    public String updateProfile(@Valid @ModelAttribute("UserDetails") UserDto userDto,
+                                BindingResult result, Model model) {
+        System.out.println(userDto);
+        String oldUsername = userService.findById(userDto.getId()).getUsername();
+        String newUsername = userDto.getUsername();
+        if (userService.isExistsByUsername(newUsername) && !(oldUsername.equals(newUsername))) {
+            result.rejectValue("username", String.valueOf(HttpStatus.CONFLICT),"User with this email is already exist");
+        }
+        if (result.hasErrors()) {
+            System.out.println(result.getFieldError());
+            model.addAttribute("UserDetails",userDto);
+            return "User/page-edit-profile";
+        }
+        userService.update(userDto);
+        return "redirect:/user/home";
     }
 
-    @PutMapping("/cancel-order/{id}")
-    public String cancelOrders(@PathVariable("id") String id) {
-        return  "";
-    }
-
-    @GetMapping("/my-address/{id}")
-    public String showUserAddress(@PathVariable("id") String id) {
-        return "";
+    @GetMapping("/my-address")
+    public String showUserAddress(Principal principal, Model model) {
+        UserDto user = userService.findByUsername(principal.getName());
+        List<AddressDto> addressDtoList = addressService.findByUser(user.getId());
+        model.addAttribute("AddressList", addressDtoList);
+        model.addAttribute("User", user);
+        return "User/page-user-address";
     }
 
     @GetMapping("/add-address")
-    public String showNewAddressForm() {
-        return "";
+    public String showNewAddressForm(Model model, Principal principal) {
+        UserDto user = userService.findByUsername(principal.getName());
+        model.addAttribute("NewAddress",new AddressDto());
+        model.addAttribute("User",user);
+        return "User/page-add-address";
     }
 
     @PostMapping("/add-address/save")
-    public String saveNewAddress() {
-        return "";
+    public String saveNewAddress(@ModelAttribute("NewAddress") @Valid AddressDto newAddress, BindingResult result,
+                                 Principal principal, Model model) {
+        if (result.hasErrors()) {
+            System.out.println(result.getFieldError());
+            UserDto user = userService.findByUsername(principal.getName());
+            model.addAttribute("User",user);
+            return "User/page-add-address";
+        }
+        UserDto user = userService.findByUsername(principal.getName());
+        newAddress.setUserId(user.getId());
+        addressService.save(newAddress);
+        return "redirect:/user/my-address";
+    }
+
+
+    @DeleteMapping("/delete-address")
+    public String deleteAddress(@RequestParam("addressId") Integer addressId) {
+        if (!addressService.isExistById(addressId))
+            return "redirect:/user/my-address?failed";
+        addressService.deleteById(addressId);
+        return "redirect:/user/my-address?success";
     }
 
     @GetMapping("/edit-address/{addressId}")
-    public String showEditAddressForm(@PathVariable("addressId") String addressId) {
-
-        return  "";
+    public String showEditAddressForm(@PathVariable("addressId") Integer addressId,
+                                      Principal principal, Model model) {
+        AddressDto addressDto = addressService.findById(addressId);
+        UserDto user = userService.findByUsername(principal.getName());
+        model.addAttribute("Address",addressDto);
+        model.addAttribute("User",user);
+        System.out.println(addressDto);
+        return  "User/page-edit-address";
     }
 
     @PutMapping("/edit-address/update")
-    public String updateAddress() {
+    public String updateAddress( @Valid @ModelAttribute("Address") AddressDto newAddress,
+                                BindingResult result, Principal principal, Model model ) {
+        if (result.hasErrors()) {
+            System.out.println(result.getFieldError());
+            UserDto user = userService.findByUsername(principal.getName());
+            model.addAttribute("Address",newAddress);
+            model.addAttribute("User",user);
+            return "User/page-edit-address";
+        }
+        addressService.save(newAddress);
+        return "redirect:/user/my-address";
+    }
+
+    @GetMapping("/forget-password")
+    public String showForgetPasswordForm(Principal principal) {
         return "";
     }
 
-    @GetMapping("/forget-password/{id}")
-    public String showForgetPasswordForm(@PathVariable("id") String id) {
-        return "";
+    @GetMapping("/my-orders")
+    public String showUserOrders(Principal principal) {
+        return  "";
+    }
+
+    @PutMapping("/cancel-order")
+    public String cancelOrders(Principal principal) {
+        return  "";
     }
 }

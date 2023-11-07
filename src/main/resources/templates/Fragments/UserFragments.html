@@ -43,8 +43,8 @@
                                 </div>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" ><i class="material-icons md-shopping_bag"></i>My Orders</a>
-                                <a class="dropdown-item" href="#"><i class="material-icons md-receipt"></i>My Address</a>
-                                <a class="dropdown-item" id="editProfileLink"><i class="material-icons md-person_outline"></i>Edit Profile</a>
+                                <a class="dropdown-item" th:href="@{/user/my-address}"><i class="material-icons md-receipt"></i>My Address</a>
+                                <a class="dropdown-item" id="editProfileLink" th:href="@{/user/edit-profile}"><i class="material-icons md-person_outline"></i>Edit Profile</a>
                                 <a class="dropdown-item" href="#"><i class="material-icons md-lock"></i>Forget Password</a>
                                 <div class="dropdown-divider"></div>
                                 <form id="logoutForm" th:action="@{/logout}" method="post">
@@ -173,7 +173,7 @@
                                     <li><a th:href="@{User/index.html}">Home 1</a></li>
                                     <li><a th:href="@{User/index-2.html}">Home 2</a></li>
                                     <li><a th:href="@{User/index-3.html}">Home 3</a></li>
-                                    <li><a th:href="@{User/index-4.html}">Home 4</a></li>
+                                    <li><a th:href="@{../User/index-home.html}">Home 4</a></li>
                                 </ul>
                             </li>
                             <li class="menu-item-has-children"><span class="menu-expand"></span><a th:href="@{User/shop-grid-right.html}">shop</a>
@@ -185,7 +185,7 @@
                                     <li><a th:href="@{User/shop-fullwidth.html}">Shop - Wide</a></li>
                                     <li class="menu-item-has-children"><span class="menu-expand"></span><a href="#">Single Product</a>
                                         <ul class="dropdown">
-                                            <li><a th:href="@{shop-product.html}">Product – Right Sidebar</a></li>
+                                            <li><a th:href="@{../User/page-shop-product.html}">Product – Right Sidebar</a></li>
                                             <li><a th:href="@{User/shop-product-left.html}">Product – Left Sidebar</a></li>
                                             <li><a th:href="@{User/shop-product-full.html}">Product – No sidebar</a></li>
                                         </ul>
@@ -201,26 +201,26 @@
                                 <ul class="dropdown">
                                     <li class="menu-item-has-children"><span class="menu-expand"></span><a href="#">Women's Fashion</a>
                                         <ul class="dropdown">
-                                            <li><a th:href="@{shop-product.html}">Dresses</a></li>
-                                            <li><a th:href="@{shop-product.html}">Blouses & Shirts</a></li>
-                                            <li><a th:href="@{shop-product.html}">Hoodies & Sweatshirts</a></li>
-                                            <li><a th:href="@{shop-product.html}">Women's Sets</a></li>
+                                            <li><a th:href="@{../User/page-shop-product.html}">Dresses</a></li>
+                                            <li><a th:href="@{../User/page-shop-product.html}">Blouses & Shirts</a></li>
+                                            <li><a th:href="@{../User/page-shop-product.html}">Hoodies & Sweatshirts</a></li>
+                                            <li><a th:href="@{../User/page-shop-product.html}">Women's Sets</a></li>
                                         </ul>
                                     </li>
                                     <li class="menu-item-has-children"><span class="menu-expand"></span><a href="#">Men's Fashion</a>
                                         <ul class="dropdown">
-                                            <li><a th:href="@{shop-product.html}">Jackets</a></li>
-                                            <li><a th:href="@{shop-product.html}">Casual Faux Leather</a></li>
-                                            <li><a th:href="@{shop-product.html}">Genuine Leather</a></li>
+                                            <li><a th:href="@{../User/page-shop-product.html}">Jackets</a></li>
+                                            <li><a th:href="@{../User/page-shop-product.html}">Casual Faux Leather</a></li>
+                                            <li><a th:href="@{../User/page-shop-product.html}">Genuine Leather</a></li>
                                         </ul>
                                     </li>
                                     <li class="menu-item-has-children"><span class="menu-expand"></span><a href="#">Technology</a>
                                         <ul class="dropdown">
-                                            <li><a th:href="@{shop-product.html}">Gaming Laptops</a></li>
-                                            <li><a th:href="@{shop-product.html}">Ultraslim Laptops</a></li>
-                                            <li><a th:href="@{shop-product.html}">Tablets</a></li>
-                                            <li><a th:href="@{shop-product.html}">Laptop Accessories</a></li>
-                                            <li><a th:href="@{shop-product.html}">Tablet Accessories</a></li>
+                                            <li><a th:href="@{../User/page-shop-product.html}">Gaming Laptops</a></li>
+                                            <li><a th:href="@{../User/page-shop-product.html}">Ultraslim Laptops</a></li>
+                                            <li><a th:href="@{../User/page-shop-product.html}">Tablets</a></li>
+                                            <li><a th:href="@{../User/page-shop-product.html}">Laptop Accessories</a></li>
+                                            <li><a th:href="@{../User/page-shop-product.html}">Tablet Accessories</a></li>
                                         </ul>
                                     </li>
                                 </ul>

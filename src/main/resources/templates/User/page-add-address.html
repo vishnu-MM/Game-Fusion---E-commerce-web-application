@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{Fragments/UserFragments.html::head-tag}"></th:block>
+<body>
+    <div th:replace="~{Fragments/UserFragments.html::preloader}"></div>
+    <div th:replace="~{Fragments/UserFragments.html::header}"> </div>
+    <div th:replace="~{Fragments/UserFragments.html::mobile-view}"></div>
+    <main class="main">
+        <section class="mt-10 mb-10">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-3"></div>
+                    <!-- ADDRESS LIST -->
+                    <div class="col-lg-6">
+                        <div class="border-1 border-dark pt-5 mt-15 mb-15">
+                            <h2>Add Address</h2>
+                        </div>
+                        <div class=" p-2 mt-15 mb-15"  >
+                            <!-- LOOP -->
+                            <div class="login_wrap widget-taber-content bg-white background-white border-radius-5 p-4 mb-5 row">
+                                <form method="post" th:action="@{/user/add-address/save}" th:object="${NewAddress}">
+                                    <div class="form-group">
+                                        <label for="address">Address (Area and Street)</label>
+                                        <textarea class="form-control" id="address" name="streetAddress"
+                                                  placeholder="Enter your address"></textarea>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-lg-6">
+                                            <label for="locality">Country</label>
+                                            <input type="text" class="form-control" id="locality" name="country"
+                                                   placeholder="Enter your Country">
+                                        </div>
+                                        <div class="form-group col-lg-6">
+                                            <label for="state">State</label>
+                                            <input type="text" class="form-control" id="state" name="state"
+                                                   placeholder="Enter a state">
+                                        </div>
+                                        <div class="form-group col-lg-6">
+                                            <label for="city">City/District/Town</label>
+                                            <input type="text" class="form-control" id="city" name="district"
+                                                   placeholder="Enter your city">
+                                        </div>
+                                        <div class="form-group col-lg-6">
+                                            <label for="pincode">Pincode</label>
+                                            <input type="text" class="form-control" name="pinCode" id="pincode"
+                                                   placeholder="Enter your pincode">
+                                        </div>
+                                        <div class="form-group col-lg-6">
+                                            <label for="mobile">10-digit mobile number</label>
+                                            <input type="tel" class="form-control" name="phone" id="mobile"
+                                                   placeholder="Enter your mobile number">
+                                        </div>
+                                        <label for="userId"></label>
+                                        <input type="number" name="userId" id="userId"  th:value="${User.id}"
+                                               hidden="hidden">
+                                    </div>
+                                    <div class="d-flex justify-content-center ">
+                                        <div class="form-group">
+                                            <label for="submit"></label>
+                                            <button type="submit" id="submit" class="btn btn-success-light">Submit</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+                             <!-- LOOP ENDS-->
+                        </div>
+                        <!-- ADDRESS LOOP ENDS -->
+                    </div>
+                    <!-- ADDRESS LIST ENDS -->
+                    <div class="col-lg-3"></div>
+                </div>
+            </div>
+        </section>
+        <section class="mt-10 mb-10">
+            <div th:insert="~{Fragments/UserFragments.html::feature-list}"></div>
+        </section>
+    </main>
+    <div th:replace="~{Fragments/UserFragments.html::footer}"></div>
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/jquery-migrate-3.3.0.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/slick.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.syotimer.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/wow.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery-ui.js}"></script>
+    <script th:src="@{/assets/js/plugins/perfect-scrollbar.js}"></script>
+    <script th:src="@{/assets/js/plugins/magnific-popup.js}"></script>
+    <script th:src="@{/assets/js/plugins/select2.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/waypoints.js}"></script>
+    <script th:src="@{/assets/js/plugins/counterup.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.countdown.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/images-loaded.js}"></script>
+    <script th:src="@{/assets/js/plugins/isotope.js}"></script>
+    <script th:src="@{/assets/js/plugins/scrollup.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.vticker-min.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.theia.sticky.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.elevatezoom.js}"></script>
+    <script th:src="@{/assets/js/main.js}"></script>
+    <script th:src="@{/assets/js/shop.js}"></script>
+    <script th:src="@{/assets/js/AjaxFile.js}"></script>
+</body>
+</html>

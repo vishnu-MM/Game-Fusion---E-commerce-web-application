@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{Fragments/UserFragments.html::head-tag}"></th:block>
+<body>
+    <div th:replace="~{Fragments/UserFragments.html::preloader}"></div>
+    <div th:replace="~{Fragments/UserFragments.html::header}"> </div>
+    <div th:replace="~{Fragments/UserFragments.html::mobile-view}"></div>
+    <main class="main">
+        <section class="mt-10 mb-10">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-3"></div>
+                    <!-- ADDRESS LIST -->
+                    <div class="col-lg-6">
+                        <div class="border-1 border-dark pt-5 mt-15 mb-15">
+                            <h2>Manage Addresses</h2>
+                        </div>
+                        <a class="btn btn-outline-success" th:href="@{/user/add-address}">
+                            <span> Add New</span><i class="material-icons md-add icon-top"></i>
+                        </a>
+                        <div class=" p-2 mt-15 mb-15" th:if="${AddressList}==null" >
+                            <h3>No addresses have been added yet.</h3>
+                        </div>
+                        <div class=" p-2 mt-15 mb-15" th:unless="${AddressList}==null" >
+                            <!-- LOOP -->
+                            <div class="login_wrap widget-taber-content bg-white background-white border-radius-5 p-4 mb-5 row"
+                                 th:each="address :${AddressList}" >
+                                <div class="col-lg-10">
+                                    <div>
+                                        <span class="mr-5 bold font-lg"
+                                              th:text="${User.firstName}+' '+${User.lastName}"></span>
+                                        <span class="ml-5 mr-5"></span>
+                                        <span class="ml-5" th:text="${address.phone}"></span>
+                                    </div>
+                                    <div>
+                                        <p th:text="${address.streetAddress}"></p>
+                                        <span th:text="${address.district}"></span><span class="mr-5">,</span>
+                                        <span th:text="${address.state}"></span><span class="mr-5">,</span>
+                                        <span th:text="${address.country}"></span><span class="mr-5">,</span>
+                                        <span th:text="'Pin code: '+${address.pinCode}"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 ">
+                                    <div class="d-flex flex-grow-1 flex-column ">
+                                        <a class="btn btn-success-light border border-dark d-flex justify-content-center"
+                                            th:href="@{/user/edit-address/{addressId}(addressId=${address.id})}">
+                                           Edit
+                                        </a>
+                                        <form th:method="delete" th:action="@{/user/delete-address}">
+                                            <label for="addressId"></label>
+                                            <input type="number" name="addressId" id="addressId"
+                                                   th:value="${address.id}" hidden="hidden">
+                                            <input type="submit" value="Delete"
+                                                   class="btn btn-warning-light border border-dark">
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                             <!-- LOOP ENDS-->
+                        </div>
+                        <!-- ADDRESS LOOP ENDS -->
+                    </div>
+                    <!-- ADDRESS LIST ENDS -->
+                    <div class="col-lg-3"></div>
+                </div>
+            </div>
+        </section>
+        <section class="mt-10 mb-10">
+            <div th:insert="~{Fragments/UserFragments.html::feature-list}"></div>
+        </section>
+    </main>
+    <div th:replace="~{Fragments/UserFragments.html::footer}"></div>
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/jquery-migrate-3.3.0.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/slick.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.syotimer.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/wow.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery-ui.js}"></script>
+    <script th:src="@{/assets/js/plugins/perfect-scrollbar.js}"></script>
+    <script th:src="@{/assets/js/plugins/magnific-popup.js}"></script>
+    <script th:src="@{/assets/js/plugins/select2.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/waypoints.js}"></script>
+    <script th:src="@{/assets/js/plugins/counterup.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.countdown.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/images-loaded.js}"></script>
+    <script th:src="@{/assets/js/plugins/isotope.js}"></script>
+    <script th:src="@{/assets/js/plugins/scrollup.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.vticker-min.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.theia.sticky.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.elevatezoom.js}"></script>
+    <script th:src="@{/assets/js/main.js}"></script>
+    <script th:src="@{/assets/js/shop.js}"></script>
+    <script th:src="@{/assets/js/AjaxFile.js}"></script>
+</body>
+</html>

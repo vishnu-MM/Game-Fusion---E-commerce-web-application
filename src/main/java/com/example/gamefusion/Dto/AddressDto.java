@@ -35,7 +35,6 @@ public class AddressDto {
     @Min(value = 100000, message = "Pin code should be at least 6 digits")
     @Max(value = 999999, message = "Pin code should be at most 6 digits")
     private Integer pinCode;
-
     private String phone;
 }
 

@@ -3,6 +3,8 @@ package com.example.gamefusion.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "users")
 @Data
@@ -29,5 +31,8 @@ public class User {
     @Column( name = "active_status")
     private Boolean isActive;
 
-
+    @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private List<Address> addressList;
 }

@@ -34,43 +34,15 @@ $(document).ready(function() {
     }
 });
 
-$(document).ready(function() {
-    function sendGetRequest(url) {
-        alert(url+" "+userId)
-        $.ajax({
-            type: 'GET',
-            url: url+userId,
-            dataType: 'json',
-            success: function(data) {
-                // Handle the response data
-            },
-            error: function() {
-                console.log('Error sending GET request');
-            }
-        });
+function togglePhoneNumberInput() {
+    let phoneNumberInput = document.getElementById("phone-number-input");
+    let phoneNumberCheckbox = document.getElementById("use-default-phone");
+
+    if (phoneNumberCheckbox.checked) {
+        phoneNumberInput.value = "Your Default Phone Number";
+        phoneNumberInput.disabled = true;
+    } else {
+        phoneNumberInput.value = "";
+        phoneNumberInput.disabled = false;
     }
-
-    $('#editProfileLink').on('click', function(e) {
-        e.preventDefault();
-        const url = '/user/edit-profile/';
-        sendGetRequest(url);
-    });
-
-    $('#myOrdersLink').on('click', function(e) {
-        e.preventDefault();
-        const url = '/user/my-orders/';
-        sendGetRequest(url);
-    });
-
-    $('#myAddressLink').on('click', function(e) {
-        e.preventDefault();
-        const url = '/user/my-address/';
-        sendGetRequest(url);
-    });
-
-    $('#forgotPasswordLink').on('click', function(e) {
-        e.preventDefault();
-        const url = '/user/forgot-password';
-        sendGetRequest(url);
-    });
-});
+}

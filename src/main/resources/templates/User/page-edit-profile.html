@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{Fragments/UserFragments.html::head-tag}"></th:block>
+<body>
+    <div th:replace="~{Fragments/UserFragments.html::preloader}"></div>
+    <div th:replace="~{Fragments/UserFragments.html::header}"> </div>
+    <div th:replace="~{Fragments/UserFragments.html::mobile-view}"></div>
+    <main class="main">
+        <section class="mt-10 mb-10">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-3"></div>
+                    <!-- Edit Profile form -->
+                    <div class="col-lg-6 login_wrap widget-taber-content bg-white  background-white border-radius-5">
+                        <div class="padding_eight_all p-30">
+                            <div class="heading_s1"><h3 class="mb-30">Edit Profile</h3></div>
+                            <form th:method="put" th:action="@{/user/edit-profile/update}" th:object="${UserDetails}">
+                                <label for="id-form"></label>
+                                <label for="password-form"></label>
+                                <label for="active-form"></label>
+                                <label for="role-form"></label>
+                                <input id="id-form" type="number" name="id" th:value="*{id}" hidden="hidden">
+                                <input id="password-form" type="text" name="password" th:value="*{password}" hidden="hidden">
+                                <input id="active-form" type="text" name="isActive" th:value="*{isActive}" hidden="hidden">
+                                <input id="role-form" type="text" name="role" th:value="*{role}" hidden="hidden">
+                                <div class="form-group container-custom">
+                                    <label for="first-name-form"></label>
+                                    <input type="text" id="first-name-form" name="firstName" th:value="*{firstName}"
+                                           class="text-box"
+                                           placeholder="First name">
+                                    <label for="last-name-form"></label>
+                                    <input type="text" id="last-name-form" name="lastName" th:value="*{lastName}"
+                                           class="text-box"
+                                           placeholder="Last name">
+                                </div>
+                                <div class="error-msg" th:if="${#fields.hasErrors('firstName')}"
+                                     th:errors="*{firstName}"></div>
+                                <div class="form-group">
+                                    <label for="phone-form"></label>
+                                    <input type="tel" name="phone" th:value="*{phone}" id="phone-form"
+                                           placeholder="Phone number">
+                                    <div class="error-msg" th:if="${#fields.hasErrors('phone')}"
+                                         th:errors="*{phone}"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email-form"></label>
+                                    <input type="email" name="username" th:value="*{username}" id="email-form"
+                                           placeholder="Email ID">
+                                    <div class="error-msg" th:if="${#fields.hasErrors('username')}"
+                                         th:errors="*{username}"></div>
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-fill-out btn-block hover-up" name="edit">
+                                        Update
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- Edit Profile form ends -->
+                    <div class="col-lg-3"></div>
+                </div>
+            </div>
+        </section>
+        <section class="mt-10 mb-10">
+            <div th:insert="~{Fragments/UserFragments.html::feature-list}"></div>
+        </section>
+    </main>
+    <div th:replace="~{Fragments/UserFragments.html::footer}"></div>
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/jquery-migrate-3.3.0.min.js}"></script>
+    <script th:src="@{/assets/js/vendor/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/slick.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.syotimer.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/wow.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery-ui.js}"></script>
+    <script th:src="@{/assets/js/plugins/perfect-scrollbar.js}"></script>
+    <script th:src="@{/assets/js/plugins/magnific-popup.js}"></script>
+    <script th:src="@{/assets/js/plugins/select2.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/waypoints.js}"></script>
+    <script th:src="@{/assets/js/plugins/counterup.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.countdown.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/images-loaded.js}"></script>
+    <script th:src="@{/assets/js/plugins/isotope.js}"></script>
+    <script th:src="@{/assets/js/plugins/scrollup.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.vticker-min.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.theia.sticky.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.elevatezoom.js}"></script>
+    <script th:src="@{/assets/js/main.js}"></script>
+    <script th:src="@{/assets/js/shop.js}"></script>
+    <script th:src="@{/assets/js/AjaxFile.js}"></script>
+</body>
+</html>

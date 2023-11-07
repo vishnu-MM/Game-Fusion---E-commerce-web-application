@@ -16,3 +16,46 @@
     width: max-content;
     padding: 20px; /* Adjust the padding as needed */
 }
+.product-image {
+    width: 100%; /* 100% width to fit the container */
+    height: 100%; /* 100% height to fit the container */
+    object-fit: cover; /* Scale the image to cover the entire container */
+}
+
+/*------------------*/
+.form-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+.container-custom {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.text-box {
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+}
+#phone-form,
+#email-form,
+#password-org,
+#confirm-password {
+    border-radius: 50px;
+    border: solid #E2E9E1;
+}
+#first-name-form{
+    border-top-left-radius: 50px;
+    border-bottom-left-radius: 50px;
+    border: solid #E2E9E1;
+}
+#last-name-form{
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
+    border: solid #E2E9E1;
+    border-left-color:transparent;
+}
+.error-msg{
+    color: firebrick;
+}

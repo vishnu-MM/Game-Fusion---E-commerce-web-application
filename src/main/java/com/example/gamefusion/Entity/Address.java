@@ -16,9 +16,6 @@ public class Address {
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "user_id", nullable = false)
-    private Integer userId;
-
     @Column(name = "country", nullable = false, length = 100)
     private String country;
 
@@ -37,5 +34,7 @@ public class Address {
     @Column(name = "phone", precision = 12, scale = 0)
     private Long phone;
 
-    // Constructors, getters, setters, and other methods as needed
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 }

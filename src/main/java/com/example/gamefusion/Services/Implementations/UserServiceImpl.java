@@ -45,11 +45,16 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Override
+    public void update(UserDto userDto) {
+        User user = conversionUtil.dtoToEntity(userDto);
+        userRepository.save(user);
+    }
 
     @Override
     public UserDto findByUsername(String receiver) {
         User user = userRepository.findByUsername(receiver);
-        return entityToDto(user);
+        return conversionUtil.entityToDto(user);
     }
 
     @Override
@@ -81,7 +86,7 @@ public class UserServiceImpl implements UserService {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id"));
         Page<User> users = userRepository.findUsersByRole("USER",pageable);
         List<User> listOfUser = users.getContent();
-        List<UserDto> contents = listOfUser.stream().map(this::entityToDto).toList();
+        List<UserDto> contents = listOfUser.stream().map(conversionUtil::entityToDto).toList();
 
         return new PaginationInfo(
                 contents,users.getNumber(),users.getSize(),
@@ -102,18 +107,5 @@ public class UserServiceImpl implements UserService {
         if (isExistsById(id) && !isBlocked(id)) {
             userRepository.unBlockUser(id);
         }
-    }
-
-    public UserDto entityToDto(User user) {
-        return new UserDto(
-                user.getId(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getPhone(),
-                user.getUsername(),
-                user.getRole(),
-                user.getPassword(),
-                user.getIsActive()
-        );
     }
 }

@@ -1,12 +1,12 @@
 ﻿<!DOCTYPE html>
 <html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
-<th:block th:replace="Fragments/UserFragments.html::head-tag"></th:block>
+<th:block th:replace="~{Fragments/UserFragments.html::head-tag}"></th:block>
 <body>
-    <div th:replace="Fragments/UserFragments.html::preloader"></div>
-    <div th:replace="Fragments/UserFragments.html::header"> </div>
-    <div th:replace="Fragments/UserFragments.html::mobile-view"></div>
+    <div th:replace="~{Fragments/UserFragments.html::preloader}"></div>
+    <div th:replace="~{Fragments/UserFragments.html::header}"> </div>
+    <div th:replace="~{Fragments/UserFragments.html::mobile-view}"></div>
     <main class="main">
-        <div th:replace="Fragments/UserFragments.html::banner-slider"></div>
+        <div th:replace="~{Fragments/UserFragments.html::banner-slider}"></div>
         <section class="product-tabs pt-25 pb-20 wow fadeIn animated">
             <div class="container">
                 <div class="row">
@@ -129,9 +129,9 @@
                 </div>
             </div>
         </section>
-        <div th:replace="Fragments/UserFragments.html::feature-list"></div>
+        <div th:replace="~{Fragments/UserFragments.html::feature-list}"></div>
     </main>
-    <div th:replace="Fragments/UserFragments.html::footer"></div>
+    <div th:replace="~{Fragments/UserFragments.html::footer}"></div>
     <!-- JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
