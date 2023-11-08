@@ -2,7 +2,6 @@ package com.example.gamefusion.Controller;
 
 import com.example.gamefusion.Dto.*;
 import com.example.gamefusion.Services.*;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,14 +22,16 @@ public class UserHomeController {
     private final CategoryService categoryService;
     private final BrandService brandService;
     private final AddressService addressService;
+    private final OTPService otpService;
     @Autowired
     public UserHomeController(ProductService productService, UserService userService,
-                              CategoryService categoryService, BrandService brandService, AddressService addressService) {
+                              CategoryService categoryService, BrandService brandService, AddressService addressService, OTPService otpService) {
         this.productService = productService;
         this.userService = userService;
         this.categoryService = categoryService;
         this.brandService = brandService;
         this.addressService = addressService;
+        this.otpService = otpService;
     }
 
 
@@ -175,17 +176,69 @@ public class UserHomeController {
     }
 
     @GetMapping("/forget-password")
-    public String showForgetPasswordForm(Principal principal) {
-        return "";
+    public String showForgetPasswordForm() {
+        return "User/page-forget-password";
+    }
+
+    @PostMapping("/forget-password/verify")
+    public String verifyMailForResetPassword(@RequestParam("username") String username,Model model) {
+        if (!userService.isExistsByUsername(username)) {
+//            model.addAttribute("error",);
+            return "User/page-forget-password";
+        }
+        otpService.sendOTP(userService.findByUsername(username));
+        model.addAttribute("username",username);
+        return "User/page-otp-verification0";
+    }
+
+    @PostMapping("/verify-otp")
+    public String verifyOTPForResetPassword(@RequestParam("otp") String otp,
+                                            @RequestParam("username") String username,
+                                            Model model) {
+        String msg = otpService.verifyOTP(username, otp);
+        if (msg.equals("SUCCESS")) {
+            return "redirect:/user/update-password/"+username;
+        }
+        getError(model, msg);
+        model.addAttribute("username",username);
+        return "User/page-otp-verification0";
+    }
+
+    @GetMapping("/update-password/{username}")
+    public String getPasswordResetForm(@PathVariable("username") String username, Model model) {
+        model.addAttribute("username",username);
+        return "User/page-update-password";
+    }
+
+    @PutMapping("/reset-password")
+    public String updatePassword(@RequestParam("password") String password,
+                                 @RequestParam("username") String username) {
+        UserDto userDto = userService.findByUsername(username);
+        userService.resetPassword(userDto.getId(), password);
+        return "redirect:/user/home?success";
     }
 
     @GetMapping("/my-orders")
-    public String showUserOrders(Principal principal) {
+    public String showUserOrders() {
         return  "";
     }
 
     @PutMapping("/cancel-order")
-    public String cancelOrders(Principal principal) {
+    public String cancelOrders() {
         return  "";
     }
+
+    static void getError(Model model, String msg) {
+        String errorMsg = "Some thing went wrong";
+        if (msg.equals("INVALID")) errorMsg = "The OTP is Invalid";
+        if (msg.equals("EMPTY"))   errorMsg = "OTP should not be Empty";
+        if (msg.equals("TIMEOUT")) errorMsg = "OTP expired, Try again";
+        if (msg.equals("USER-NOT-FOUNT")) errorMsg = "User not fount";
+
+        model.addAttribute("error", errorMsg);
+    }
 }
+
+
+
+

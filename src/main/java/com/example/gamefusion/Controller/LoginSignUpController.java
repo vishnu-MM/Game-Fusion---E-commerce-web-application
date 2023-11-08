@@ -88,13 +88,7 @@ public class LoginSignUpController {
             model.addAttribute("Success",true);
             return "User/page-otp-verification";
         }
-        String errorMsg = "Some thing went wrong";
-        if (msg.equals("INVALID")) errorMsg = "The OTP is Invalid";
-        if (msg.equals("EMPTY"))   errorMsg = "OTP should not be Empty";
-        if (msg.equals("TIMEOUT")) errorMsg = "OTP expired, Try again";
-        if (msg.equals("USER-NOT-FOUNT")) errorMsg = "User not fount";
-
-        model.addAttribute("error", errorMsg);
+        UserHomeController.getError(model, msg);
         return "User/page-otp-verification";
     }
 

@@ -17,6 +17,10 @@ public interface UserRepository extends JpaRepository<User,Integer> {
     Boolean existsByUsername(String username);
     boolean existsById(Integer id);
 
+    @Modifying
+    @Query("UPDATE User u SET u.password = :password WHERE u.id = :id")
+    void updatePasswordById(Integer id, String password);
+
     @Query("SELECT u.isActive FROM User u WHERE u.id = :id")
     Boolean findIsActiveById(Integer id);
 

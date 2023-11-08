@@ -17,5 +17,6 @@ public interface UserService {
     Boolean isBlocked(Integer id);
     void block(Integer id);
     void unBlock(Integer id);
+    void resetPassword(Integer id, String password);
 }
 

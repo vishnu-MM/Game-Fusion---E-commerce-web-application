@@ -7,6 +7,7 @@ import com.example.gamefusion.Entity.User;
 import com.example.gamefusion.Repository.UserRepository;
 import com.example.gamefusion.Services.UserService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -106,6 +107,16 @@ public class UserServiceImpl implements UserService {
     public void unBlock(Integer id) {
         if (isExistsById(id) && !isBlocked(id)) {
             userRepository.unBlockUser(id);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void resetPassword(Integer id, String password) {
+        if (isExistsById(id)) {
+            userRepository.updatePasswordById( id,
+                    passwordEncoder.encode(password)
+            );
         }
     }
 }
