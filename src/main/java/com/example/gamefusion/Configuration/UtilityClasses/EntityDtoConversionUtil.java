@@ -56,6 +56,9 @@ public class EntityDtoConversionUtil {
     public AddressDto entityToDto(Address address) {
       return mapper.map(address,AddressDto.class);
     }
+    public CartDto entityToDto(Cart cart) {
+      return mapper.map(cart,CartDto.class);
+    }
 
     //? DTO TO ENTITY
 
@@ -89,5 +92,8 @@ public class EntityDtoConversionUtil {
     }
     public Address dtoToEntity(AddressDto addressDto) {
         return mapper.map(addressDto,Address.class);
+    }
+    public Cart dtoToEntity(CartDto cartDto) {
+        return mapper.map(cartDto,Cart.class);
     }
 }

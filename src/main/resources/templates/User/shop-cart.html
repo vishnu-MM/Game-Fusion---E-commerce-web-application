@@ -1,0 +1,218 @@
+﻿<!DOCTYPE html>
+<html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{Fragments/UserFragments.html::head-tag}"></th:block>
+<body>
+<th:block th:replace="~{Fragments/UserFragments.html::preloader}"></th:block>
+<th:block th:replace="~{Fragments/UserFragments.html::header}"></th:block>
+<th:block th:replace="~{Fragments/UserFragments.html::mobile-view}"></th:block>
+    <main class="main">
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Update Quantity</h5>
+                        <button type="button"  onclick="hideModal()"  class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form th:method="put" th:action="@{/updateQuantity}" onsubmit="return isValid()">
+                        <div class="modal-body">
+                            <span class="h5">Say how much you need, We will bring it you :)</span><br>
+                            <label for="qty"></label>
+                            <label for="CartID"></label>
+                            <input  id="CartID" value="" name="CartID" hidden="hidden"/>
+                            <label for="availableQty"></label>
+                            <input  id="availableQty" value="" name="availableQty" hidden="hidden"/>
+                            <input type="number" placeholder="Quantity" id="qty" name="qty"
+                                   class="border border-dark rounded" required="required">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" onclick="hideModal()" class="btn btn-secondary"
+                                    data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- MODAL -->
+        <div class="page-header breadcrumb-wrap">
+            <div class="container">
+                <h2>My Cart</h2>
+            </div>
+        </div>
+        <div class="page-header breadcrumb-wrap" th:if="${#lists.isEmpty(ProductDetails)}">
+            <div class="container">
+                <h2>Cart is Empty</h2>
+            </div>
+        </div>
+        <section class="mt-50 mb-50" th:unless="${#lists.isEmpty(ProductDetails)}">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="table-responsive">
+                            <table class="table shopping-summery text-center clean">
+                                <thead>
+                                    <tr class="main-heading">
+                                        <th scope="col">Image</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Price</th>
+                                        <th scope="col">Quantity</th>
+                                        <th scope="col">Sub Total</th>
+                                        <th scope="col">Remove</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <!-- CART LOOP STARTS -->
+                                    <tr th:each="cart :${ProductDetails}">
+                                        <td class="image product-thumbnail">
+                                            <img th:src="@{/images/{imgId}(imgId=${cart.product.images[0].id})}"
+                                                 alt="">
+                                        </td>
+                                        <td class="product-des product-name">
+                                            <h5 class="product-name">
+                                                <a href="#"><span th:text="${#strings.abbreviate(cart.product.name,50)}"></span></a>
+                                            </h5>
+                                        </td>
+                                        <td class="price" data-title="Price">
+                                            <span th:text="'&#8377; '+${cart.product.price}"></span>
+                                        </td>
+                                        <td class="text-center " data-title="Stock">
+                                            <!--  QUANTITY UPDATE-->
+                                            <div class="button-group row">
+                                                <div class="detail-qty border radius m-auto col-lg-8">
+                                                    <span th:text="${cart.qty}"></span>
+                                                </div>
+                                                <button th:data-id="${cart.id}"
+                                                        th:data-qty="${cart.product.qty}"
+                                                        th:onclick="showModal(this.getAttribute('data-id'),this.getAttribute('data-qty'))"
+                                                        class="d-flex border-0 center_icon p-2 col-lg-4">
+                                                    <i class="material-icons fi-rs-edit" id="editButton"></i>
+                                                </button>
+                                            </div>
+                                            <!-- QUANTITY UPDATE-->
+                                        </td>
+                                        <td class="price" data-title="Price">
+                                            <span th:text="'&#8377; '+${cart.product.price*cart.qty}"></span>
+                                        </td>
+                                        <td class="action" data-title="Remove">
+                                            <form th:method="put"
+                                                  th:action="@{/delete-product/{CartId}(CartId = ${cart.id})}">
+                                                <i class="fi-rs-trash" ></i>
+                                            </form>
+                                        </td>
+                                    </tr>
+
+                                <!-- CART LOOP END -->
+                                    <tr>
+                                        <td colspan="6" class="text-end">
+                                            <form th:method="delete" th:action="@{/clear-cart}">
+                                                <button class="text-muted"> <i
+                                                        class="fi-rs-cross-small"></i>
+                                                    Clear Cart
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="cart-action text-end">
+                            <a class="btn "><i class="fi-rs-shopping-bag mr-10"></i>Continue Shopping</a><!-- LINK TO HOME-->
+                        </div>
+                        <div class="divider center_icon mt-50 mb-50"><i class="fi-rs-fingerprint"></i></div>
+                        <div class="row mb-50">
+                            <div class="col-lg-6 col-md-12">
+                                <div class="mb-30 mt-50">
+                                    <div class="heading_s1 mb-3">
+                                        <h4>Apply Coupon</h4>
+                                    </div>
+                                    <div class="total-amount">
+                                        <div class="left">
+                                            <div class="coupon">
+                                                <form action="#" target="_blank">
+                                                    <div class="form-row row justify-content-center">
+                                                        <div class="form-group col-lg-6">
+                                                            <input class="font-medium" name="Coupon" placeholder="Enter Your Coupon">
+                                                        </div>
+                                                        <div class="form-group col-lg-6">
+                                                            <button class="btn btn-success-light btn-sm"><i
+                                                                    class="fi-rs-label mr-10"></i>Apply</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-12">
+                                <div class="border p-md-4 p-30 border-radius cart-totals">
+                                    <div class="heading_s1 mb-3">
+                                        <h4>Cart Totals</h4>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="cart_total_label">Cart Subtotal</td>
+                                                    <td class="cart_total_amount"><span
+                                                            class="font-lg fw-900 text-brand" th:text="'&#8377; '+${TotalAmount}"></span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="cart_total_label">Shipping</td>
+                                                    <td class="cart_total_amount"> <i class="ti-gift mr-5"></i> Free Shipping</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="cart_total_label">Total</td>
+                                                    <td class="cart_total_amount"><strong><span
+                                                            class="font-xl fw-900 text-brand"
+                                                            th:text="'&#8377; '+${TotalAmount}"></span></strong></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <a th:href="@{/checkout-page}" class="btn btn-brand"> <i
+                                            class="fi-rs-box-alt mr-10"></i>
+                                        Proceed To CheckOut
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+<th:block th:replace="~{Fragments/UserFragments.html::footer}"></th:block>
+    <!-- Vendor JS-->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
+<script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
+<script th:src="@{/assets/js/vendor/jquery-migrate-3.3.0.min.js}"></script>
+<script th:src="@{/assets/js/vendor/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/assets/js/plugins/slick.js}"></script>
+<script th:src="@{/assets/js/plugins/jquery.syotimer.min.js}"></script>
+<script th:src="@{/assets/js/plugins/wow.js}"></script>
+<script th:src="@{/assets/js/plugins/jquery-ui.js}"></script>
+<script th:src="@{/assets/js/plugins/perfect-scrollbar.js}"></script>
+<script th:src="@{/assets/js/plugins/magnific-popup.js}"></script>
+<script th:src="@{/assets/js/plugins/select2.min.js}"></script>
+<script th:src="@{/assets/js/plugins/waypoints.js}"></script>
+<script th:src="@{/assets/js/plugins/counterup.js}"></script>
+<script th:src="@{/assets/js/plugins/jquery.countdown.min.js}"></script>
+<script th:src="@{/assets/js/plugins/images-loaded.js}"></script>
+<script th:src="@{/assets/js/plugins/isotope.js}"></script>
+<script th:src="@{/assets/js/plugins/scrollup.js}"></script>
+<script th:src="@{/assets/js/plugins/jquery.vticker-min.js}"></script>
+<script th:src="@{/assets/js/plugins/jquery.theia.sticky.js}"></script>
+<script th:src="@{/assets/js/plugins/jquery.elevatezoom.js}"></script>
+<script th:src="@{/assets/js/main.js}"></script>
+<script th:src="@{/assets/js/shop.js}"></script>
+<script th:src="@{/assets/js/AjaxFile.js}"></script>
+</body>
+</html>

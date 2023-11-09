@@ -9,7 +9,9 @@
     <meta property="og:title" content="">
     <meta property="og:type" content="">
     <meta property="og:url" content="">
-    <meta property="og:image" content=""><link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/imgs/theme/favicon.svg}">
+    <meta property="og:image" content="">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/imgs/theme/favicon.svg}">
     <link rel="stylesheet" th:href="@{/assets/css/main.css}">
     <link rel="stylesheet" th:href="@{/assets/admin-assets/css/main.css}">
     <link rel="stylesheet" th:href="@{/assets/css/MyCss.css}">
@@ -86,7 +88,7 @@
             <div class="container">
                 <div class="header-wrap">
                     <div class="logo logo-width-1">
-                        <a th:href="@{User/index.html}"><img th:src="@{/assets/imgs/theme/New-logo.svg}" alt="logo"></a>
+                        <a th:href="@{/user/home}"><img th:src="@{/assets/imgs/theme/New-logo.svg}" alt="logo"></a>
                     </div>
                     <div class="header-right">
                         <div class="search-style-2">
@@ -112,7 +114,7 @@
                                 </div>
                                 <div class="header-action-icon-2">
                                     <!-- CART LINK -->
-                                    <a class="mini-cart-icon">
+                                    <a class="mini-cart-icon" th:href="@{/cart-products}">
                                         <img alt="Evara" th:src="@{/assets/imgs/theme/icons/icon-cart.svg}">
                                         <span class="pro-count blue">2</span>
                                     </a>

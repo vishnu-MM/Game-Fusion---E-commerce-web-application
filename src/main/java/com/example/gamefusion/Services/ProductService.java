@@ -3,6 +3,7 @@ package com.example.gamefusion.Services;
 import com.example.gamefusion.Dto.CategoryDto;
 import com.example.gamefusion.Dto.PaginationInfo;
 import com.example.gamefusion.Dto.ProductDto;
+import com.example.gamefusion.Dto.UserDto;
 import com.example.gamefusion.Entity.Category;
 import com.example.gamefusion.Entity.Product;
 
@@ -16,4 +17,5 @@ public interface ProductService {
     Boolean isProductExists(Long id);
     void activateProduct(Long id);
     void deActivateProduct(Long id);
+
 }

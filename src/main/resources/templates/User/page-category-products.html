@@ -80,9 +80,16 @@
                                                 </div>
                                                 <div class="product-action-1 show">
                                                     <!-- ADD TO CART -->
-                                                    <a aria-label="Add To Cart" class="action-btn hover-up" >
-                                                        <i class="fi-rs-shopping-bag-add"></i>
-                                                    </a>
+                                                    <form method="post" th:action="@{/add-to-cart}">
+                                                        <label for="ProductId"></label>
+                                                        <label for="Quantity"></label>
+                                                        <input type="number" name="ProductId" id="ProductId"
+                                                               th:value="${product.id}" hidden="hidden">
+                                                        <input type="number" name="Quantity" id="Quantity" value="1" hidden="hidden">
+                                                        <button aria-label="Add To Cart" class="action-btn hover-up" >
+                                                            <i class="fi-rs-shopping-bag-add"></i>
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             </div>
                                         </div>

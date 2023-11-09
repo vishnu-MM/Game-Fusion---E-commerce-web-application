@@ -33,16 +33,25 @@ $(document).ready(function() {
         }
     }
 });
+function showModal(id,qty) {
+    $('#CartID').attr('value',id)
+    $('#availableQty').attr('value',qty)
+    $('#exampleModalLong').modal('show')
+}
+function hideModal() {
+    $('#exampleModalLong').modal('hide')
+}
 
-function togglePhoneNumberInput() {
-    let phoneNumberInput = document.getElementById("phone-number-input");
-    let phoneNumberCheckbox = document.getElementById("use-default-phone");
-
-    if (phoneNumberCheckbox.checked) {
-        phoneNumberInput.value = "Your Default Phone Number";
-        phoneNumberInput.disabled = true;
-    } else {
-        phoneNumberInput.value = "";
-        phoneNumberInput.disabled = false;
+function isValid() {
+    const qty = document.getElementById("qty").value;
+    const availableQty = document.getElementById("availableQty").value;
+    if (qty <= 0) {
+        alert("Please enter a quantity greater than 0.");
+        return false;
     }
+    if (availableQty < qty) {
+        alert("Oops!! We dont have that much item in stock.");
+        return false;
+    }
+    return true;
 }
