@@ -18,4 +18,5 @@ public interface ProductService {
     void activateProduct(Long id);
     void deActivateProduct(Long id);
 
+    void updateQuantity(Long productID, Integer qty);
 }

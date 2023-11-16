@@ -2,6 +2,8 @@ package com.example.gamefusion.Services.Implementations;
 
 import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
 import com.example.gamefusion.Dto.*;
+import com.example.gamefusion.Entity.OrderMain;
+import com.example.gamefusion.Entity.OrderSub;
 import com.example.gamefusion.Entity.Product;
 import com.example.gamefusion.Services.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,6 +23,8 @@ public class AdminServiceImpl implements AdminService {
     private final StorageService storageService;
     private final ImagesService imagesService;
     private final BrandService brandService;
+    private final OrderMainService orderMainService;
+    private final OrderSubService orderSubService;
     private final EntityDtoConversionUtil conversionUtil;
 
     @Autowired
@@ -30,13 +34,15 @@ public class AdminServiceImpl implements AdminService {
             CategoryService categoryService,
             StorageService storageService,
             ImagesService imagesService,
-            BrandService brandService, EntityDtoConversionUtil conversionUtil) {
+            BrandService brandService, OrderMainService orderMainService, OrderSubService orderSubService, EntityDtoConversionUtil conversionUtil) {
         this.userService = userService;
         this.productService = productService;
         this.categoryService = categoryService;
         this.storageService = storageService;
         this.imagesService = imagesService;
         this.brandService = brandService;
+        this.orderMainService = orderMainService;
+        this.orderSubService = orderSubService;
         this.conversionUtil = conversionUtil;
     }
 
@@ -171,6 +177,34 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public Boolean isCategoryNameExist(String name) {
         return categoryService.isExistsByName(name);
+    }
+
+    @Override
+    public PaginationInfo getAllOrders(Integer pageNo, Integer pageSize) {
+        return orderMainService.findAll(pageNo,pageSize);
+    }
+
+    @Override
+    public OrderMainDto getOrderById(Integer orderId) {
+        return orderMainService.findOrderById(orderId);
+    }
+
+    @Override
+    public Boolean isOrderExists(Integer orderId) {
+        return orderMainService.isExistsByID(orderId);
+    }
+
+    @Override
+    public List<OrderSubDto> findOrderSubByMain(Integer orderId) {
+        OrderMainDto orderMain = orderMainService.findOrderById(orderId);
+        if ( orderMain!=null )
+            return orderSubService.findOrderByOrder(orderMain);
+        throw new EntityNotFoundException("Order not found");
+    }
+
+    @Override
+    public void updateOrderMain(OrderMainDto orderMainDto) {
+        orderMainService.save(orderMainDto);
     }
 
     public PaginationInfo getAllProduct(Integer pageNo, Integer pageSize) {

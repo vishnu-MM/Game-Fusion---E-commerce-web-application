@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{Fragments/UserFragments.html::head-tag}"></th:block>
+<body>
+<th:block th:replace="~{Fragments/UserFragments.html::preloader}"></th:block>
+<th:block th:replace="~{Fragments/UserFragments.html::header}"></th:block>
+<main class="main">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="#" rel="nofollow">Home</a>
+                <span></span> Profile
+                <span></span> My Orders
+            </div>
+        </div>
+    </div>
+
+    <section class="section-padding footer-mid">
+
+        <div class="container pt-15 pb-20">
+            <div class="row">
+                <div class="login_wrap widget-taber-content bg-white shadow p-5 mb-3
+                            background-white border-radius-5 border-light" th:each="order : ${OrderDetails.contents}">
+                    <div class="d-flex flex-row justify-content-between">
+                        <span class="mx-3" th:text="${order.date}"></span>
+                        <h4>
+                            <span class="mx-3" th:if="${#strings.equals(order.status, 'PENDING')}" style="color: orange">
+                                Pending
+                            </span>
+                            <span class="mx-3" th:if="${#strings.equals(order.status, 'SHIPPED')}" style="color: yellow">
+                                Shipped
+                            </span>
+                            <span class="mx-3" th:if="${#strings.equals(order.status, 'DELIVERED')}" style="color: green">
+                                Delivered
+                            </span>
+                            <span class="mx-3" th:if="${#strings.equals(order.status, 'CANCELED')}" style="color: red">
+                                Cancelled
+                            </span>
+                            <span class="mx-3" th:if="${#strings.equals(order.status, 'RETURNED')}" style="color: rosybrown">
+                                Returned
+                            </span>
+                        </h4>
+                    </div>
+                    <!-- DIVIDER STARTS -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="divider mt-5 mb-5"></div>
+                        </div>
+                    </div>
+                    <!-- DIVIDER ENDS -->
+                    <div class="d-flex flex-row justify-content-evenly"
+                         th:each="orderSubDetails :${OrderSubDetails}">
+                        <div class="col-lg-3 p-3 m-2 bg-white border border-dark rounded">
+                            <img class="default-img"
+                                 th:src="@{/images/{imgId}(imgId=${orderSubDetails.product.images[0].id})}"
+                                 alt="">
+                        </div>
+                        <div class="col-lg-6 d-flex align-items-center">
+                            <h5 class="product-name d-flex flex-column">
+                                <a href="#">
+                                    <span class="h5" th:text="${orderSubDetails.product.name}"></span>
+                                </a>
+                            </h5>
+                        </div>
+                        <div class="col-lg-3 d-flex align-items-center">
+                            <div>
+                                <div><span class="h6 mb-2" th:text="'PRICE: &#8377; '+${orderSubDetails.product.price}"></span></div>
+                                <div><span class="h6 mt-2" th:text="'quantity: '+${orderSubDetails.qty}"></span></div>
+                            </div>
+                        </div>
+                    </div>
+<!--                     DIVIDER STARTS -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="divider mt-5 mb-5"></div>
+                        </div>
+                    </div>
+                    <!-- DIVIDER ENDS -->
+                    <div class="d-flex flex-row align-items-center justify-content-between mt-25">
+                        <div th:if="${#strings.equals(order.status, 'PENDING')} or ${#strings.equals(order.status, 'SHIPPED')}">
+                            <form th:method="put" th:action="@{/cancel-order/{orderID}(orderID = ${order.id})}">
+                                <button class="btn btn-outline-warning">
+                                    <i class="material-icons md-close "></i>
+                                    <span>Cancel Order</span>
+                                </button>
+                            </form>
+                        </div>
+                        <div class="bold text-dark">
+                            <span th:if="${#strings.equals(order.paymentMethod,'CASH_ON_DELIVERY')}">CASH ON DELIVERY</span>
+                            <span th:if="${#strings.equals(order.paymentMethod,'ONLINE_PAYMENT')}"> UPI </span>
+<!--                            <span VALET PAYMENT</span>-->
+                        </div>
+                        <div><span class="font-lg font-weight-bolder text-dark"
+                                   th:text="'TOTAL : &#8377; '+${order.amount}"></span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-area mt-30 mb-50 ">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-start">
+                        <li class="page-item" th:each="page, iterStat : ${#numbers.sequence(0, OrderDetails.totalPages - 1)}"
+                            th:class="${page == OrderDetails.pageNo} ? 'page-item active' : 'page-item'">
+                            <a class="page-link" th:href="@{/my-orders(pageNo=${page},pageSize=${OrderDetails.pageSize})}"
+                               th:text="${page + 1}"></a>
+                        </li>
+                        <li class="page-item"><a class="page-link dot" href="#">...</a></li>
+                        <li class="page-item">
+                            <a class="page-link" th:if="${OrderDetails.hasNext}"
+                               th:href="@{/my-orders(pageNo=${OrderDetails.totalPages - 1},pageSize=${OrderDetails.pageSize})}">
+                                <i class="material-icons md-chevron_right"></i>
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
+            </div>
+            <!-- End of pagination -->
+        </div>
+
+    </section>
+
+</main>
+<th:block th:replace="~{Fragments/UserFragments.html::footer}"></th:block>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
+<script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
+<script th:src="@{/assets/js/vendor/jquery-migrate-3.3.0.min.js}"></script>
+<script th:src="@{/assets/js/vendor/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/assets/js/plugins/slick.js}"></script>
+<script th:src="@{/assets/js/plugins/jquery.syotimer.min.js}"></script>
+<script th:src="@{/assets/js/plugins/wow.js}"></script>
+<script th:src="@{/assets/js/plugins/jquery-ui.js}"></script>
+<script th:src="@{/assets/js/plugins/perfect-scrollbar.js}"></script>
+<script th:src="@{/assets/js/plugins/magnific-popup.js}"></script>
+<script th:src="@{/assets/js/plugins/select2.min.js}"></script>
+<script th:src="@{/assets/js/plugins/waypoints.js}"></script>
+<script th:src="@{/assets/js/plugins/counterup.js}"></script>
+<script th:src="@{/assets/js/plugins/jquery.countdown.min.js}"></script>
+<script th:src="@{/assets/js/plugins/images-loaded.js}"></script>
+<script th:src="@{/assets/js/plugins/isotope.js}"></script>
+<script th:src="@{/assets/js/plugins/scrollup.js}"></script>
+<script th:src="@{/assets/js/plugins/jquery.vticker-min.js}"></script>
+<script th:src="@{/assets/js/plugins/jquery.theia.sticky.js}"></script>
+<script th:src="@{/assets/js/plugins/jquery.elevatezoom.js}"></script>
+<script th:src="@{/assets/js/main.js}"></script>
+<script th:src="@{/assets/js/shop.js}"></script>
+<script th:src="@{/assets/js/AjaxFile.js}"></script>
+</body>
+</html>

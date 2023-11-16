@@ -1,8 +1,9 @@
 package com.example.gamefusion.Controller;
 
-import com.example.gamefusion.Dto.CategoryDto;
-import com.example.gamefusion.Dto.PaginationInfo;
-import com.example.gamefusion.Dto.ProductDto;
+import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
+import com.example.gamefusion.Dto.*;
+import com.example.gamefusion.Entity.OrderSub;
+import com.example.gamefusion.Entity.Product;
 import com.example.gamefusion.Services.AdminService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -16,7 +17,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/dashboard")
@@ -24,10 +28,12 @@ public class AdminController {
 
     Logger log = LoggerFactory.getLogger(AdminController.class);
     private final AdminService adminService;
+    private final EntityDtoConversionUtil conversionUtil;
 
     @Autowired
-    public AdminController(AdminService adminService) {
+    public AdminController(AdminService adminService, EntityDtoConversionUtil conversionUtil) {
         this.adminService = adminService;
+        this.conversionUtil = conversionUtil;
     }
 
     @GetMapping("")
@@ -194,7 +200,6 @@ public class AdminController {
     public String editProduct(@Valid @ModelAttribute("Product") ProductDto productDto,
                               BindingResult result, Model model) {
         if (result.hasErrors()) {
-            System.out.println(result);
             productCommonAttributes(model);
             model.addAttribute("Product",productDto);
             return "Admin/page-edit-product";
@@ -207,7 +212,6 @@ public class AdminController {
     public String editAndExit(@Valid @ModelAttribute("Product") ProductDto productDto,
                               BindingResult result, Model model) {
         if (result.hasErrors()) {
-            System.out.println(result);
             productCommonAttributes(model);
             model.addAttribute("Product",productDto);
             return "Admin/page-edit-product";
@@ -233,5 +237,45 @@ public class AdminController {
     private void productCommonAttributes(Model model) {
         model.addAttribute("CategoryList", adminService.getAllCategory());
         model.addAttribute("brandList", adminService.getAllBrands());
+    }
+
+
+    //? ORDER MANAGEMENT
+
+    @GetMapping("/view-orders")
+    public String viewAllOrders(Model model,
+                                @RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
+                                @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize) {
+        model.addAttribute("OrderMainList", adminService.getAllOrders(pageNo, pageSize));
+        return "Admin/page-orders-1";
+    }
+
+    @GetMapping("/order-details")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> viewOrderDetail(@RequestParam("orderID") Integer orderId) {
+        if (adminService.isOrderExists(orderId)) {
+            List<OrderSubDto> orderSub = adminService.findOrderSubByMain(orderId);
+            List<ProductDto> orderProducts = new ArrayList<>();
+            for (OrderSubDto osd : orderSub) {
+                orderProducts.add(adminService.getProduct(osd.getProductId()));
+            }
+            Map<String,Object> response = new HashMap<>();
+            response.put("DETAILS",orderSub);
+            response.put("PRODUCTS",orderProducts);
+            return new ResponseEntity<>(response,HttpStatus.OK);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/update-order-status")
+    public String updateOrderStatus(@RequestParam("OrderID") Integer orderId,
+                                    @RequestParam("status") String status){
+        if (adminService.isOrderExists(orderId) ) {
+            OrderMainDto orderMainDto = adminService.getOrderById(orderId);
+            orderMainDto.setStatus(status);
+            adminService.updateOrderMain(orderMainDto);
+        }
+        return "redirect:/dashboard/view-orders";
     }
 }

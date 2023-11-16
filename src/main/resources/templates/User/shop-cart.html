@@ -23,7 +23,7 @@
                             <label for="CartID"></label>
                             <input  id="CartID" value="" name="CartID" hidden="hidden"/>
                             <label for="availableQty"></label>
-                            <input  id="availableQty" value="" name="availableQty" hidden="hidden"/>
+                            <input  id="availableQty" value="" type="number" name="availableQty" hidden="hidden"/>
                             <input type="number" placeholder="Quantity" id="qty" name="qty"
                                    class="border border-dark rounded" required="required">
                         </div>
@@ -71,12 +71,22 @@
                                                  alt="">
                                         </td>
                                         <td class="product-des product-name">
-                                            <h5 class="product-name">
+                                            <h5 class="product-name" th:if="${cart.product.status}">
                                                 <a href="#"><span th:text="${#strings.abbreviate(cart.product.name,50)}"></span></a>
+                                            </h5>
+                                            <h5 class="product-name" th:unless="${cart.product.status}">
+                                                <div class="d-flex flex-column justify-content-center">
+                                                    <div>
+                                                       <span th:text="${#strings.abbreviate(cart.product.name,50)}"></span>
+                                                    </div>
+                                                    <div>
+                                                        <span class="h5 mt-15" style="color: red">Out of Stock</span>
+                                                    </div>
+                                                </div>
                                             </h5>
                                         </td>
                                         <td class="price" data-title="Price">
-                                            <span th:text="'&#8377; '+${cart.product.price}"></span>
+                                                <span th:text="'&#8377; '+${cart.product.price}"></span>
                                         </td>
                                         <td class="text-center " data-title="Stock">
                                             <!--  QUANTITY UPDATE-->
@@ -99,18 +109,18 @@
                                         <td class="action" data-title="Remove">
                                             <form th:method="put"
                                                   th:action="@{/delete-product/{CartId}(CartId = ${cart.id})}">
-                                                <i class="fi-rs-trash" ></i>
+                                               <button class="btn border-0"> <i class="fi-rs-trash" ></i> </button>
                                             </form>
                                         </td>
+
                                     </tr>
 
                                 <!-- CART LOOP END -->
                                     <tr>
                                         <td colspan="6" class="text-end">
                                             <form th:method="delete" th:action="@{/clear-cart}">
-                                                <button class="text-muted"> <i
-                                                        class="fi-rs-cross-small"></i>
-                                                    Clear Cart
+                                                <button class="text-muted btn border-0">
+                                                    <i class="fi-rs-cross-small"></i> Clear Cart
                                                 </button>
                                             </form>
                                         </td>

@@ -17,6 +17,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Boolean findStatusById(Long id);
 
     @Modifying
+    @Query("update Product p set p.qty = :qty where p.id = :id")
+    void updateQty(Long id, Integer qty);
+
+    @Modifying
     @Query("update Product p set p.status = false where p.id = ?1")
     void blockProduct(Long id);
 

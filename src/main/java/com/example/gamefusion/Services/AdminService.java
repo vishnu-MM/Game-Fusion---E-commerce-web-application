@@ -1,9 +1,7 @@
 package com.example.gamefusion.Services;
 
-import com.example.gamefusion.Dto.BrandDto;
-import com.example.gamefusion.Dto.CategoryDto;
-import com.example.gamefusion.Dto.PaginationInfo;
-import com.example.gamefusion.Dto.ProductDto;
+import com.example.gamefusion.Dto.*;
+import com.example.gamefusion.Entity.OrderSub;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -44,4 +42,13 @@ public interface AdminService {
     void deleteImage(Long imageId);
 
     Boolean isCategoryNameExist(String name);
+
+    PaginationInfo getAllOrders(Integer pageNo, Integer pageSize);
+    OrderMainDto getOrderById(Integer orderId);
+
+    Boolean isOrderExists(Integer orderId);
+
+    List<OrderSubDto> findOrderSubByMain(Integer orderId);
+
+    void updateOrderMain(OrderMainDto orderMainDto);
 }

@@ -43,14 +43,14 @@ function hideModal() {
 }
 
 function isValid() {
-    const qty = document.getElementById("qty").value;
-    const availableQty = document.getElementById("availableQty").value;
+    const qty = parseInt(document.getElementById("qty").value);
+    const availableQty = parseInt(document.getElementById("availableQty").value);
     if (qty <= 0) {
         alert("Please enter a quantity greater than 0.");
         return false;
     }
-    if (availableQty < qty) {
-        alert("Oops!! We dont have that much item in stock.");
+        if (availableQty < qty) {
+        alert("Oops!! We dont have that much item in stock."+availableQty+" < "+qty);
         return false;
     }
     return true;

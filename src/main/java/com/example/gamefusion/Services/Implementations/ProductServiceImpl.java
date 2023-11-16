@@ -120,4 +120,11 @@ public class ProductServiceImpl implements ProductService {
             productRepository.blockProduct(id);
         }
     }
+
+    @Override
+    @Transactional
+    public void updateQuantity(Long productID, Integer qty) {
+        if (productID == null || qty == null) return;
+        productRepository.updateQty(productID,qty);
+    }
 }

@@ -25,7 +25,8 @@ public class UserHomeController {
     private final OTPService otpService;
     @Autowired
     public UserHomeController(ProductService productService, UserService userService,
-                              CategoryService categoryService, BrandService brandService, AddressService addressService, OTPService otpService) {
+                              CategoryService categoryService, BrandService brandService,
+                              AddressService addressService, OTPService otpService) {
         this.productService = productService;
         this.userService = userService;
         this.categoryService = categoryService;
@@ -130,7 +131,6 @@ public class UserHomeController {
     public String saveNewAddress(@ModelAttribute("NewAddress") @Valid AddressDto newAddress, BindingResult result,
                                  Principal principal, Model model) {
         if (result.hasErrors()) {
-            System.out.println(result.getFieldError());
             UserDto user = userService.findByUsername(principal.getName());
             model.addAttribute("User",user);
             return "User/page-add-address";

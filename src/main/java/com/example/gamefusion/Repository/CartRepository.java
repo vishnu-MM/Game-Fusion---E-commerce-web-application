@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface CartRepository extends JpaRepository<Cart, Integer> {
     Page<Cart> findByUser(User user, Pageable pageable);
-    List<Cart> findByUser(User user);
+    List<Cart> findByUserOrderById(User user);
     void deleteByUser(User user);
     void deleteById(Integer id);
     Cart findByUserAndProduct(User user, Product product);
