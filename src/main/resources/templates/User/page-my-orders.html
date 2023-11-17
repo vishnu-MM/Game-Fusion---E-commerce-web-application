@@ -48,17 +48,17 @@
                         </div>
                     </div>
                     <!-- DIVIDER ENDS -->
-                    <div class="d-flex flex-row justify-content-evenly"
+                    <div class="d-flex flex-row justify-content-between"
                          th:each="orderSubDetails :${OrderSubDetails}">
-                        <div class="col-lg-3 p-3 m-2 bg-white border border-dark rounded">
+                        <div class="col-lg-2 p-3 m-2 bg-white">
                             <img class="default-img"
                                  th:src="@{/images/{imgId}(imgId=${orderSubDetails.product.images[0].id})}"
-                                 alt="">
+                                 alt="" style="width: 150px">
                         </div>
                         <div class="col-lg-6 d-flex align-items-center">
                             <h5 class="product-name d-flex flex-column">
                                 <a href="#">
-                                    <span class="h5" th:text="${orderSubDetails.product.name}"></span>
+                                    <span class="h6" th:text="${orderSubDetails.product.name}"></span>
                                 </a>
                             </h5>
                         </div>
@@ -77,21 +77,47 @@
                     </div>
                     <!-- DIVIDER ENDS -->
                     <div class="d-flex flex-row align-items-center justify-content-between mt-25">
-                        <div th:if="${#strings.equals(order.status, 'PENDING')} or ${#strings.equals(order.status, 'SHIPPED')}">
-                            <form th:method="put" th:action="@{/cancel-order/{orderID}(orderID = ${order.id})}">
-                                <button class="btn btn-outline-warning">
-                                    <i class="material-icons md-close "></i>
-                                    <span>Cancel Order</span>
-                                </button>
-                            </form>
+                        <div class="d-flex flex-column">
+                            <span
+                                    class="d-flex icon-top h5 pb-2 border-bottom">
+                                <i
+                                    class="material-icons md-location_on"></i> Delivery
+                                Address</span>
+                            <span class="h6"
+                                  th:text="${order.streetAddress}+', '+
+                                           ${order.district}+', '+
+                                           ${order.state}+', '+
+                                           ${order.country}">
+                            </span>
+                            <span class="h6" th:text="'Pin Code : '+${order.pinCode}"></span>
+                            <span class="h6" th:text="'Phone: '+${order.phone}"></span>
                         </div>
-                        <div class="bold text-dark">
-                            <span th:if="${#strings.equals(order.paymentMethod,'CASH_ON_DELIVERY')}">CASH ON DELIVERY</span>
-                            <span th:if="${#strings.equals(order.paymentMethod,'ONLINE_PAYMENT')}"> UPI </span>
-<!--                            <span VALET PAYMENT</span>-->
-                        </div>
-                        <div><span class="font-lg font-weight-bolder text-dark"
-                                   th:text="'TOTAL : &#8377; '+${order.amount}"></span></div>
+                        <div class="border border-dark rounded p-3">
+                            <div>
+                                <span class="font-weight-bolder text-dark p-1"
+                                      th:if="${#strings.equals(order.paymentMethod,'CASH_ON_DELIVERY')}">
+                                    Cash On Delivery
+                                </span>
+                                <span class="font-weight-bolder text-dark p-1"
+                                      th:if="${#strings.equals(order.paymentMethod,'ONLINE_PAYMENT')}">
+                                    UPI
+                                </span>
+                            </div>
+                            <div class=" p-1">
+                                <span class="font-lg font-weight-bolder text-dark"
+                                       th:text="'TOTAL : &#8377; '+${order.amount}"></span>
+                            </div>
+                            <div class=" p-1"
+                                    th:if="${#strings.equals(order.status, 'PENDING')} or
+                                    ${#strings.equals(order.status, 'SHIPPED')}">
+                                <form th:method="put" th:action="@{/cancel-order/{orderID}(orderID = ${order.id})}">
+                                    <button class="btn btn-outline-warning">
+                                        <i class="material-icons md-close "></i>
+                                        <span>Cancel Order</span>
+                                    </button>
+                                </form>
+                            </div>
+                      </div>
                     </div>
                 </div>
             </div>

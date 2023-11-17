@@ -2,7 +2,7 @@
 <html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
 <th:block th:replace="~{Fragments/UserFragments.html::head-tag}"></th:block>
 <body>
-    <div th:replace="~{Fragments/UserFragments.html::preloader}"></div>
+    
     <div th:replace="~{Fragments/UserFragments.html::header}"> </div>
     <div th:replace="~{Fragments/UserFragments.html::mobile-view}"></div>
     <main class="main">
@@ -23,32 +23,38 @@
                                         <label for="address">Address (Area and Street)</label>
                                         <textarea class="form-control" id="address" name="streetAddress"
                                                   placeholder="Enter your address"></textarea>
+                                        <span style="color : red" th:if="${#fields.hasErrors('streetAddress')}" th:errors="*{streetAddress}"></span>
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-lg-6">
                                             <label for="locality">Country</label>
                                             <input type="text" class="form-control" id="locality" name="country"
                                                    placeholder="Enter your Country">
+                                            <span style="color : red" th:if="${#fields.hasErrors('country')}" th:errors="*{country}"></span>
                                         </div>
                                         <div class="form-group col-lg-6">
                                             <label for="state">State</label>
                                             <input type="text" class="form-control" id="state" name="state"
                                                    placeholder="Enter a state">
+                                            <span style="color : red" th:if="${#fields.hasErrors('state')}" th:errors="*{state}"></span>
                                         </div>
                                         <div class="form-group col-lg-6">
                                             <label for="city">City/District/Town</label>
                                             <input type="text" class="form-control" id="city" name="district"
                                                    placeholder="Enter your city">
+                                            <span style="color : red" th:if="${#fields.hasErrors('district')}" th:errors="*{district}"></span>
                                         </div>
                                         <div class="form-group col-lg-6">
                                             <label for="pincode">Pincode</label>
                                             <input type="text" class="form-control" name="pinCode" id="pincode"
                                                    placeholder="Enter your pincode">
+                                            <span style="color : red" th:if="${#fields.hasErrors('pinCode')}" th:errors="*{pinCode}"></span>
                                         </div>
                                         <div class="form-group col-lg-6">
                                             <label for="mobile">10-digit mobile number</label>
                                             <input type="tel" class="form-control" name="phone" id="mobile"
                                                    placeholder="Enter your mobile number">
+                                            <span style="color : red" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></span>
                                         </div>
                                         <label for="userId"></label>
                                         <input type="number" name="userId" id="userId"  th:value="${User.id}"

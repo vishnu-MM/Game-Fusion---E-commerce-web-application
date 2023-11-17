@@ -2,7 +2,7 @@
 <html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
 <th:block th:replace="~{Fragments/UserFragments.html::head-tag}"></th:block>
 <body>
-    <div th:replace="~{Fragments/UserFragments.html::preloader}"></div>
+    
     <div th:replace="~{Fragments/UserFragments.html::header}"> </div>
     <div th:replace="~{Fragments/UserFragments.html::mobile-view}"></div>
     <main class="main">
@@ -46,7 +46,8 @@
                                             th:href="@{/user/edit-address/{addressId}(addressId=${address.id})}">
                                            Edit
                                         </a>
-                                        <form th:method="delete" th:action="@{/user/delete-address}">
+                                        <form th:method="delete" th:action="@{/user/delete-address}"
+                                              onsubmit="confirmDeletion(this)">
                                             <label for="addressId"></label>
                                             <input type="number" name="addressId" id="addressId"
                                                    th:value="${address.id}" hidden="hidden">
@@ -95,5 +96,22 @@
     <script th:src="@{/assets/js/main.js}"></script>
     <script th:src="@{/assets/js/shop.js}"></script>
     <script th:src="@{/assets/js/AjaxFile.js}"></script>
+    <script>
+        function confirmDeletion(form) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you want to Delete this address?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No, cancel',
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    form.submit();
+                }
+            });
+        }
+    </script>
 </body>
 </html>

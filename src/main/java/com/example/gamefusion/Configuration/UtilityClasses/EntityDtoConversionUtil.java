@@ -112,11 +112,7 @@ public class EntityDtoConversionUtil {
         return cart;
     }
     public OrderMain dtoToEntity(OrderMainDto orderMainDto) {
-        OrderMain orderMain = mapper.map(orderMainDto,OrderMain.class);
-        orderMain.setAddress(
-                addressRepository.findById(orderMainDto.getAddressId()).orElse(null)
-        );
-        return  orderMain;
+        return mapper.map(orderMainDto,OrderMain.class);
     }
     public OrderSub dtoToEntity(OrderSubDto orderSubDto) {
         OrderSub orderSub = mapper.map(orderSubDto,OrderSub.class);

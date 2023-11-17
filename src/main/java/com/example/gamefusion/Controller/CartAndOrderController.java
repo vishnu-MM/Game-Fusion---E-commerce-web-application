@@ -232,11 +232,7 @@ public class CartAndOrderController {
         OrderMainDto orderMainDto = new OrderMainDto();
         orderMainDto.setDate( Date.valueOf(LocalDate.now()) );
         orderMainDto.setStatus(String.valueOf(OrderStatusUtil.PENDING));
-        orderMainDto.setAddressId(addressId);
         orderMainDto.setUserId(userDto.getId());
-        System.out.println(cartService.totalAmount(
-                cart.stream().map(conversionUtil::dtoToEntity).toList()
-        ));
         orderMainDto.setAmount(cartService.totalAmount(
                 cart.stream().map(conversionUtil::dtoToEntity).toList()
         ));
@@ -245,6 +241,17 @@ public class CartAndOrderController {
         else if (paymentOption.equals(PaymentMethodUtil.CASH_ON_DELIVERY.getValue()))
             orderMainDto.setPaymentMethod(String.valueOf(PaymentMethodUtil.CASH_ON_DELIVERY));
         else throw new RuntimeException();
+
+        if (addressService.isExistById(addressId)) {
+            AddressDto addressDto = addressService.findById(addressId);
+            orderMainDto.setCountry(addressDto.getCountry());
+            orderMainDto.setState(addressDto.getState());
+            orderMainDto.setDistrict(addressDto.getDistrict());
+            orderMainDto.setStreetAddress(addressDto.getStreetAddress());
+            orderMainDto.setPinCode(addressDto.getPinCode());
+            orderMainDto.setPhone(addressDto.getPhone());
+        }
+
         return orderMainService.save(orderMainDto);
     }
 }
