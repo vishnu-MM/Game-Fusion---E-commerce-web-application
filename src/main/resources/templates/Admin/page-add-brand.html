@@ -12,26 +12,10 @@
     <meta property="og:image" content="">
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/admin-assets/imgs/theme/favicon.svg}">
     <link th:href="@{/assets/admin-assets/css/main.css}" rel="stylesheet" type="text/css" />
-    <script>
-        function confirmDelete(form) {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: 'Do you want to Delete this image?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, Delete',
-                cancelButtonText: 'No, cancel',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
-                }
-            });
-        }
-    </script>
 </head>
 <body>
 <div class="screen-overlay"></div>
-<aside class="navbar-aside" id="offcanvas_aside">
+<!--<aside class="navbar-aside" id="offcanvas_aside">
     <div class="aside-top">
         <a href="#" class="brand-wrap">
             <img th:src="@{/assets/admin-assets/imgs/theme/New-logo.svg}" class="logo" alt="Evara Dashboard">
@@ -42,12 +26,12 @@
     </div>
     <nav>
         <ul class="menu-aside">
-            <li class="menu-item">
+            <li class="menu-item ">
                 <a class="menu-link" th:href="@{/dashboard}">
                     <i class="icon material-icons md-home"></i><span class="text">Dashboard</span>
                 </a>
             </li>
-            <li class="menu-item  active">
+            <li class="menu-item  ">
                 <a class="menu-link" th:href="@{/dashboard/view-products}">
                     <i class="icon material-icons md-shopping_bag"></i><span class="text">Products</span>
                 </a>
@@ -57,8 +41,8 @@
                     <i class="icon material-icons md-person"></i><span class="text">Users</span>
                 </a>
             </li>
-            <li class="menu-item ">
-                <a class="menu-link" th:href="@{/dashboard/brands}">
+            <li class="menu-item active">
+                <a class="menu-link" href="#">
                     <i class="icon material-icons md-store"></i><span class="text">Sellers</span>
                 </a>
             </li>
@@ -79,7 +63,8 @@
             </li>
         </ul>
     </nav>
-</aside>
+</aside>-->
+<th:block th:replace="~{Fragments/AdminFragments.html::navbar-aside}"></th:block>
 <main class="main-wrap">
     <!--<header class="main-header navbar">
         <div class="col-search">
@@ -105,6 +90,7 @@
                 <a href="#" class="requestfullscreen nav-link btn-icon"><i class="material-icons md-cast"></i></a>
             </li>
             <li class="dropdown nav-item">
+
                 <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false"> <img class="img-xs rounded-circle" th:src="@{/assets/admin-assets/imgs/people/avatar-2-admin.png}" alt="User"></a>
                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
                     <a class="dropdown-item" href="#"><i class="material-icons md-perm_identity"></i>Edit Profile</a>
@@ -121,67 +107,59 @@
         <div class="row">
             <div class="col-9">
                 <div class="content-header">
-                    <h2 class="content-title">Edit Images</h2>
+                    <h2 class="content-title">Add New Product</h2>
+                    <div>
+                        <a th:href="@{/dashboard/brands}" class="btn btn-md rounded font-sm hover-up">View Brands</a>
+                    </div>
                 </div>
             </div>
-            <div class="col-12">
+            <div class="col-9">
                 <div class="card">
                     <div class="card-body">
                         <div class="row gx-5">
-                            <aside class="col-lg-3 border-end">
-                                <nav class="nav nav-pills flex-column mb-4">
-                                    <div class="nav-link ">General</div>
-                                    <div class="nav-link active" aria-current="page">Images</div>
-                                </nav>
-                            </aside>
                             <div class="col-lg-9">
                                 <section class="content-body p-xl-4">
                                     <!-- Form  -->
-                                    <div class="col-lg-12">
-                                        <div class="card mb-12">
-                                            <div class="card-header">
-                                                <h4>Upload New Images</h4>
-                                            </div>
-                                            <div class="card-body">
-                                                <div class="input-upload">
-                                                    <!-- ADD NEW IMAGE-->
-                                                    <img th:src="@{/assets/admin-assets/imgs/theme/upload.svg}" alt="">
-                                                    <form th:action="@{/dashboard/update-images/save}" method="post" enctype="multipart/form-data">
-                                                        <input type="hidden" name="productId" th:value="${productId}">
-                                                        <input class="form-control" type="file" id="imageFiles" name="imageFiles" multiple="multiple" required="required">
-                                                        <div style="height: 50px"></div>
-                                                        <button class="btn btn-primary" type="submit">Upload Images</button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="card-header">
-                                        <h4>Existing Images</h4>
-                                    </div>
-                                    <!-- LOOP STARTS HERE -->
-                                    <div class="col" th:each="imageId : ${Product.imageIds}">
-                                        <div class="card card-product-grid">
-                                            <div class="info-wrap">
-                                                <div class="row">
-                                                    <div class="col-10"> <!-- Each image takes 4 columns -->
-                                                        <img th:src="@{/images/{imgId}(imgId=${imageId})}" />
+                                    <form th:action="@{/dashboard/add-new-brand/save}" method="post" th:object="${NewBrand}">
+                                        <section class="content-body p-xl-4">
+                                            <!-- Form  -->
+                                            <div class="col-lg-12">
+                                                <div class="card mb-12">
+                                                    <div class="card-header">
+                                                        <h4>Media</h4>
                                                     </div>
-                                                    <div class="col-2">
-                                                        <form th:method="delete"
-                                                              th:action="@{/dashboard/delete-image}" onsubmit="return false;">
-                                                            <input type="hidden" name="imageId" th:value="${imageId}" />
-                                                            <input type="hidden" name="productId" th:value="${Product.id}" />
-                                                            <button class="btn btn-lg font-lg btn-outline-danger" onclick="confirmDelete(this.form)">
-                                                                Delete
-                                                            </button>
-                                                        </form>
+                                                    <div class="card-body">
+                                                        <div class="input-upload">
+                                                            <img th:src="@{/assets/admin-assets/imgs/theme/upload.svg}" alt="">
+                                                                <input type="hidden" name="productId" th:value="${productId}">
+                                                                <input class="form-control" type="file" id="imageFiles" name="imageFiles">
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                        </section>
+                                        <div class="row mb-4">
+                                            <label class="col-lg-3 col-form-label" for="name">Brand name*</label>
+                                            <div class="col-lg-9">
+                                                <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}">
+                                                    Name cannot be empty
+                                                </span>
+                                                <input type="text" th:field="*{name}" class="form-control" id="name"
+                                                       name="name" placeholder="Type here">
+                                            </div>
                                         </div>
-                                    </div>
-                                    <!-- LOOP ENDS HERE -->
+                                        <div class="row mb-4">
+                                            <label class="col-lg-3 col-form-label">Status</label>
+                                            <div class="col-lg-9">
+                                                <label class="form-check my-2">
+                                                    <input type="checkbox" th:field="*{status}" class="form-check-input" checked="">
+                                                    <span class="form-check-label">Enable this Brand</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <button class="btn btn-primary" type="submit"> Continue to next</button>
+                                    </form>
                                 </section>
                             </div>
                         </div>
@@ -191,7 +169,6 @@
         </div>
     </section>
 </main>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script th:src="@{/assets/admin-assets/js/vendors/jquery-3.6.0.min.js}"></script>
 <script th:src="@{/assets/admin-assets/js/vendors/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/assets/admin-assets/js/vendors/select2.min.js}"></script>

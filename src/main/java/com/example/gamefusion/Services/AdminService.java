@@ -1,7 +1,7 @@
 package com.example.gamefusion.Services;
 
 import com.example.gamefusion.Dto.*;
-import com.example.gamefusion.Entity.OrderSub;
+import com.example.gamefusion.Entity.BrandLogo;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -22,33 +22,36 @@ public interface AdminService {
      List<CategoryDto> getAllCategory();
      CategoryDto getCategoryInfo(Long id);
      void toggleCategoryStatus(Long id);
+     Boolean isCategoryNameExist(String name);
 
+    //?Brands
+    List<BrandDto> getAllBrands();
+    PaginationInfo getAllBrands(Integer pageNo, Integer pageSize);
+    BrandDto getBrandInfo(Long brandId);
+    BrandDto addOrUpdateBrand(BrandDto brandDto);
+    Boolean isBrandExistsById(Long brandId);
+    Boolean isBrandExistsByName(String name);
+    Boolean isBrandActive(Long brandId);
+    void toggleBrandStatus(Long brandId);
 
-    //! products
+    //? products
     PaginationInfo getAllProduct(Integer pageNo, Integer pageSize);
     Long addOrUpdateProduct(ProductDto productDto);
     List<String> uploadImage(List<MultipartFile> file, Long productId);
-
-    //todo: edit
     ProductDto getProduct(Long id);
     void toggleStatus(Long id);
 
-    List<BrandDto> getAllBrands();
+    //? Images
     byte[] getImages(Long imageId);
-
-
     List<byte[]> getImageOfSingleProduct(Long productId);
-
     void deleteImage(Long imageId);
 
-    Boolean isCategoryNameExist(String name);
-
+    //? Order Main & Sub
     PaginationInfo getAllOrders(Integer pageNo, Integer pageSize);
     OrderMainDto getOrderById(Integer orderId);
-
     Boolean isOrderExists(Integer orderId);
-
+    void updateOrderMain(OrderMainDto orderMainDto);
     List<OrderSubDto> findOrderSubByMain(Integer orderId);
 
-    void updateOrderMain(OrderMainDto orderMainDto);
+    BrandLogo saveBrandLogo(MultipartFile file);
 }

@@ -1,6 +1,5 @@
 package com.example.gamefusion.Dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,13 +8,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BrandDto {
-
+public class BrandLogoDto {
     private Long id;
-    @NotNull(message = "Name should not be empty")
+    @NotNull
     private String name;
-    @NotNull(message = "Status should not be empty")
-    private boolean status;
-    private Long logo;
+    @NotNull
+    private String type;
+    @NotNull
+    private byte[] imageData;
 }
-

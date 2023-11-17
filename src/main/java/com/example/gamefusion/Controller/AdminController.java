@@ -1,9 +1,7 @@
 package com.example.gamefusion.Controller;
 
-import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
 import com.example.gamefusion.Dto.*;
-import com.example.gamefusion.Entity.OrderSub;
-import com.example.gamefusion.Entity.Product;
+import com.example.gamefusion.Entity.BrandLogo;
 import com.example.gamefusion.Services.AdminService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -28,12 +26,10 @@ public class AdminController {
 
     Logger log = LoggerFactory.getLogger(AdminController.class);
     private final AdminService adminService;
-    private final EntityDtoConversionUtil conversionUtil;
 
     @Autowired
-    public AdminController(AdminService adminService, EntityDtoConversionUtil conversionUtil) {
+    public AdminController(AdminService adminService) {
         this.adminService = adminService;
-        this.conversionUtil = conversionUtil;
     }
 
     @GetMapping("")
@@ -239,6 +235,59 @@ public class AdminController {
         model.addAttribute("brandList", adminService.getAllBrands());
     }
 
+    //? BRAND MANAGEMENT
+
+    @GetMapping("/brands")
+    public String viewAllBrands(Model model,
+                                @RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
+                                @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
+        model.addAttribute("BrandPage",adminService.getAllBrands(pageNo, pageSize));
+        return "Admin/page-brands";
+    }
+
+//    @GetMapping("/brand/{BrandID}")
+//    public String viewBrand(@PathVariable("BrandID") String brandId) {
+//        return "";
+//    }
+
+    @GetMapping("/add-new-brand")
+    public String addNewBrand(Model model) {
+        model.addAttribute("NewBrand",new BrandDto());
+        return "Admin/page-add-brand";
+    }
+    
+    @PostMapping("/add-new-brand/save")
+    public String addNewBrandSave(@ModelAttribute("NewBrand") BrandDto brandDto,BindingResult result,
+                                  MultipartFile file,Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("NewBrand",new BrandDto());
+            return "Admin/page-add-brand";
+        }
+        if (file != null) {
+            BrandLogo brandLogo = adminService.saveBrandLogo(file);
+            brandDto.setLogo(brandLogo.getId());
+        }
+        adminService.addOrUpdateBrand(brandDto);
+        return "redirect:/dashboard/brands";
+    }
+
+//    @GetMapping("/edit-brand/{BrandID}")
+//    public String editBrand(@PathVariable("BrandID") String brandId) {
+//        return "";
+//    }
+//
+//    @PutMapping("/edit-brand/update")
+//    public String editBrandUpdate() {
+//        return "";
+//    }
+
+    @PutMapping("/update-brand-status/{BrandID}")
+    public String updateBrandStatus(@PathVariable("BrandID") Long brandId) {
+        System.out.println(brandId);
+        if (adminService.isBrandExistsById(brandId))
+            adminService.toggleBrandStatus(brandId);
+        return "redirect:/dashboard/brands";
+    }
 
     //? ORDER MANAGEMENT
 

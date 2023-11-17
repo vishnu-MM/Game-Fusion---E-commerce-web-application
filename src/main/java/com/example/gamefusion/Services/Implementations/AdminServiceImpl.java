@@ -2,8 +2,7 @@ package com.example.gamefusion.Services.Implementations;
 
 import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
 import com.example.gamefusion.Dto.*;
-import com.example.gamefusion.Entity.OrderMain;
-import com.example.gamefusion.Entity.OrderSub;
+import com.example.gamefusion.Entity.BrandLogo;
 import com.example.gamefusion.Entity.Product;
 import com.example.gamefusion.Services.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -29,12 +29,11 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     public AdminServiceImpl(
-            UserService userService,
-            @Lazy ProductService productService,
-            CategoryService categoryService,
-            StorageService storageService,
-            ImagesService imagesService,
-            BrandService brandService, OrderMainService orderMainService, OrderSubService orderSubService, EntityDtoConversionUtil conversionUtil) {
+            UserService userService, @Lazy ProductService productService,
+            CategoryService categoryService, StorageService storageService,
+            ImagesService imagesService, BrandService brandService,
+            OrderMainService orderMainService, OrderSubService orderSubService,
+            EntityDtoConversionUtil conversionUtil) {
         this.userService = userService;
         this.productService = productService;
         this.categoryService = categoryService;
@@ -111,22 +110,25 @@ public class AdminServiceImpl implements AdminService {
             categoryService.activateCategory(id);
     }
 
-    // PRODUCT OPS
-
     @Override
-    public Long addOrUpdateProduct(ProductDto productDto) {
-        return productService.save(productDto);
+    public Boolean isCategoryNameExist(String name) {
+        return categoryService.isExistsByName(name);
     }
 
-    @Override
-    public List<String> uploadImage(List<MultipartFile> file, Long id) {
-        Product product =conversionUtil.dtoToEntity( productService.getProductById(id));
-        return storageService.uploadImagesToFileSystem(file,product);
+    //* PRODUCT OPS
+
+    public PaginationInfo getAllProduct(Integer pageNo, Integer pageSize) {
+        return productService.getAllProducts(pageNo,pageSize);
     }
 
     @Override
     public ProductDto getProduct(Long id) {
         return productService.getProductById(id);
+    }
+
+    @Override
+    public Long addOrUpdateProduct(ProductDto productDto) {
+        return productService.save(productDto);
     }
 
     @Override
@@ -142,10 +144,7 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
-    @Override
-    public List<BrandDto> getAllBrands() {
-        return brandService.getAll();
-    }
+    //* IMAGES OPS
 
     @Override
     public byte[] getImages(Long imageId) {
@@ -154,6 +153,12 @@ public class AdminServiceImpl implements AdminService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public List<String> uploadImage(List<MultipartFile> file, Long id) {
+        Product product =conversionUtil.dtoToEntity( productService.getProductById(id));
+        return storageService.uploadImagesToFileSystem(file,product);
     }
 
     @Override
@@ -174,10 +179,7 @@ public class AdminServiceImpl implements AdminService {
         }
     }
 
-    @Override
-    public Boolean isCategoryNameExist(String name) {
-        return categoryService.isExistsByName(name);
-    }
+    //* ORDER OPS
 
     @Override
     public PaginationInfo getAllOrders(Integer pageNo, Integer pageSize) {
@@ -207,7 +209,55 @@ public class AdminServiceImpl implements AdminService {
         orderMainService.save(orderMainDto);
     }
 
-    public PaginationInfo getAllProduct(Integer pageNo, Integer pageSize) {
-        return productService.getAllProducts(pageNo,pageSize);
+    //* BRAND OPS
+
+    @Override
+    public List<BrandDto> getAllBrands() {
+        return brandService.getAll();
+    }
+
+    @Override
+    public PaginationInfo getAllBrands(Integer pageNo, Integer pageSize) {
+        return brandService.getAll(pageNo, pageSize);
+    }
+
+    @Override
+    public BrandDto getBrandInfo(Long brandId) {
+        return brandService.findById(brandId);
+    }
+
+    @Override
+    public BrandDto addOrUpdateBrand(BrandDto brandDto) {
+        return brandService.saveOrUpdate(brandDto);
+    }
+
+    @Override
+    public Boolean isBrandExistsById(Long brandId) {
+        return brandService.existsById(brandId);
+    }
+
+    @Override
+    public Boolean isBrandExistsByName(String name) {
+        return brandService.existsByName(name);
+    }
+
+    @Override
+    public Boolean isBrandActive(Long brandId) {
+        return brandService.isActive(brandId);
+    }
+
+    public void toggleBrandStatus(Long brandId) {
+        if (!isBrandExistsById(brandId)) throw new EntityNotFoundException("Brand Not Found");
+        if (isBrandActive(brandId)) brandService.updateStatusInActive(brandId);
+        else brandService.updateStatusActive(brandId);
+    }
+
+    @Override
+    public BrandLogo saveBrandLogo(MultipartFile file) {
+        try {
+            return storageService.uploadImage(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

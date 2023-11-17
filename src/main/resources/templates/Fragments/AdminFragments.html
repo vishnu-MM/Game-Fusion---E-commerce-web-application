@@ -1,0 +1,129 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Game Fusion - Dashboard</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="">
+    <meta property="og:type" content="">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/admin-assets/imgs/theme/favicon.svg}">
+    <link th:href="@{/assets/admin-assets/css/main.css}" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+
+<aside class="navbar-aside" id="offcanvas_aside" th:fragment="navbar-aside">
+    <div class="aside-top">
+        <a href="#" class="brand-wrap">
+            <img th:src="@{/assets/admin-assets/imgs/theme/New-logo.svg}" class="logo" alt="Evara Dashboard">
+        </a>
+        <div>
+            <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button>
+        </div>
+    </div>
+    <nav>
+        <ul class="menu-aside">
+            <li class="menu-item active">
+                <a class="menu-link" href="#">
+                    <i class="icon material-icons md-home"></i><span class="text">Dashboard</span>
+                </a>
+            </li>
+            <li class="menu-item ">
+                <a class="menu-link" th:href="@{/dashboard/view-products}">
+                    <i class="icon material-icons md-shopping_bag"></i><span class="text">Products</span>
+                </a>
+            </li>
+            <li class="menu-item ">
+                <a class="menu-link" th:href="@{/dashboard/view-users}">
+                    <i class="icon material-icons md-person"></i><span class="text">Users</span>
+                </a>
+            </li>
+            <li class="menu-item ">
+                <a class="menu-link" th:href="@{/dashboard/brands}">
+                    <i class="icon material-icons md-store"></i><span class="text">Sellers</span>
+                </a>
+            </li>
+            <li class="menu-item ">
+                <a class="menu-link" th:href="@{/dashboard/view-categories}">
+                    <i class="icon material-icons md-add_box"></i><span class="text">Categories</span>
+                </a>
+            </li>
+            <li class="menu-item ">
+                <a class="menu-link" th:href="@{/dashboard/view-orders}">
+                    <i class="icon material-icons md-shopping_cart md-monetization_on"></i><span class="text">Orders</span>
+                </a>
+            </li>
+            <li class="menu-item ">
+                <a class="menu-link" href="#">
+                    <i class="icon material-icons md-pie_chart"></i><span class="text">Sales Report</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</aside>
+
+<header class="main-header navbar" th:fragment="main-header">
+    <div class="col-search">
+        <form class="searchform">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search term">
+                <button class="btn btn-light bg" type="button"> <i class="material-icons md-search"></i></button>
+            </div>
+        </form>
+    </div>
+    <div class="col-nav">
+        <ul class="nav">
+            <li class="dropdown nav-item">
+                <!-- PROFILE-->
+                <div class="dropdown nav-item">
+                    <a class="dropdown-toggle" id="dropdownAccount" aria-expanded="false">
+                        <img class="img-xs rounded-circle" th:src="@{/assets/admin-assets/imgs/people/avatar-2-admin.png}" alt="User">
+                    </a>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-item">
+                            <i class="material-icons md-person"></i>
+                            <span> </span>
+                            <span  id="name"></span>
+                        </div>
+                        <div class="dropdown-item">
+                            <i class="material-icons md-email"></i>
+                            <span> </span>
+                            <span  id="email"></span>
+                        </div>
+                        <div class="dropdown-item">
+                            <i class="material-icons md-phone_android"></i>
+                            <span> </span>
+                            <span  id="phone"></span>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" id="editProfileLink" th:href="@{/user/edit-profile}"><i class="material-icons md-person_outline"></i>Edit Profile</a>
+                        <a class="dropdown-item" th:href="@{/user/forget-password}">
+                            <i class="material-icons md-lock"></i>Forget Password</a>
+                        <div class="dropdown-divider"></div>
+                        <form th:action="@{/logout}" method="post">
+                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+                            <button type="submit" class="dropdown-item text-danger"><i class="material-icons md-exit_to_app"></i>Logout</button>
+                        </form>
+                    </div>
+                </div>
+                <!-- PROFILE ENDS-->
+            </li>
+            <li class="nav-item">
+                <a class="nav-link btn-icon darkmode" href="#"> <i class="material-icons md-nights_stay"></i> </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="requestfullscreen nav-link btn-icon"><i class="material-icons md-cast"></i></a>
+            </li>
+            <li class="nav-item">
+                <div style="width: 100px"></div>
+            </li>
+        </ul>
+    </div>
+</header>
+<script th:src="@{/assets/js/AjaxFile.js}"></script>
+</body>
+</html>

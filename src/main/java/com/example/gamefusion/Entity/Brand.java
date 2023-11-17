@@ -23,9 +23,7 @@ public class Brand {
 
     @Column(name = "status", nullable = false)
     private boolean status;
-
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "logo")
-    private byte[] logo;
+    @OneToOne
+    @JoinColumn(name = "logo_id",referencedColumnName = "id")
+    private BrandLogo brandLogo;
 }

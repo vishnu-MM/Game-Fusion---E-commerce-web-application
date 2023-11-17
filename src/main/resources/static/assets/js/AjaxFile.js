@@ -8,7 +8,8 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(data) {
                 userId = data.id;
-                let name = data.firstName+" "+data.lastName;
+                let name = data.firstName
+                if (data.lastName != null) name+=' '+data.lastName;
                 $('#name').text(name);
                 $('#email').text(data.username);
                 $('#phone').text(data.phone);

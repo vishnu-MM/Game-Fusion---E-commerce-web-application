@@ -1,5 +1,7 @@
 package com.example.gamefusion.Services.Implementations;
 
+import com.example.gamefusion.Entity.BrandLogo;
+import com.example.gamefusion.Repository.BrandLogoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import com.example.gamefusion.Entity.Images;
 import com.example.gamefusion.Entity.Product;
@@ -17,15 +19,21 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import com.example.gamefusion.Configuration.UtilityClasses.ImageUtils;
+
+import static com.example.gamefusion.Configuration.UtilityClasses.ImageUtils.*;
 
 @Service
 public class StorageServiceImpl implements StorageService {
 
     Logger log = LoggerFactory.getLogger(StorageService.class);
     private final ImagesRepository imagesRepository;
+    private final BrandLogoRepository brandLogoRepository;
     @Autowired
-    public StorageServiceImpl(ImagesRepository imagesRepository) {
+    public StorageServiceImpl(ImagesRepository imagesRepository,
+                              BrandLogoRepository brandLogoRepository) {
         this.imagesRepository = imagesRepository;
+        this.brandLogoRepository = brandLogoRepository;
     }
 
     @Override
@@ -88,20 +96,19 @@ public class StorageServiceImpl implements StorageService {
         }
     }
 
-    //?    public String uploadImage(MultipartFile file) throws IOException {
-//?        ImageData imageData = repository.save(ImageData.builder()
-//?                .name(file.getOriginalFilename())
-//?                .type(file.getContentType())
-//?                .imageData(ImageUtils.compressImage(file.getBytes())).build());
-//?        if (imageData != null) {
-//?           return "file uploaded successfully : " + file.getOriginalFilename();
-//?        }
-//?        return null;
-//?    }
+    @Override
+   public BrandLogo uploadImage(MultipartFile file) throws IOException {
+        BrandLogo brandLogo = new BrandLogo();
+        brandLogo.setName(file.getOriginalFilename());
+        brandLogo.setType(file.getContentType());
+        brandLogo.setImageData(compressImage(file.getBytes()));
+        return brandLogoRepository.save(brandLogo);
+   }
 
-//?    public byte[] downloadImage(String fileName) {
-//?      Optional<ImageData> dbImageData = repository.findByName(fileName);
-//?        byte[] images = ImageUtils.decompressImage(dbImageData.get().getImageData());
-//?        return images;
-//?    }
+   @Override
+    public byte[] downloadImage(String fileName) throws IOException {
+        Optional<BrandLogo> brandLogo = brandLogoRepository.findByName(fileName);
+        if (brandLogo.isEmpty()) return null;
+        return ImageUtils.decompressImage(brandLogo.get().getImageData());
+    }
 }
