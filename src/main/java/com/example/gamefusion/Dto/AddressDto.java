@@ -1,9 +1,11 @@
 package com.example.gamefusion.Dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 
 @Data
 @AllArgsConstructor
@@ -36,5 +38,9 @@ public class AddressDto {
     @Max(value = 999999, message = "Pin code should be at most 6 digits")
     private Integer pinCode;
     private String phone;
+
+    @NotNull
+    @Value("true")
+    private Boolean status;
 }
 

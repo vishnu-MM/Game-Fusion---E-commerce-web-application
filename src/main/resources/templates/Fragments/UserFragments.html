@@ -10,6 +10,8 @@
     <meta property="og:type" content="">
     <meta property="og:url" content="">
     <meta property="og:image" content="">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/imgs/theme/favicon.svg}">
     <link rel="stylesheet" th:href="@{/assets/css/main.css}">
@@ -48,7 +50,7 @@
                                     </i>My Orders</a>
                                 <a class="dropdown-item" th:href="@{/user/my-address}"><i class="material-icons md-receipt"></i>My Address</a>
                                 <a class="dropdown-item" id="editProfileLink" th:href="@{/user/edit-profile}"><i class="material-icons md-person_outline"></i>Edit Profile</a>
-                                <a class="dropdown-item" th:href="@{/user/forget-password}">
+                                <a class="dropdown-item" th:href="@{/forget-password}">
                                     <i class="material-icons md-lock"></i>Forget Password</a>
                                 <div class="dropdown-divider"></div>
                                 <form id="logoutForm" th:action="@{/logout}" method="post">

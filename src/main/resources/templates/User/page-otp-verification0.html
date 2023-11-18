@@ -22,7 +22,7 @@
                   <div class="heading_s1">
                     <h3 class="mb-30">OTP Verification</h3>
                   </div>
-                  <form th:action="@{/user/verify-otp}" method="post" onsubmit="return validateForm()">
+                  <form th:action="@{/verify-otp}" method="post" onsubmit="return validateForm()">
                     <div class="form-group">
                       <p>OTP has been sent via Email to</p>
                     </div>
@@ -37,7 +37,7 @@
                     </div>
                     <div class="form-group">
                       <button type="submit" class="btn btn-fill-out btn-block hover-up" name="submit">Verify</button>
-                      <a class="btn btn-fill-out btn-block hover-up" th:href="@{/resent-otp}">Resent OTP</a>
+                      <a class="btn btn-fill-out btn-block hover-up" th:href="@{/sent-otp}">Resent OTP</a>
                     </div>
                   </form>
                 </div>

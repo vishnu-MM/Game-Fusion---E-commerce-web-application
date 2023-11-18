@@ -55,10 +55,8 @@ public class OTPServiceImpl implements OTPService {
         try {
             javaMailSender.send(message);
         }catch (Exception e){
-            log.error(e.getMessage());
-            log.warn("Error Occurred");
+            log.error("Error Occurred"+e.getMessage());
         }
-        log.info("send Email Successfully");
     }
 
     @Override

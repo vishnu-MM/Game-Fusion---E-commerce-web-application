@@ -61,7 +61,6 @@ public class CartServiceImpl implements CartService {
         int totalAmount = 0;
         for ( Cart cart : cartList ) {
             Product product = cart.getProduct();
-            System.out.println(product);
             if ( product.getStatus()) {
                 int price = product.getPrice();
                 int qty = cart.getQty();

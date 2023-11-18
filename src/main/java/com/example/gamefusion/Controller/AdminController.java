@@ -219,7 +219,6 @@ public class AdminController {
     @PostMapping("/update-images/save")
     public String editProductImages(@RequestParam("imageFiles") List<MultipartFile> file,
                                    @RequestParam("productId") Long productId ) {
-        log.info(adminService.uploadImage(file,productId).toString());
         return "redirect:/dashboard/update-images/" + productId;
     }
 
@@ -283,7 +282,6 @@ public class AdminController {
 
     @PutMapping("/update-brand-status/{BrandID}")
     public String updateBrandStatus(@PathVariable("BrandID") Long brandId) {
-        System.out.println(brandId);
         if (adminService.isBrandExistsById(brandId))
             adminService.toggleBrandStatus(brandId);
         return "redirect:/dashboard/brands";

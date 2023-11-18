@@ -23,7 +23,6 @@ public class ImageController {
 
     @GetMapping("/images/{imageId}")
     public ResponseEntity<byte[]> getImage(@PathVariable("imageId") Long imageId ) {
-        System.out.println("getting "+imageId);
         try {
             byte[] imageBytes = storageService.downloadImageFromFileSystem(imageId);
             HttpHeaders headers = new HttpHeaders();

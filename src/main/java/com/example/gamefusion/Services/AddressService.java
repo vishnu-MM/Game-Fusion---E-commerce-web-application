@@ -7,6 +7,9 @@ import java.util.List;
 
 public interface AddressService {
     List<AddressDto> findByUser(Integer userId);
+
+    List<AddressDto> findByUser(Integer userId, Boolean status);
+
     Boolean isExistsByUser(Integer user);
     Boolean isExistById(Integer addressId);
 

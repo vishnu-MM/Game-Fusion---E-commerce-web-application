@@ -55,15 +55,11 @@ public class StorageServiceImpl implements StorageService {
                 imagesRepository.save(img);
                 file.transferTo(new File(filePath));
                 filePaths.add("File uploaded successfully: " + filePath);
-                log.info(filePath);
-
-            } catch (IOException e) {
-                filePaths.add("Error uploading the file: " + e.getMessage());
-                log.error(e.getMessage());
-            } catch (Exception ex) {
-                filePaths.add("An error occurred: " + ex.getMessage());
+            } catch ( Exception ex) {
+                filePaths.add("Error uploading the file: " + ex.getMessage());
                 log.error(ex.getMessage());
             }
+
         }
         return filePaths;
     }
@@ -72,11 +68,8 @@ public class StorageServiceImpl implements StorageService {
     @Override
     public byte[] downloadImageFromFileSystem(Long id) throws IOException {
         Optional<Images> imageData = imagesRepository.findById(id);
-        log.info("downloadImageFromFileSystem"+id);
         if (imageData.isPresent()){
             String filePath = imageData.get().getFilePath();
-            log.info("File "+filePath);
-            log.info(new File(filePath).toPath().toString());
             return Files.readAllBytes(new File(filePath).toPath());
         }
         else {

@@ -26,7 +26,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException,LockedException {
         User user = userRepository.findByUsername(username);
         if (user == null) {
-            System.out.println("its exe");
             throw new UsernameNotFoundException("Invalid username or password");
         }
         else if (!user.getIsActive()) {

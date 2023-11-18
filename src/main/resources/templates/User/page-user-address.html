@@ -46,12 +46,11 @@
                                             th:href="@{/user/edit-address/{addressId}(addressId=${address.id})}">
                                            Edit
                                         </a>
-                                        <form th:method="delete" th:action="@{/user/delete-address}"
-                                              onsubmit="confirmDeletion(this)">
+                                        <form th:method="delete" th:action="@{/user/delete-address}" onsubmit="return false">
                                             <label for="addressId"></label>
                                             <input type="number" name="addressId" id="addressId"
                                                    th:value="${address.id}" hidden="hidden">
-                                            <input type="submit" value="Delete"
+                                            <input type="submit" value="Delete" onclick="confirmDeletion(this.form)"
                                                    class="btn btn-warning-light border border-dark">
                                         </form>
                                     </div>
@@ -96,6 +95,7 @@
     <script th:src="@{/assets/js/main.js}"></script>
     <script th:src="@{/assets/js/shop.js}"></script>
     <script th:src="@{/assets/js/AjaxFile.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script>
         function confirmDeletion(form) {
             Swal.fire({
@@ -107,7 +107,6 @@
                 cancelButtonText: 'No, cancel',
             }).then((result) => {
                 if (result.isConfirmed) {
-
                     form.submit();
                 }
             });

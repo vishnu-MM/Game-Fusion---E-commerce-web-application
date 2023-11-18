@@ -19,13 +19,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 
 @Controller
-public class LoginSignUpController {
+public class AuthenticationController {
 
     private final UserService userService;
     private final OTPService otpService;
-
     @Autowired
-    public LoginSignUpController(UserService userService, OTPService otpService) {
+    public AuthenticationController(UserService userService, OTPService otpService) {
         this.userService = userService;
         this.otpService = otpService;
     }
@@ -88,13 +87,64 @@ public class LoginSignUpController {
             model.addAttribute("Success",true);
             return "User/page-otp-verification";
         }
-        UserHomeController.getError(model, msg);
+        getError(model, msg);
         return "User/page-otp-verification";
+    }
+
+    @GetMapping("/forget-password")
+    public String showForgetPasswordForm() {
+        return "User/page-forget-password";
+    }
+
+    @PostMapping("/forget-password/verify")
+    public String verifyMailForResetPassword(@RequestParam("username") String username,Model model) {
+        if (!userService.isExistsByUsername(username)) {
+            return "User/page-forget-password";
+        }
+        otpService.sendOTP(userService.findByUsername(username));
+        model.addAttribute("username",username);
+        return "User/page-otp-verification0";
+    }
+
+    @PostMapping("/verify-otp")
+    public String verifyOTPForResetPassword(@RequestParam("otp") String otp,
+                                            @RequestParam("username") String username,
+                                            Model model) {
+        String msg = otpService.verifyOTP(username, otp);
+        if (msg.equals("SUCCESS")) {
+            return "redirect:/update-password/"+username;
+        }
+        getError(model, msg);
+        model.addAttribute("username",username);
+        return "User/page-otp-verification0";
+    }
+
+    @GetMapping("/update-password/{username}")
+    public String getPasswordResetForm(@PathVariable("username") String username, Model model) {
+        model.addAttribute("username",username);
+        return "User/page-update-password";
+    }
+
+    @PutMapping("/reset-password")
+    public String updatePassword(@RequestParam("password") String password,
+                                 @RequestParam("username") String username) {
+        UserDto userDto = userService.findByUsername(username);
+        userService.resetPassword(userDto.getId(), password);
+        return "redirect:/user/home?success";
     }
 
     @InitBinder
     private void removeWhiteSpace(WebDataBinder webDataBinder) {
         StringTrimmerEditor ste = new StringTrimmerEditor(true);
         webDataBinder.registerCustomEditor(String.class, ste);
+    }
+
+    static void getError(Model model, String msg) {
+        String errorMsg = "Some thing went wrong";
+        if (msg.equals("INVALID")) errorMsg = "The OTP is Invalid";
+        if (msg.equals("EMPTY"))   errorMsg = "OTP should not be Empty";
+        if (msg.equals("TIMEOUT")) errorMsg = "OTP expired, Try again";
+        if (msg.equals("USER-NOT-FOUNT")) errorMsg = "User not fount";
+        model.addAttribute("error", errorMsg);
     }
 }

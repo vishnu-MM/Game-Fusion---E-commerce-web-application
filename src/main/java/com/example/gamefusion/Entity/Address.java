@@ -31,6 +31,9 @@ public class Address {
     @Column(name = "pin_code", nullable = false)
     private Integer pinCode;
 
+    @Column(name = "status", nullable = false, columnDefinition = "boolean default true")
+    private Boolean status;
+
     @Column(name = "phone", precision = 12, scale = 0)
     private Long phone;
 

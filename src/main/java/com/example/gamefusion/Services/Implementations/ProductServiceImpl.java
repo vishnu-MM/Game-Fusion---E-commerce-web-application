@@ -38,7 +38,6 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> products = productRepository.findAll(pageable);
         List<Product> listOfProducts = products.getContent();
         List<ProductDto> contents = listOfProducts.stream().map(conversionUtil::entityToDto).toList();
-        System.out.println(contents);
         return new PaginationInfo(
                 contents,products.getNumber(),products.getSize(),
                 products.getTotalElements(),products.getTotalPages(),
@@ -86,7 +85,6 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto getProductById(Long id) {
         Optional<Product> product = productRepository.findById(id);
-        System.out.println(product);
         if (product.isPresent()){
             return conversionUtil.entityToDto(product.get());
         }

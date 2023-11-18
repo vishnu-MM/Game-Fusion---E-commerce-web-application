@@ -84,13 +84,13 @@
                                     class="material-icons md-location_on"></i> Delivery
                                 Address</span>
                             <span class="h6"
-                                  th:text="${order.streetAddress}+', '+
-                                           ${order.district}+', '+
-                                           ${order.state}+', '+
-                                           ${order.country}">
+                                  th:text="${Address.streetAddress}+', '+
+                                           ${Address.district}+', '+
+                                           ${Address.state}+', '+
+                                           ${Address.country}">
                             </span>
-                            <span class="h6" th:text="'Pin Code : '+${order.pinCode}"></span>
-                            <span class="h6" th:text="'Phone: '+${order.phone}"></span>
+                            <span class="h6" th:text="'Pin Code : '+${Address.pinCode}"></span>
+                            <span class="h6" th:text="'Phone: '+${Address.phone}"></span>
                         </div>
                         <div class="border border-dark rounded p-3">
                             <div>

@@ -26,19 +26,11 @@ public class OrderMain {
     private String status;
     @Column(name = "payment_method")
     private String paymentMethod;
-    @Column(name = "country", nullable = false, length = 100)
-    private String country;
-    @Column(name = "state", nullable = false, length = 100)
-    private String state;
-    @Column(name = "district", nullable = false, length = 100)
-    private String district;
-    @Column(name = "street_address", nullable = false, length = 150)
-    private String streetAddress;
-    @Column(name = "pin_code", nullable = false)
-    private Integer pinCode;
-    @Column(name = "phone", precision = 12, scale = 0)
-    private Long phone;
+
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
+    @OneToOne
+    @JoinColumn(name = "address_id", referencedColumnName = "id")
+    private Address address;
 }
