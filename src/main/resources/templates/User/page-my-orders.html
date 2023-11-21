@@ -78,13 +78,10 @@
                     <!-- DIVIDER ENDS -->
                     <div class="d-flex flex-row align-items-center justify-content-between mt-25">
                         <div class="d-flex flex-column">
-                            <span
-                                    class="d-flex icon-top h5 pb-2 border-bottom">
-                                <i
-                                    class="material-icons md-location_on"></i> Delivery
-                                Address</span>
-                            <span class="h6"
-                                  th:text="${Address.streetAddress}+', '+
+                            <span class="d-flex icon-top h5 pb-2 border-bottom">
+                                <i class="material-icons md-location_on"></i> Delivery Address
+                            </span>
+                            <span class="h6" th:text="${Address.streetAddress}+', '+
                                            ${Address.district}+', '+
                                            ${Address.state}+', '+
                                            ${Address.country}">

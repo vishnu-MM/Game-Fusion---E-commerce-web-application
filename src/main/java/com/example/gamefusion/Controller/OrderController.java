@@ -1,48 +1,114 @@
 package com.example.gamefusion.Controller;
 
 import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
+import com.example.gamefusion.Configuration.UtilityClasses.PaymentMethodUtil;
 import com.example.gamefusion.Dto.*;
+import com.example.gamefusion.Entity.Cart;
 import com.example.gamefusion.Entity.OrderSub;
 import com.example.gamefusion.Services.*;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class OrderController {
     private final UserService userService;
     private final CartService cartService;
     private final AddressService addressService;
+    private final ProductService productService;
+    private final PaymentService paymentService;
     private final OrderSubService orderSubService;
     private final OrderMainService orderMainService;
     private final EntityDtoConversionUtil conversionUtil;
     @Autowired
     public OrderController(UserService userService, AddressService addressService,
-                           CartService cartService, EntityDtoConversionUtil conversionUtil,
-                           OrderSubService orderSubService,OrderMainService orderMainService ) {
+                           CartService cartService, ProductService productService, EntityDtoConversionUtil conversionUtil,
+                           OrderSubService orderSubService, OrderMainService orderMainService,
+                           PaymentService paymentService) {
         this.userService = userService;
         this.addressService = addressService;
         this.cartService = cartService;
+        this.productService = productService;
         this.orderMainService = orderMainService;
         this.orderSubService = orderSubService;
         this.conversionUtil = conversionUtil;
+        this.paymentService = paymentService;
+    }
+
+    @GetMapping("/checkout-page")
+    public String getCheckOutPage(Model model, Principal principal) {
+        AddressDto addressDto = new AddressDto();
+        UserDto user = userService.findByUsername(principal.getName());
+        List<AddressDto> addressDtoList = addressService.findByUser(user.getId(),true);
+        List<CartDto> cartDtoList = cartService.findAvailableProductsByUser(user);
+        List<Cart> cart = cartDtoList.stream().map(conversionUtil::dtoToEntity).toList();
+
+        model.addAttribute("User", user);
+        model.addAttribute("NewAddress", addressDto);
+        model.addAttribute("ProductDetails", cart);
+        model.addAttribute("AddressList", addressDtoList);
+        model.addAttribute("TotalAmount",cartService.totalAmount(cartDtoList));
+        return "User/shop-checkout";
     }
 
     @PostMapping("/checkout")
     public String checkout(@RequestParam("addressId") Integer addressId,
                            @RequestParam("payment_option") Integer paymentOption,
-                           Principal principal) {
+                           Principal principal, Model model) {
         UserDto userDto = userService.findByUsername(principal.getName());
-        List<CartDto> cart = cartService.getCartByUser(userDto);
-        System.out.println("------");
-        OrderMainDto orderMainDto = orderMainService.save(addressId,paymentOption,userDto,cart);
-        System.out.println("orderMainDto saved");
+
+        List<CartDto> cart = cartService.findAvailableProductsByUser(userDto);
+        Integer totalAmount = cartService.totalAmount(cart);
+        OrderMainDto orderMainDto = orderMainService.save(addressId,paymentOption,userDto,totalAmount);
+
         orderSubService.save(orderMainDto.getId(),cart);
-        System.out.println("orderSubDto saved");
+        PaymentDto paymentDto = new PaymentDto();
+        paymentDto.setPaymentMethod(PaymentMethodUtil.getPaymentMethodByValue(paymentOption));
+        paymentDto.setPaymentId("UW"+orderMainDto.getOrderId());
+        paymentDto.setOrderId(orderMainDto.getId());
+        paymentDto.setAmount(orderMainDto.getAmount());
+        paymentDto.setDate(Date.valueOf(LocalDate.now()));
+        paymentDto.setPaymentStatus(false);
+        paymentService.save(paymentDto);
+
+        if (paymentOption != 1) {
+            return "redirect:/online-payment?orderId="+orderMainDto.getId();
+        }
         return "User/shop-place_order-success";
+    }
+
+    @GetMapping("/online-payment")
+    public String getPaymentPage(@RequestParam("orderId") Integer orderId, Model model) {
+
+        OrderMainDto orderMainDto = orderMainService.findOrderById(orderId);
+        List<OrderSubDto> orderSubDtoList = orderSubService.findOrderByOrder(orderMainDto);
+        AddressDto addressDto = addressService.findById(orderMainDto.getAddressId());
+        UserDto userDto = userService.findById(orderMainDto.getUserId());
+        Map<Long,ProductDto> productDtoMap = new HashMap<>();
+        for (OrderSubDto orderSubDto: orderSubDtoList) {
+            System.out.println(orderSubDto.getProductId()+" "+
+                    productService.getProductById(orderSubDto.getProductId()));
+            productDtoMap.put(
+                orderSubDto.getProductId(),
+                productService.getProductById(orderSubDto.getProductId())
+            );
+        }
+        model.addAttribute("orderMainDto",orderMainDto);
+        model.addAttribute("orderSubDtoList",orderSubDtoList);
+        model.addAttribute("productDtoMap",productDtoMap);
+        model.addAttribute("addressDto",addressDto);
+        model.addAttribute("userDto",userDto);
+        return "User/shop-payment";
     }
 
     @GetMapping("/my-orders")
@@ -68,5 +134,18 @@ public class OrderController {
         if (orderMainService.isExistsByID(orderId))
             orderMainService.cancelOrder(orderId);
         return "redirect:/my-orders";
+    }
+
+
+    @PostMapping("/add-new-address")
+    public String saveNewAddress(@ModelAttribute("NewAddress") @Valid AddressDto newAddress, BindingResult result,
+                                 Principal principal, Model model) {
+        if (result.hasErrors()) {
+            return getCheckOutPage(model,principal);
+        }
+        UserDto user = userService.findByUsername(principal.getName());
+        newAddress.setUserId(user.getId());
+        addressService.save(newAddress);
+        return "redirect:/checkout-page";
     }
 }

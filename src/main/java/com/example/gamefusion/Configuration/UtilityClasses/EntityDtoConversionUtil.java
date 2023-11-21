@@ -70,6 +70,9 @@ public class EntityDtoConversionUtil {
     public OrderSubDto entityToDto(OrderSub orderSub) {
       return mapper.map(orderSub,OrderSubDto.class);
     }
+    public PaymentDto entityToDto(Payment payment) {
+      return mapper.map(payment,PaymentDto.class);
+    }
 
     //? DTO TO ENTITY
 
@@ -127,5 +130,12 @@ public class EntityDtoConversionUtil {
                 ).orElse(null)
         );
          return orderSub;
+    }
+    public Payment dtoToEntity(PaymentDto paymentDto) {
+        Payment payment = mapper.map(paymentDto,Payment.class);
+        payment.setOrderMain(
+            orderMainRepository.findById(paymentDto.getOrderId()).orElse(null)
+        );
+        return payment;
     }
 }

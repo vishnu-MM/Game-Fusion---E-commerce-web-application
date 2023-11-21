@@ -4,7 +4,9 @@ import com.example.gamefusion.Dto.*;
 import com.example.gamefusion.Entity.BrandLogo;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface AdminService {
 
@@ -33,6 +35,7 @@ public interface AdminService {
     Boolean isBrandExistsByName(String name);
     Boolean isBrandActive(Long brandId);
     void toggleBrandStatus(Long brandId);
+    BrandLogo saveBrandLogo(MultipartFile file);
 
     //? products
     PaginationInfo getAllProduct(Integer pageNo, Integer pageSize);
@@ -52,6 +55,13 @@ public interface AdminService {
     Boolean isOrderExists(Integer orderId);
     void updateOrderMain(OrderMainDto orderMainDto);
     List<OrderSubDto> findOrderSubByMain(Integer orderId);
+    AddressDto getUserAddress(Integer addressId);
 
-    BrandLogo saveBrandLogo(MultipartFile file);
+    //? Sales Report
+    Map<String,Integer> filterGraphBasedOnDate(String filterBy);
+    PaginationInfo filterOrderByStatus(Integer pageNo, Integer pageSize, Integer statusFilter);
+    PaginationInfo filterOrderByDate(Integer pageNo, Integer pageSize,String startDate, String endDate);
+    PaginationInfo filterOrderByDayAndStatus(Integer pageNo, Integer pageSize, Date date, Integer statusFilter);
+    PaginationInfo filterOrderByDateAndStatus(Integer pageNo, Integer pageSize,String startDate, String endDate, Integer statusFilter);
+
 }

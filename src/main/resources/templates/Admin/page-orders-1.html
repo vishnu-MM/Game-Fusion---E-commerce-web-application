@@ -67,7 +67,7 @@
                     </a>
                 </li>
                 <li class="menu-item ">
-                    <a class="menu-link" href="#">
+                    <a class="menu-link" th:href="@{/dashboard/view-sales-report}">
                         <i class="icon material-icons md-pie_chart"></i><span class="text">Sales Report</span>
                     </a>
                 </li>
@@ -134,11 +134,11 @@
                             <input type="number" id="OrderID" name="OrderID" hidden="hidden">
                             <label for="status"></label>
                             <select id="status" name="status" class="form-select">
-                                    <option value="PENDING">Pending</option>
-                                    <option value="SHIPPED">Shipped</option>
-                                    <option value="DELIVERED">Delivered</option>
-                                    <option value="CANCELED">Cancel</option>
-                                    <option value="RETURNED">Returned</option>
+                                <option value="PENDING">Pending</option>
+                                <option value="SHIPPED">Shipped</option>
+                                <option value="DELIVERED">Delivered</option>
+                                <option value="CANCELED">Cancel</option>
+                                <option value="RETURNED">Returned</option>
                             </select>
                         </div>
                         <div class="modal-footer">
@@ -189,13 +189,13 @@
                         <table class="table table-hover ">
                             <thead>
                                 <tr>
-                                    <th>#ID</th>
+                                    <th class="text-start">#ID</th>
                                     <th scope="col">Name</th>
                                     <th scope="col">Email</th>
                                     <th scope="col">Total</th>
                                     <th scope="col">Date</th>
                                     <th scope="col">Status</th>
-                                    <th scope="col" class="text-end"> Action </th>
+                                    <th scope="col" class="text-end">More</th>
                                 </tr>
                             </thead>
                             <tbody th:each="order : ${OrderMainList.contents}">
@@ -235,9 +235,11 @@
                                     </span>
                                 </td>
                                 <td class="text-end">
-                                    <a th:data-id="${order.id}"
+                                    <a th:data-id="${order.id}" th:with="order = ${order}"
                                        onclick="toggleHiddenRow(this,this.getAttribute('data-id'))"
-                                       class="btn btn-md rounded font-sm toggle-detail">View Detail</a>
+                                       class=" toggle-detail">
+                                        <i class="material-icons md-more_vert"></i>
+                                    </a>
                                 </td>
                             </tr>
                             <tr class="hidden-row"><td colspan="7" ></td></tr>
@@ -299,20 +301,40 @@
         function hideModal() {
             $('#exampleModalLong').modal('hide')
         }
+
         function toggleHiddenRow(button, id) {
-
-
+            let val = $('#myForm'+id).value
+            console.log(val)
             let parentRow = button.closest('tr');
             let hiddenRow = parentRow.nextElementSibling;
             if (hiddenRow) {
                 if(hiddenRow.style.display === 'none' || hiddenRow.style.display === '') {
+                    let address;
+                    fetch(`/dashboard/order-address?orderID=` + id, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }).then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        address = data;
+                    })
+                    .catch(error => {
+                        alert('Error: ' + error.message);
+                    });
+
                     fetch(`/dashboard/order-details?orderID=` + id, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
                         },
                     })
-                        .then(response => {
+                    .then(response => {
                             if (!response.ok) {
                                 throw new Error(`HTTP error! Status: ${response.status}`);
                             }
@@ -321,7 +343,21 @@
                         .then(data => {
                             let orderDetails = data['DETAILS'];
                             let products = data['PRODUCTS'];
-                            let detailsHTML = '<td colspan="7">';
+
+                            let detailsHTML = '<td colspan="7">'+''
+                                +'<div class="d-flex flex-row">' +
+                                '<div class="border border-dark rounded p-3">' +
+                                '<span class="d-flex icon-top h5 pb-2 border-bottom">' +
+                                '<i class="material-icons md-location_on"></i>' +
+                                'Delivery Address</span>'+
+                                '<span class="h6 ">'+address.streetAddress +'</span><br>' +
+                                '<span class="h6 ">'+address.district +'</span><br>' +
+                                '<span class="h6 ">'+address.state+'</span><br>' +
+                                '<span class="h6 ">'+address.country+'</span><br>' +
+                                '<span class="h6 ">Pin code: '+address.pinCode+'</span><br>' +
+                                '<span class="h6 ">Phone: '+address.phone+'</span><br> ' +
+                                '</div>' +
+                                '<div>';
 
                             orderDetails.forEach((detail, index) => {
                                 detailsHTML +=
@@ -334,20 +370,20 @@
                                                     </a>
                                                 </h5>
                                             </div>
-                                            <div class="col-lg-3 d-flex align-items-center justify-content-center">
+                                            <div class="col-lg-3 d-flex align-items-top justify-content-center">
                                                 <div>
                                                     <div><h5 class="h6 mb-2">Price : ${products[index].price}</h5></div>
                                                 </div>
                                             </div>
-                                            <div class="col-lg-3 d-flex align-items-center justify-content-center">
+                                            <div class="col-lg-3 d-flex align-items-top justify-content-center">
                                                 <div>
-                                                    <div><h5 class="h6 mt-2">Quantity : ${detail.qty}</h5></div>
+                                                    <div><h5 class="h6">Quantity : ${detail.qty}</h5></div>
                                                 </div>
                                             </div>
                                       </div>`;
                             });
 
-                            detailsHTML += '</td>';
+                            detailsHTML += '</div></div></td>';
 
                             // Set the innerHTML of the hidden row
                             hiddenRow.innerHTML = detailsHTML;

@@ -53,11 +53,27 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public List<Cart> findByUser(UserDto user) {
-        return cartRepository.findByUserOrderById(conversionUtil.dtoToEntity(user));
+        return cartRepository.findByUser(conversionUtil.dtoToEntity(user));
     }
 
     @Override
-    public Integer totalAmount(List<Cart> cartList) {
+    public List<CartDto> findAvailableProductsByUser(UserDto userDto) {
+        User user = conversionUtil.dtoToEntity(userDto);
+        return cartRepository.findByUserAndProductStatusAndPositiveProductQty(user,true)
+                             .stream().map(conversionUtil::entityToDto).toList();
+    }
+
+
+    @Override
+    public List<CartDto> getCartByUser(UserDto userDto) {
+        List<Cart> cart = cartRepository.findByUser(conversionUtil.dtoToEntity(userDto));
+        return cart.stream().map(conversionUtil::entityToDto).toList();
+    }
+
+    @Override
+    public Integer totalAmount(List<CartDto> cartListDto) {
+        List<Cart> cartList = cartListDto.stream().map(conversionUtil::dtoToEntity).toList();
+
         int totalAmount = 0;
         for ( Cart cart : cartList ) {
             Product product = cart.getProduct();
@@ -106,11 +122,5 @@ public class CartServiceImpl implements CartService {
             return conversionUtil.entityToDto(cart.get());
         else
             throw new EntityNotFoundException("Not Found");
-    }
-
-    @Override
-    public List<CartDto> getCartByUser(UserDto userDto) {
-        List<Cart> cart = cartRepository.findByUserOrderById(conversionUtil.dtoToEntity(userDto));
-        return cart.stream().map(conversionUtil::entityToDto).toList();
     }
 }

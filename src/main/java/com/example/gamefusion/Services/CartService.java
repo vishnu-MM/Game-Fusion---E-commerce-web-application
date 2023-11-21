@@ -12,13 +12,15 @@ public interface CartService {
     void addToCart(CartDto cart);
     PaginationInfo findByUser(UserDto user,Integer pageNo, Integer pageSize);
     List<Cart> findByUser(UserDto user);
-    Integer totalAmount(List<Cart> cartList);
+    Integer totalAmount(List<CartDto> cartList);
     CartDto findByUserAndProduct(UserDto user, ProductDto product);
     Boolean isExistsByProduct(UserDto user, ProductDto product);
     Boolean isExistsById(Integer id);
     void deleteById(Integer id);
     void deleteByUser(UserDto user);
     CartDto findById(Integer cartId);
+
+    List<CartDto> findAvailableProductsByUser(UserDto user);
 
     List<CartDto> getCartByUser(UserDto userDto);
 }

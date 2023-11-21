@@ -163,7 +163,7 @@
                                     </thead>
                                     <tbody>
                                     <!--PRODUCT LOOP-->
-                                        <tr th:each="cart : ${ProductDetails}" th:if="${cart.product.status}">
+                                        <tr th:each="cart : ${ProductDetails}" >
                                             <td class="image product-thumbnail">
                                                 <img th:src="@{/images/{imgId}(imgId=${cart.product.images[0].id})}" alt="#">
                                             </td>

@@ -1,6 +1,7 @@
 package com.example.gamefusion.Services.Implementations;
 
 import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
+import com.example.gamefusion.Configuration.UtilityClasses.OrderStatusUtil;
 import com.example.gamefusion.Dto.*;
 import com.example.gamefusion.Entity.BrandLogo;
 import com.example.gamefusion.Entity.Product;
@@ -11,9 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
+import java.sql.Date;
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -25,6 +30,7 @@ public class AdminServiceImpl implements AdminService {
     private final BrandService brandService;
     private final OrderMainService orderMainService;
     private final OrderSubService orderSubService;
+    private final AddressService addressService;
     private final EntityDtoConversionUtil conversionUtil;
 
     @Autowired
@@ -33,7 +39,7 @@ public class AdminServiceImpl implements AdminService {
             CategoryService categoryService, StorageService storageService,
             ImagesService imagesService, BrandService brandService,
             OrderMainService orderMainService, OrderSubService orderSubService,
-            EntityDtoConversionUtil conversionUtil) {
+            AddressService addressService, EntityDtoConversionUtil conversionUtil) {
         this.userService = userService;
         this.productService = productService;
         this.categoryService = categoryService;
@@ -42,6 +48,7 @@ public class AdminServiceImpl implements AdminService {
         this.brandService = brandService;
         this.orderMainService = orderMainService;
         this.orderSubService = orderSubService;
+        this.addressService = addressService;
         this.conversionUtil = conversionUtil;
     }
 
@@ -205,6 +212,40 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public AddressDto getUserAddress(Integer addressId) {
+        //! Exception Handling
+        return addressService.findById(addressId);
+    }
+
+    @Override
+    public Map<String, Integer> filterGraphBasedOnDate(String filterBy) {
+        LocalDate endDate = LocalDate.now();
+        switch (filterBy) {
+            case "MONTH" -> {
+                LocalDate startDate = endDate.minusDays(endDate.getDayOfMonth() - 1);
+                if (startDate.isAfter(endDate))
+                    throw new DateTimeException("Invalid Start and Ending date");
+                return orderMainService.getOrderCountByMonth(startDate, endDate);
+            }
+            case "YEAR" -> {
+                LocalDate startDate = LocalDate.parse(endDate.getYear()+"-01-01");
+                LocalDate newEndDate = LocalDate.parse(endDate.getYear()+"-12-31");
+                if (startDate.isAfter(endDate))
+                    throw new DateTimeException("Invalid Start and Ending date");
+                return orderMainService.getOrderCountByYear(startDate, endDate);
+            }
+            case "WEEK" -> {
+                LocalDate startDate = endDate.minusDays( endDate.getDayOfWeek().getValue());
+                if (startDate.isAfter(endDate))
+                    throw new DateTimeException("Invalid Start and Ending date");
+                return orderMainService.getOrderCountByWeek(startDate, endDate);
+
+            }
+            default -> throw new RuntimeException();
+        }
+    }
+
+    @Override
     public void updateOrderMain(OrderMainDto orderMainDto) {
         orderMainService.save(orderMainDto);
     }
@@ -259,5 +300,61 @@ public class AdminServiceImpl implements AdminService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public PaginationInfo filterOrderByDate(Integer pageNo, Integer pageSize, String startDateStr, String endDateStr) {
+        Date startDate = convertStringToDate(startDateStr);
+        Date endDate = convertStringToDate(endDateStr);
+        if (startDate.compareTo(endDate) > 0 ){
+            return orderMainService.findAll(pageNo, pageSize);
+        }
+        if (startDate.equals(endDate)){
+            return orderMainService.findAllFilterByDay(pageNo,pageSize,endDate);
+        }
+        return orderMainService.findAllBetweenDay(pageNo,pageSize,startDate,endDate);
+    }
+
+    @Override
+    public PaginationInfo filterOrderByDayAndStatus(Integer pageNo, Integer pageSize, Date date, Integer statusFilter) {
+        String status = OrderStatusUtil.getOrderStatusByValue(statusFilter);
+        System.out.println(status);
+        return orderMainService.findByDayAndStatus(pageNo, pageSize, date, status);
+    }
+
+    @Override
+    public PaginationInfo filterOrderByStatus(Integer pageNo, Integer pageSize, Integer statusFilter) {
+        String status = OrderStatusUtil.getOrderStatusByValue(statusFilter);
+        return orderMainService.findOrderByStatus(status, pageNo, pageSize);
+    }
+
+    @Override
+    public PaginationInfo filterOrderByDateAndStatus(Integer pageNo, Integer pageSize, String startDateStr,
+                                                     String endDateStr, Integer statusFilter) {
+        if ((startDateStr == null || startDateStr.equals("null")) && (endDateStr == null || endDateStr.equals("null"))) {
+            return filterOrderByStatus(pageNo, pageSize, statusFilter);
+        }
+        String status = OrderStatusUtil.getOrderStatusByValue(statusFilter);
+        Date startDate = convertStringToDate(startDateStr);
+        Date endDate = convertStringToDate(endDateStr);
+
+        if (startDate.equals(endDate)){
+            return orderMainService.findByDayAndStatus(pageNo,pageSize,endDate,status);
+        }
+        return orderMainService.findByDatesBetweenAndStatus(pageNo,pageSize,startDate,endDate,status);
+    }
+
+    private Date convertStringToDate(String DateStr) {
+        Date date;
+        if (DateStr == null || DateStr.equals("null")) {
+            date = Date.valueOf(LocalDate.now());
+        } else {
+            try {
+                date = Date.valueOf(LocalDate.parse(DateStr));
+            } catch (DateTimeParseException e) {
+                date = Date.valueOf(LocalDate.now());
+            }
+        }
+        return date;
     }
 }

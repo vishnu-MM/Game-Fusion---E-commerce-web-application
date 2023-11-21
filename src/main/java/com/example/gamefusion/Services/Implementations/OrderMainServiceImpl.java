@@ -7,7 +7,9 @@ import com.example.gamefusion.Dto.*;
 import com.example.gamefusion.Entity.OrderMain;
 import com.example.gamefusion.Entity.User;
 import com.example.gamefusion.Repository.OrderMainRepository;
-import com.example.gamefusion.Services.*;
+import com.example.gamefusion.Services.OrderMainService;
+import com.example.gamefusion.Services.OrderSubService;
+import com.example.gamefusion.Services.ProductService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,25 +17,23 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class OrderMainServiceImpl implements OrderMainService {
     private final OrderMainRepository orderMainRepository;
     private final EntityDtoConversionUtil conversionUtil;
-    private final CartService cartService;
     private final ProductService productService;
     private final OrderSubService orderSubService;
     @Autowired
     public OrderMainServiceImpl(OrderMainRepository orderMainRepository, ProductService productService,
-                                EntityDtoConversionUtil conversionUtil, OrderSubService orderSubService,
-                                CartService cartService ) {
+                                EntityDtoConversionUtil conversionUtil, OrderSubService orderSubService) {
         this.orderMainRepository = orderMainRepository;
         this.conversionUtil = conversionUtil;
-        this.cartService = cartService;
         this.productService = productService;
         this.orderSubService = orderSubService;
     }
@@ -55,9 +55,79 @@ public class OrderMainServiceImpl implements OrderMainService {
     }
 
     @Override
+    public PaginationInfo findOrderByStatus(String status, Integer pageNo, Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by("date").descending());
+        Page<OrderMain> orderMainPage = orderMainRepository.findByStatus(status,pageable);
+        List<OrderMain> orderMainList = orderMainPage.getContent();
+//        List<OrderMainDto> orderMainDtoList = orderMainList.stream().map(conversionUtil::entityToDto).toList();
+
+        return new PaginationInfo(
+                orderMainList, orderMainPage.getNumber(), orderMainPage.getSize(),
+                orderMainPage.getTotalElements(), orderMainPage.getTotalPages(),
+                orderMainPage.isLast(), orderMainPage.hasNext()
+        );
+    }
+
+    @Override
     public PaginationInfo findAll(Integer pageNo, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by("date").descending());
         Page<OrderMain> orderMainPage = orderMainRepository.findAll( pageable);
+        List<OrderMain> orderMainList = orderMainPage.getContent();
+//        List<OrderMainDto> orderMainDtoList = orderMainList.stream().map(conversionUtil::entityToDto).toList();
+
+        return new PaginationInfo(
+                orderMainList, orderMainPage.getNumber(), orderMainPage.getSize(),
+                orderMainPage.getTotalElements(), orderMainPage.getTotalPages(),
+                orderMainPage.isLast(), orderMainPage.hasNext()
+        );
+    }
+
+    @Override
+    public PaginationInfo findAllFilterByDay(Integer pageNo, Integer pageSize, Date date) {
+        Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by("date").descending());
+        Page<OrderMain> orderMainPage = orderMainRepository.findByDate( pageable, date);
+        List<OrderMain> orderMainList = orderMainPage.getContent();
+//        List<OrderMainDto> orderMainDtoList = orderMainList.stream().map(conversionUtil::entityToDto).toList();
+
+        return new PaginationInfo(
+                orderMainList, orderMainPage.getNumber(), orderMainPage.getSize(),
+                orderMainPage.getTotalElements(), orderMainPage.getTotalPages(),
+                orderMainPage.isLast(), orderMainPage.hasNext()
+        );
+    }
+
+    @Override
+    public PaginationInfo findAllBetweenDay(Integer pageNo, Integer pageSize, Date startDate, Date endDate) {
+        Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by("date").descending());
+        Page<OrderMain> orderMainPage = orderMainRepository.findByDateBetween(startDate, endDate, pageable);
+        List<OrderMain> orderMainList = orderMainPage.getContent();
+//        List<OrderMainDto> orderMainDtoList = orderMainList.stream().map(conversionUtil::entityToDto).toList();
+
+        return new PaginationInfo(
+                orderMainList, orderMainPage.getNumber(), orderMainPage.getSize(),
+                orderMainPage.getTotalElements(), orderMainPage.getTotalPages(),
+                orderMainPage.isLast(), orderMainPage.hasNext()
+        );
+    }
+
+    @Override
+    public PaginationInfo findByDayAndStatus(Integer pageNo, Integer pageSize, Date date, String status) {
+        Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by("date").descending());
+        Page<OrderMain> orderMainPage = orderMainRepository.findByDateAndStatus(date,status,pageable);
+        List<OrderMain> orderMainList = orderMainPage.getContent();
+//        List<OrderMainDto> orderMainDtoList = orderMainList.stream().map(conversionUtil::entityToDto).toList();
+
+        return new PaginationInfo(
+                orderMainList, orderMainPage.getNumber(), orderMainPage.getSize(),
+                orderMainPage.getTotalElements(), orderMainPage.getTotalPages(),
+                orderMainPage.isLast(), orderMainPage.hasNext()
+        );
+    }
+
+    @Override
+    public PaginationInfo findByDatesBetweenAndStatus(Integer pageNo, Integer pageSize, Date startDate, Date endDate, String status) {
+        Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by("date").descending());
+        Page<OrderMain> orderMainPage = orderMainRepository.findByDateBetweenAndStatus(startDate,endDate,status,pageable);
         List<OrderMain> orderMainList = orderMainPage.getContent();
 //        List<OrderMainDto> orderMainDtoList = orderMainList.stream().map(conversionUtil::entityToDto).toList();
 
@@ -78,10 +148,9 @@ public class OrderMainServiceImpl implements OrderMainService {
 
     @Override
     public OrderMainDto save(Integer addressId, Integer paymentOption,
-                             UserDto userDto, List<CartDto> cart) {
+                             UserDto userDto, Integer totalAmount) {
 
         String paymentMethod = PaymentMethodUtil.getPaymentMethodByValue(paymentOption);
-        int totalAmount = cartService.totalAmount( cart.stream().map(conversionUtil::dtoToEntity).toList() );
         OrderMainDto orderMainDto = new OrderMainDto();
         orderMainDto.setDate( Date.valueOf(LocalDate.now()) );
         orderMainDto.setStatus(String.valueOf(OrderStatusUtil.PENDING));
@@ -134,6 +203,51 @@ public class OrderMainServiceImpl implements OrderMainService {
             int newQty = oldQty + orderQty;
             productService.updateQuantity(productID,newQty);
         }
+    }
+
+    @Override
+    public Map<String, Integer> getOrderCountByMonth(LocalDate startDate, LocalDate endDate) {
+        Map<String, Integer> dateCountMap = new HashMap<>(31);
+        LocalDate current = startDate;
+        while (!current.isAfter(endDate)) {
+            dateCountMap.put(
+                String.valueOf(current.getDayOfMonth()),
+                orderMainRepository.countAllByDate(Date.valueOf(current))
+            );
+            current = current.plusDays(1);
+        }
+        return dateCountMap;
+    }
+
+
+    @Override
+    public Map<String, Integer> getOrderCountByWeek(LocalDate startDate, LocalDate endDate) {
+        Map<String, Integer> dateCountMap = new HashMap<>(31);
+        LocalDate current = startDate;
+        while (!current.isAfter(endDate)) {
+            dateCountMap.put(
+                String.valueOf(current.getDayOfWeek()),
+                orderMainRepository.countAllByDate(Date.valueOf(current))
+            );
+            current = current.plusDays(1);
+        }
+        return dateCountMap;
+    }
+
+
+    @Override
+    public Map<String, Integer> getOrderCountByYear(LocalDate startDate, LocalDate endDate) {
+        Map<String, Integer> dateCountMap = new HashMap<>(12);
+        LocalDate current = startDate;
+        int year = current.getYear();
+        while (current.getMonthValue() <= endDate.getMonthValue()) {
+            dateCountMap.put(
+                String.valueOf(current.getMonth()),
+                orderMainRepository.countAllByDateYearAndDateMonth(year,current.getMonthValue())
+            );
+            current = current.plusMonths(1);
+        }
+        return dateCountMap;
     }
 
     @Override

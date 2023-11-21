@@ -4,8 +4,6 @@ import com.example.gamefusion.Dto.*;
 import com.example.gamefusion.Entity.BrandLogo;
 import com.example.gamefusion.Services.AdminService;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,26 +13,51 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.*;
 
 @Controller
 @RequestMapping("/dashboard")
 public class AdminController {
 
-    Logger log = LoggerFactory.getLogger(AdminController.class);
     private final AdminService adminService;
-
     @Autowired
     public AdminController(AdminService adminService) {
         this.adminService = adminService;
     }
+    
+    //* DASH BOARD
 
     @GetMapping("")
     public String home() {
         return "Admin/index";
+    }
+
+    @GetMapping("/fetchData/Month")
+    @ResponseBody
+    public ResponseEntity<Map<String,Integer>> getGraphByDay(){
+        Map<String, Integer> response = adminService.filterGraphBasedOnDate("MONTH");
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @GetMapping("/fetchData/week")
+    @ResponseBody
+    public ResponseEntity<Map<String,Integer>> getGraphByWeek(){
+        LocalDate endDate = LocalDate.now();
+        DayOfWeek dayOfWeek = endDate.getDayOfWeek();
+        LocalDate startDate = endDate.minusDays(6);
+        Map<String, Integer> response = adminService.filterGraphBasedOnDate("WEEK");
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @GetMapping("/fetchData/year")
+    @ResponseBody
+    public ResponseEntity<Map<String,Integer>> getGraphByYear(){
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusDays(6);
+        Map<String, Integer> response = adminService.filterGraphBasedOnDate("YEAR");
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
     //* USER MANAGEMENT
@@ -234,7 +257,7 @@ public class AdminController {
         model.addAttribute("brandList", adminService.getAllBrands());
     }
 
-    //? BRAND MANAGEMENT
+    //* BRAND MANAGEMENT
 
     @GetMapping("/brands")
     public String viewAllBrands(Model model,
@@ -287,7 +310,7 @@ public class AdminController {
         return "redirect:/dashboard/brands";
     }
 
-    //? ORDER MANAGEMENT
+    //* ORDER MANAGEMENT
 
     @GetMapping("/view-orders")
     public String viewAllOrders(Model model,
@@ -315,6 +338,18 @@ public class AdminController {
         }
     }
 
+    @GetMapping("/order-address")
+    @ResponseBody
+    public ResponseEntity<AddressDto> getOrderAddress(@RequestParam("orderID") Integer orderId) {
+        if (adminService.isOrderExists(orderId)) {
+            Integer addressId = adminService.getOrderById(orderId).getAddressId();
+            AddressDto addressDto = adminService.getUserAddress(addressId);
+            return new ResponseEntity<>(addressDto,HttpStatus.OK);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @PutMapping("/update-order-status")
     public String updateOrderStatus(@RequestParam("OrderID") Integer orderId,
                                     @RequestParam("status") String status){
@@ -325,4 +360,37 @@ public class AdminController {
         }
         return "redirect:/dashboard/view-orders";
     }
+
+    //* SALES REPORT
+
+
+    @GetMapping("/view-sales-report")
+    public String viewSalesReport(Model model,
+                                @RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
+                                @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize,
+                                @RequestParam(value = "startDate", required = false) String startDate,
+                                @RequestParam(value = "endDate", required = false) String endDate,
+                                @RequestParam(value = "StatusFilter", defaultValue = "0", required = false) Integer statusFilter) {
+
+            PaginationInfo paginationInfo;
+
+            if ( isValidDate(startDate) && isValidDate(endDate) && statusFilter == 0) {
+                paginationInfo = adminService.getAllOrders(pageNo, pageSize);
+            }
+            else if (statusFilter == 0 ) {
+                paginationInfo = adminService.filterOrderByDate(pageNo, pageSize, startDate, endDate);
+            }
+            else {
+                paginationInfo = adminService.filterOrderByDateAndStatus(pageNo,pageSize,startDate,endDate,statusFilter);
+            }
+            model.addAttribute("StartDate", startDate);
+            model.addAttribute("EndDate", endDate);
+            model.addAttribute("StatusFilter", statusFilter);
+            model.addAttribute("OrderMainList", paginationInfo);
+            return "Admin/page-sales-report";
+        }
+
+        private static Boolean isValidDate(String dateString) {
+            return dateString == null || Objects.equals(dateString, "") || dateString.trim().isEmpty();
+        }
 }
