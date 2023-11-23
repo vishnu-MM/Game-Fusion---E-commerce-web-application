@@ -75,47 +75,6 @@
         </nav>
     </aside>
     <main class="main-wrap">
-        <!--<header class="main-header navbar">
-            <div class="col-search">
-                <form class="searchform">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search term">
-                        <button class="btn btn-light bg" type="button"> <i class="material-icons md-search"></i></button>
-                    </div>
-                </form>
-            </div>
-            <div class="col-nav">
-                <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside"> <i class="material-icons md-apps"></i> </button>
-                <ul class="nav">
-                    <li class="nav-item">
-                        <a class="nav-link btn-icon darkmode" href="#"> <i class="material-icons md-nights_stay"></i> </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="requestfullscreen nav-link btn-icon"><i class="material-icons md-cast"></i></a>
-                    </li>
-                    <li class="dropdown nav-item">
-                        <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false"> <img class="img-xs rounded-circle" th:src="@{/assets/admin-assets/imgs/people/avatar-2-admin.png}" alt="User"></a>
-                    </li>
-                    <li class="nav-item">
-                        <form th:action="@{/logout}" method="post">
-                            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-                            <button type="submit" class="dropdown-item text-danger"><i class="material-icons md-exit_to_app"></i>Logout</button>
-                        </form>
-                    </li>
-                    <li class="dropdown nav-item">
-                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
-                            <a class="dropdown-item" href="#"><i class="material-icons md-perm_identity"></i>Edit Profile</a>
-                            <a class="dropdown-item" href="#"><i class="material-icons md-settings"></i>Change Password</a>
-                            <div class="dropdown-divider"></div>
-                            <form th:action="@{/logout}" method="post">
-                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-                                <button type="submit" class="dropdown-item text-danger"><i class="material-icons md-exit_to_app"></i>Logout</button>
-                            </form>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </header>-->
         <th:block th:replace="~{Fragments/AdminFragments.html::main-header}"></th:block>
         <!-- Modal -->
         <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
@@ -134,11 +93,11 @@
                             <input type="number" id="OrderID" name="OrderID" hidden="hidden">
                             <label for="status"></label>
                             <select id="status" name="status" class="form-select">
-                                <option value="PENDING">Pending</option>
-                                <option value="SHIPPED">Shipped</option>
-                                <option value="DELIVERED">Delivered</option>
-                                <option value="CANCELED">Cancel</option>
-                                <option value="RETURNED">Returned</option>
+                                <option value="PENDING" id="PENDING">Pending</option>
+                                <option value="SHIPPED" id="SHIPPED">Shipped</option>
+                                <option value="DELIVERED" id="DELIVERED">Delivered</option>
+                                <option value="CANCELED" id="CANCELED">Cancel</option>
+                                <option value="RETURNED" id="RETURNED">Returned</option>
                             </select>
                         </div>
                         <div class="modal-footer">
@@ -195,6 +154,8 @@
                                     <th scope="col">Total</th>
                                     <th scope="col">Date</th>
                                     <th scope="col">Status</th>
+                                    <th scope="col">Payment Status</th>
+                                    <th scope="col">Payment Method</th>
                                     <th scope="col" class="text-end">More</th>
                                 </tr>
                             </thead>
@@ -226,12 +187,23 @@
                                                 Returned
                                             </span>
                                         </span>
-                                        <span class="badge rounded-pill alert-dark border border-dark">
-                                            <a th:data-id="${order.id}"
-                                               onclick="showModal(this.getAttribute('data-id'))">
+                                        <span class="badge rounded-pill alert-dark border border-dark"
+                                              th:unless="${#strings.equals(order.status, 'RETURNED')} or ${#strings.equals(order.status, 'CANCELED')}">
+                                            <a th:data-id="${order.id}" th:data-status="${order.status}"
+                                               onclick="showModal(this.getAttribute('data-id'),this.getAttribute('data-status'))">
                                                 <i class="material-icons md-edit"></i>
                                             </a>
                                         </span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="fw-bolder"  style=""
+                                          th:style="${paymentInfo.get(order.id).paymentStatus} == true ? 'color: yellowgreen;' : 'color: red;' "
+                                        th:text="${paymentInfo.get(order.id).paymentStatus} == true ? 'Payment Success' :'Payment Failed' ">
+                                    </span>
+                                </td><td>
+                                    <span class="fw-bolder"  style=""
+                                        th:text="${paymentInfo.get(order.id).paymentMethod} == 'CASH_ON_DELIVERY' ? 'Cash On Delivery' :'Online Payment' ">
                                     </span>
                                 </td>
                                 <td class="text-end">
@@ -282,7 +254,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script th:src="@{/assets/js/AjaxFile.js}"></script>
     <script>
-        function showModal(id) {
+        function showModal(id,status) {
             Swal.fire({
                 title: 'Are you sure?',
                 text: 'Do you want to edit this status?',
@@ -292,8 +264,15 @@
                 cancelButtonText: 'No, cancel',
             }).then((result) => {
                 if (result.isConfirmed) {
-                        $('#OrderID').attr('value',id)
-                        $('#exampleModalLong').modal('show')
+                    $('#OrderID').attr('value',id)
+                    $('#exampleModalLong').modal('show')
+
+                    $('#PENDING, #SHIPPED, #DELIVERED, #RETURNED, #CANCELED').show();
+                    $('#'+status).hide()
+                    if (status === "SHIPPED") $('#PENDING').hide()
+                    else if (status === "DELIVERED") $('#PENDING,#SHIPPED').hide()
+                    // else if (status === "CANCELED") $('#PENDING,#DELIVERED,#SHIPPED').hide()
+                    // else if (status === "RETURNED")
                 }
             });
         }

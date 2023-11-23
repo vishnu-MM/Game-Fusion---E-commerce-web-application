@@ -3,6 +3,7 @@ package com.example.gamefusion.Services;
 import com.example.gamefusion.Dto.*;
 import com.example.gamefusion.Entity.Brand;
 import com.example.gamefusion.Entity.BrandLogo;
+import com.example.gamefusion.Entity.OrderMain;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Date;
@@ -66,4 +67,6 @@ public interface AdminService {
     PaginationInfo filterOrderByDate(Integer pageNo, Integer pageSize,String startDate, String endDate);
     PaginationInfo filterOrderByDayAndStatus(Integer pageNo, Integer pageSize, Date date, Integer statusFilter);
     PaginationInfo filterOrderByDateAndStatus(Integer pageNo, Integer pageSize,String startDate, String endDate, Integer statusFilter);
+
+    Map<Integer, PaymentDto> getPaymentInfoByOrder(List<OrderMain> contents);
 }

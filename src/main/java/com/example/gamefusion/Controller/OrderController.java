@@ -86,7 +86,7 @@ public class OrderController {
         paymentDto.setOrderId(orderMainDto.getId());
         paymentDto.setAmount(orderMainDto.getAmount());
         paymentDto.setDate(Date.valueOf(LocalDate.now()));
-        paymentDto.setPaymentStatus(false);
+        paymentDto.setPaymentStatus(paymentOption == 1);
         paymentService.save(paymentDto);
 
         if (paymentOption != 1) {

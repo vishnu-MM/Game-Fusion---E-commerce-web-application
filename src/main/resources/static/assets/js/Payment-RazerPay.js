@@ -29,7 +29,7 @@ rzp1.on('payment.failed', function (response){
     console.log(response.error.source+" "+3);
     console.log(response.error.step+" "+4);
     console.log(response.error.reason+" "+5);
-    console.log(response.error.metadata.order_id+" "+6);
+    console.log(response.error.metadata+" "+6);
     console.log(response.error.metadata.payment_id+" "+7);
     window.location.href = '/online-payment?orderId='+orderMainId
 });

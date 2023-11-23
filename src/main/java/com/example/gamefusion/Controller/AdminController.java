@@ -2,6 +2,7 @@ package com.example.gamefusion.Controller;
 
 import com.example.gamefusion.Dto.*;
 import com.example.gamefusion.Entity.BrandLogo;
+import com.example.gamefusion.Entity.OrderMain;
 import com.example.gamefusion.Services.AdminService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -314,7 +315,9 @@ public class AdminController {
                                 @RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
                                 @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize) {
         PaginationInfo paginationInfo = adminService.getAllOrders(pageNo, pageSize);
+        Map<Integer,PaymentDto> paymentInfo = adminService.getPaymentInfoByOrder((List<OrderMain>) paginationInfo.getContents());
         model.addAttribute("OrderMainList", paginationInfo);
+        model.addAttribute("paymentInfo", paymentInfo);
         return "Admin/page-orders-1";
     }
 

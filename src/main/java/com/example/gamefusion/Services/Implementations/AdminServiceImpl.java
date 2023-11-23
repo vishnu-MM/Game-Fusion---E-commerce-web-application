@@ -3,9 +3,7 @@ package com.example.gamefusion.Services.Implementations;
 import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
 import com.example.gamefusion.Configuration.UtilityClasses.OrderStatusUtil;
 import com.example.gamefusion.Dto.*;
-import com.example.gamefusion.Entity.Brand;
-import com.example.gamefusion.Entity.BrandLogo;
-import com.example.gamefusion.Entity.Product;
+import com.example.gamefusion.Entity.*;
 import com.example.gamefusion.Services.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -33,6 +31,7 @@ public class AdminServiceImpl implements AdminService {
     private final OrderMainService orderMainService;
     private final OrderSubService orderSubService;
     private final AddressService addressService;
+    private final PaymentService paymentService;
     private final EntityDtoConversionUtil conversionUtil;
 
     @Autowired
@@ -41,7 +40,7 @@ public class AdminServiceImpl implements AdminService {
             CategoryService categoryService, StorageService storageService,
             ImagesService imagesService, BrandService brandService,
             OrderMainService orderMainService, OrderSubService orderSubService,
-            AddressService addressService, EntityDtoConversionUtil conversionUtil) {
+            AddressService addressService, PaymentService paymentService, EntityDtoConversionUtil conversionUtil) {
         this.userService = userService;
         this.productService = productService;
         this.categoryService = categoryService;
@@ -51,6 +50,7 @@ public class AdminServiceImpl implements AdminService {
         this.orderMainService = orderMainService;
         this.orderSubService = orderSubService;
         this.addressService = addressService;
+        this.paymentService = paymentService;
         this.conversionUtil = conversionUtil;
     }
 
@@ -345,6 +345,18 @@ public class AdminServiceImpl implements AdminService {
             return orderMainService.findByDayAndStatus(pageNo,pageSize,endDate,status);
         }
         return orderMainService.findByDatesBetweenAndStatus(pageNo,pageSize,startDate,endDate,status);
+    }
+
+    @Override
+    public Map<Integer, PaymentDto> getPaymentInfoByOrder(List<OrderMain> contents) {
+        Map<Integer, PaymentDto> paymentDtoMap = new HashMap<>();
+        for (OrderMain OrderMain: contents) {
+            paymentDtoMap.put(
+                    OrderMain.getId(),
+                    paymentService.findByOrderMain(conversionUtil.entityToDto(OrderMain))
+            );
+        }
+        return paymentDtoMap;
     }
 
     @Override
