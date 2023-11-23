@@ -38,40 +38,11 @@ public class CartController {
         return "User/shop-cart";
     }
 
-    @PostMapping("/add-to-cart")
-    public String addToCart(@RequestParam("ProductId") Long productId,
-                            @RequestParam(value = "Quantity",defaultValue = "1", required = false) Integer qty,
-                            Principal principal, HttpServletRequest request){
-
-        UserDto userDto = userService.findByUsername(principal.getName());
-        ProductDto productDto = productService.getProductById(productId);
-        if (qty > productDto.getQty() ) {
-            String redirectUrl = request.getHeader("Referer");
-            String path = redirectUrl.substring(redirectUrl.lastIndexOf("0")+1);
-            return "redirect:"+path;
-        }
-        if (cartService.isExistsByProduct(userDto, productDto)) {
-            CartDto cartDto = cartService.findByUserAndProduct(userDto, productDto);
-            Integer newQty = cartDto.getQty();
-            cartDto.setQty( ++newQty );
-            cartService.addToCart(cartDto);
-        }
-        else {
-            CartDto cart = new CartDto();
-            cart.setQty(qty);
-            cart.setProductID(productId);
-            cart.setUserID(userDto.getId());
-            cartService.addToCart(cart);
-        }
-        return "redirect:/cart-products";
-    }
-
-    @GetMapping("/add-to-cart/qty")
+    @GetMapping("/add-to-cart")
     @ResponseBody
     public  Boolean addToCartWithQty(@RequestParam("ProductId") Long productId,
                                      @RequestParam(value = "Quantity",defaultValue = "1", required = false) Integer qty,
                                      Principal principal, HttpServletRequest request) {
-        System.out.println("haii");
         UserDto userDto = userService.findByUsername(principal.getName());
         ProductDto productDto = productService.getProductById(productId);
         if (qty > productDto.getQty() ) {

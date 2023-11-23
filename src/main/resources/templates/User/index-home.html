@@ -168,7 +168,6 @@
     <script>
         function addToCart(productId) {
             alertify.set('notifier', 'position', 'top-center');
-            alert(productId)
             $.ajax({
                 type: 'GET',
                 url: '/add-to-cart/qty?ProductId=' + productId,

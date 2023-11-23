@@ -110,7 +110,7 @@ alertify.set('notifier', 'position', 'top-center');
 function addToCart(productId) {
     $.ajax({
         type: 'GET',
-        url: '/add-to-cart/qty?ProductId=' + productId + '&Quantity=' + qtyVal,
+        url: '/add-to-cart?ProductId=' + productId + '&Quantity=' + qtyVal,
         success: function(data) {
             if (data) alertify.success('Product successfully added to cart');
             else alertify.error("Something went wrong!!")
