@@ -3,6 +3,7 @@ package com.example.gamefusion.Services.Implementations;
 import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
 import com.example.gamefusion.Configuration.UtilityClasses.OrderStatusUtil;
 import com.example.gamefusion.Dto.*;
+import com.example.gamefusion.Entity.Brand;
 import com.example.gamefusion.Entity.BrandLogo;
 import com.example.gamefusion.Entity.Product;
 import com.example.gamefusion.Services.*;
@@ -17,6 +18,7 @@ import java.sql.Date;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -135,6 +137,8 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public Long addOrUpdateProduct(ProductDto productDto) {
+//        ProductDto oldProductDto = productService.getProductById(productDto.getId());
+//        productDto.setImageIds(oldProductDto.getImageIds());
         return productService.save(productDto);
     }
 
@@ -179,7 +183,7 @@ public class AdminServiceImpl implements AdminService {
             if (!imagesService.isImageExists(imageId))
                 throw new EntityNotFoundException("Image not found");
             if (storageService.deleteImage(imageId)) {
-            imagesService.deleteImageById(imageId);
+                imagesService.deleteImageById(imageId);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -318,7 +322,6 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public PaginationInfo filterOrderByDayAndStatus(Integer pageNo, Integer pageSize, Date date, Integer statusFilter) {
         String status = OrderStatusUtil.getOrderStatusByValue(statusFilter);
-        System.out.println(status);
         return orderMainService.findByDayAndStatus(pageNo, pageSize, date, status);
     }
 
@@ -342,6 +345,24 @@ public class AdminServiceImpl implements AdminService {
             return orderMainService.findByDayAndStatus(pageNo,pageSize,endDate,status);
         }
         return orderMainService.findByDatesBetweenAndStatus(pageNo,pageSize,startDate,endDate,status);
+    }
+
+    @Override
+    public Integer getProductCountByBrand(Long brandID) {
+        if (brandService.existsById(brandID)) throw new EntityNotFoundException("Brand Not found");
+        Brand brand = conversionUtil.dtoToEntity(brandService.findById(brandID));
+        return productService.getCountByBrand(brand);
+    }
+
+    @Override
+    public Map<Long, Integer> getProductCountByBrandPage(List<BrandDto> brandDtoList) {
+        Map<Long, Integer> brandProductCount = new HashMap<>();
+        for ( BrandDto brandDto : brandDtoList ) {
+
+            brandProductCount.put(brandDto.getId(),
+                    productService.getCountByBrand(conversionUtil.dtoToEntity(brandDto)));
+        }
+        return brandProductCount;
     }
 
     private Date convertStringToDate(String DateStr) {

@@ -22,7 +22,7 @@ public class Brand {
     private String name;
 
     @Column(name = "status", nullable = false)
-    private boolean status;
+    private Boolean status;
     @OneToOne
     @JoinColumn(name = "logo_id",referencedColumnName = "id")
     private BrandLogo brandLogo;

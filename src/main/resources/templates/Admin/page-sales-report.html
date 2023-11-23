@@ -124,6 +124,7 @@
                             <form th:href="@{/dashboard/view-sales-report}">
                                 <div class="d-flex flex-row justify-content-between">
                                     <div class="d-flex flex-column">
+                                        <label><input type="number" name="StatusFilter" th:value="${StatusFilter}" hidden="hidden"></label>
                                         <label for="startDate">Start Date</label>
                                         <input class="form-control" type="date" id="startDate" name="startDate" min="2023-11-17"
                                                th:max="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}"

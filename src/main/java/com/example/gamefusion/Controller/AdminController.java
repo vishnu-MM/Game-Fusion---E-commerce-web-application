@@ -12,9 +12,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.util.*;
 
 @Controller
@@ -44,9 +41,6 @@ public class AdminController {
     @GetMapping("/fetchData/week")
     @ResponseBody
     public ResponseEntity<Map<String,Integer>> getGraphByWeek(){
-        LocalDate endDate = LocalDate.now();
-        DayOfWeek dayOfWeek = endDate.getDayOfWeek();
-        LocalDate startDate = endDate.minusDays(6);
         Map<String, Integer> response = adminService.filterGraphBasedOnDate("WEEK");
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
@@ -54,8 +48,6 @@ public class AdminController {
     @GetMapping("/fetchData/year")
     @ResponseBody
     public ResponseEntity<Map<String,Integer>> getGraphByYear(){
-        LocalDate endDate = LocalDate.now();
-        LocalDate startDate = endDate.minusDays(6);
         Map<String, Integer> response = adminService.filterGraphBasedOnDate("YEAR");
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
@@ -242,6 +234,7 @@ public class AdminController {
     @PostMapping("/update-images/save")
     public String editProductImages(@RequestParam("imageFiles") List<MultipartFile> file,
                                    @RequestParam("productId") Long productId ) {
+        adminService.uploadImage(file,productId);
         return "redirect:/dashboard/update-images/" + productId;
     }
 
@@ -263,7 +256,11 @@ public class AdminController {
     public String viewAllBrands(Model model,
                                 @RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
                                 @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
-        model.addAttribute("BrandPage",adminService.getAllBrands(pageNo, pageSize));
+        PaginationInfo paginationInfo = adminService.getAllBrands(pageNo, pageSize);
+        Map<Long,Integer> brandCount = adminService.getProductCountByBrandPage((List<BrandDto>) paginationInfo.getContents());
+
+        model.addAttribute("BrandPage",paginationInfo);
+        model.addAttribute("BrandCount",brandCount);
         return "Admin/page-brands";
     }
 
@@ -316,7 +313,8 @@ public class AdminController {
     public String viewAllOrders(Model model,
                                 @RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
                                 @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize) {
-        model.addAttribute("OrderMainList", adminService.getAllOrders(pageNo, pageSize));
+        PaginationInfo paginationInfo = adminService.getAllOrders(pageNo, pageSize);
+        model.addAttribute("OrderMainList", paginationInfo);
         return "Admin/page-orders-1";
     }
 
@@ -362,7 +360,6 @@ public class AdminController {
     }
 
     //* SALES REPORT
-
 
     @GetMapping("/view-sales-report")
     public String viewSalesReport(Model model,

@@ -160,7 +160,7 @@ public class OrderMainServiceImpl implements OrderMainService {
         orderMainDto.setPaymentMethod(paymentMethod);
 
         orderMainDto = save(orderMainDto);;
-        decrementQuantity(orderMainDto);
+        //decrementQuantity(orderMainDto);
         orderMainDto.setOrderId(generateOrderId(orderMainDto));
         return save(orderMainDto);
     }

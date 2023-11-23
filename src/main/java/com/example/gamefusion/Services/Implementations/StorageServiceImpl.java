@@ -99,8 +99,8 @@ public class StorageServiceImpl implements StorageService {
    }
 
    @Override
-    public byte[] downloadImage(String fileName) throws IOException {
-        Optional<BrandLogo> brandLogo = brandLogoRepository.findByName(fileName);
+    public byte[] downloadImage(Long id) throws IOException {
+        Optional<BrandLogo> brandLogo = brandLogoRepository.findById(id);
         if (brandLogo.isEmpty()) return null;
         return ImageUtils.decompressImage(brandLogo.get().getImageData());
     }

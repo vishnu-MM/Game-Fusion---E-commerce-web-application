@@ -33,4 +33,16 @@ public class ImageController {
         }
     }
 
+    @GetMapping("/logo-images/{imageId}")
+    public ResponseEntity<byte[]> getLogoImage(@PathVariable("imageId") Long imageId ) {
+        try {
+            byte[] imageBytes = storageService.downloadImage(imageId);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.IMAGE_PNG);
+            return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
+        } catch (EntityNotFoundException | IOException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
 }

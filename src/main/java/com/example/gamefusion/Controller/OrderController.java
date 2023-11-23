@@ -6,8 +6,13 @@ import com.example.gamefusion.Dto.*;
 import com.example.gamefusion.Entity.Cart;
 import com.example.gamefusion.Entity.OrderSub;
 import com.example.gamefusion.Services.*;
+import com.razorpay.Order;
+import com.razorpay.RazorpayClient;
+import com.razorpay.RazorpayException;
 import jakarta.validation.Valid;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +34,10 @@ public class OrderController {
     private final OrderSubService orderSubService;
     private final OrderMainService orderMainService;
     private final EntityDtoConversionUtil conversionUtil;
+    @Value("${rzp_key_id}")
+    private String key;
+    @Value("${rzp_key_secret}")
+    private String secretkey;
     @Autowired
     public OrderController(UserService userService, AddressService addressService,
                            CartService cartService, ProductService productService, EntityDtoConversionUtil conversionUtil,
@@ -70,8 +78,8 @@ public class OrderController {
         List<CartDto> cart = cartService.findAvailableProductsByUser(userDto);
         Integer totalAmount = cartService.totalAmount(cart);
         OrderMainDto orderMainDto = orderMainService.save(addressId,paymentOption,userDto,totalAmount);
-
         orderSubService.save(orderMainDto.getId(),cart);
+
         PaymentDto paymentDto = new PaymentDto();
         paymentDto.setPaymentMethod(PaymentMethodUtil.getPaymentMethodByValue(paymentOption));
         paymentDto.setPaymentId("UW"+orderMainDto.getOrderId());
@@ -88,27 +96,44 @@ public class OrderController {
     }
 
     @GetMapping("/online-payment")
-    public String getPaymentPage(@RequestParam("orderId") Integer orderId, Model model) {
+    public String getPaymentPage(@RequestParam("orderId") Integer orderId, Model model) throws RazorpayException{
 
         OrderMainDto orderMainDto = orderMainService.findOrderById(orderId);
         List<OrderSubDto> orderSubDtoList = orderSubService.findOrderByOrder(orderMainDto);
         AddressDto addressDto = addressService.findById(orderMainDto.getAddressId());
         UserDto userDto = userService.findById(orderMainDto.getUserId());
+        PaymentDto paymentDto = paymentService.findByOrderMain(orderMainDto);
         Map<Long,ProductDto> productDtoMap = new HashMap<>();
         for (OrderSubDto orderSubDto: orderSubDtoList) {
-            System.out.println(orderSubDto.getProductId()+" "+
-                    productService.getProductById(orderSubDto.getProductId()));
             productDtoMap.put(
                 orderSubDto.getProductId(),
                 productService.getProductById(orderSubDto.getProductId())
             );
         }
-        model.addAttribute("orderMainDto",orderMainDto);
+        RazorpayClient razorpayClient = new RazorpayClient(key,secretkey);
+        JSONObject orderRequest = new JSONObject();
+        orderRequest.put("amount",50000);
+        orderRequest.put("currency","INR");
+        orderRequest.put("receipt", "receipt#1");
+        Order order = razorpayClient.orders.create(orderRequest);
         model.addAttribute("orderSubDtoList",orderSubDtoList);
         model.addAttribute("productDtoMap",productDtoMap);
+        model.addAttribute("orderMainDto",orderMainDto);
+        model.addAttribute("paymentDto",paymentDto);
         model.addAttribute("addressDto",addressDto);
         model.addAttribute("userDto",userDto);
+        model.addAttribute("order",order);
         return "User/shop-payment";
+    }
+
+    @GetMapping("/verify-payment")
+    public String verifyPayment(@RequestParam("orderId") Integer orderMainId) {
+        OrderMainDto orderMainDto = orderMainService.findOrderById(orderMainId);
+        orderMainService.decrementQuantity(orderMainDto);
+        PaymentDto paymentDto = paymentService.findByOrderMain(orderMainDto);
+        paymentDto.setPaymentStatus(true);
+        paymentService.save(paymentDto);
+        return "User/shop-place_order-success";
     }
 
     @GetMapping("/my-orders")

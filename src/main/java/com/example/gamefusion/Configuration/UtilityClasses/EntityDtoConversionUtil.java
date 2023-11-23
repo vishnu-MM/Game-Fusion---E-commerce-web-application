@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class EntityDtoConversionUtil {
@@ -17,14 +18,18 @@ public class EntityDtoConversionUtil {
     private final ProductRepository productRepository;
     private final OrderSubRepository orderSubRepository;
     private final OrderMainRepository orderMainRepository;
+    private final BrandLogoRepository brandLogoRepository;
+    private final BrandRepository brandRepository;
     @Autowired
-    public EntityDtoConversionUtil(ModelMapper mapper, ImagesRepository imagesRepository, AddressRepository addressRepository, ProductRepository productRepository, OrderSubRepository orderSubRepository, OrderMainRepository orderMainRepository) {
+    public EntityDtoConversionUtil(ModelMapper mapper, ImagesRepository imagesRepository, AddressRepository addressRepository, ProductRepository productRepository, OrderSubRepository orderSubRepository, OrderMainRepository orderMainRepository, BrandLogoRepository brandLogoRepository, BrandRepository brandRepository) {
         this.mapper = mapper;
         this.imagesRepository = imagesRepository;
         this.addressRepository = addressRepository;
         this.productRepository = productRepository;
         this.orderSubRepository = orderSubRepository;
         this.orderMainRepository = orderMainRepository;
+        this.brandLogoRepository = brandLogoRepository;
+        this.brandRepository = brandRepository;
     }
 
     //? ENTITY TO DTO
@@ -42,7 +47,15 @@ public class EntityDtoConversionUtil {
         return mapper.map(category,CategoryDto.class);
     }
     public BrandDto entityToDto(Brand brand) {
-      return mapper.map(brand,BrandDto.class);
+        BrandDto brandDto = new BrandDto();
+        brandDto.setId(brand.getId());
+        brandDto.setName(brand.getName());
+        brandDto.setStatus(brand.getStatus());
+        BrandLogo brandLogo = brand.getBrandLogo();
+        if (brandLogo != null ) {
+            brandDto.setLogo(brandLogo.getId());
+        }
+        return brandDto;
     }
     public ImagesDto entityToDto(Images images) {
       return mapper.map(images,ImagesDto.class);
@@ -78,17 +91,27 @@ public class EntityDtoConversionUtil {
 
     public Product dtoToEntity(ProductDto productDto) {
         Product product = mapper.map(productDto,Product.class);
-        List<Images> imagesList = new ArrayList<>();
-        for (Long id : productDto.getImageIds() )
-            imagesList.add( imagesRepository.findById(id).orElse(null) );
-        product.setImages(imagesList);
+        if (productDto.getImageIds() != null) {
+            List<Images> imagesList = new ArrayList<>();
+            for (Long id : productDto.getImageIds() )
+                imagesList.add( imagesRepository.findById(id).orElse(null) );
+            product.setImages(imagesList);
+        }
         return product;
     }
     public Category dtoToEntity(CategoryDto categoryDto) {
         return mapper.map(categoryDto,Category.class);
     }
-    public Brand dtoToEntity(BrandDto brand) {
-        return mapper.map(brand,Brand.class);
+    public Brand dtoToEntity(BrandDto brandDto) {
+        Brand brand = new Brand();
+        brand.setName(brandDto.getName());
+        brand.setStatus(brandDto.getStatus());
+        if (brandDto.getId() != null ) brand.setId(brandDto.getId());
+        if (brandDto.getLogo() != null) {
+            Optional<BrandLogo> brandLogo = brandLogoRepository.findById(brandDto.getLogo());
+            brandLogo.ifPresent(brand::setBrandLogo);
+        }
+        return brand;
     }
     public Images dtoToEntity(ImagesDto images) {
         return mapper.map(images,Images.class);

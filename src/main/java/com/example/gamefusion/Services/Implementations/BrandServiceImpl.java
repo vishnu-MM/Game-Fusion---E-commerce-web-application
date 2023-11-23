@@ -5,6 +5,7 @@ import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUt
 import com.example.gamefusion.Dto.BrandDto;
 import com.example.gamefusion.Dto.PaginationInfo;
 import com.example.gamefusion.Entity.Brand;
+import com.example.gamefusion.Entity.BrandLogo;
 import com.example.gamefusion.Repository.BrandRepository;
 import com.example.gamefusion.Services.BrandService;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -88,10 +90,11 @@ public class BrandServiceImpl implements BrandService {
     public PaginationInfo getAll(Integer pageNo, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNo,pageSize,Sort.by("id"));
         Page<Brand> brandPage = brandRepository.findAll(pageable);
-        List<BrandDto> brandDtoList = brandPage.getContent()
+        List<BrandDto> brandList = brandPage.getContent()
                                     .stream().map(conversionUtil::entityToDto).toList();
+
         return new PaginationInfo(
-                brandDtoList,brandPage.getNumber(),brandPage.getSize(),
+                brandList,brandPage.getNumber(),brandPage.getSize(),
                 brandPage.getTotalElements(),brandPage.getTotalPages(),
                 brandPage.isLast(),brandPage.hasNext()
         );

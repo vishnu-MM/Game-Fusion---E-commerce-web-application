@@ -15,7 +15,7 @@ public class BrandDto {
     @NotNull(message = "Name should not be empty")
     private String name;
     @NotNull(message = "Status should not be empty")
-    private boolean status;
+    private Boolean status;
     private Long logo;
 }
 

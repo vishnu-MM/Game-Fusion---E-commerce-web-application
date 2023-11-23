@@ -14,5 +14,5 @@ public interface StorageService {
 
     BrandLogo uploadImage(MultipartFile file) throws IOException;
 
-    byte[] downloadImage(String fileName) throws IOException;
+    byte[] downloadImage(Long id) throws IOException;
 }

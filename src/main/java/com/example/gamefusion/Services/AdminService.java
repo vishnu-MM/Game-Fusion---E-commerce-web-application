@@ -1,6 +1,7 @@
 package com.example.gamefusion.Services;
 
 import com.example.gamefusion.Dto.*;
+import com.example.gamefusion.Entity.Brand;
 import com.example.gamefusion.Entity.BrandLogo;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,6 +37,8 @@ public interface AdminService {
     Boolean isBrandActive(Long brandId);
     void toggleBrandStatus(Long brandId);
     BrandLogo saveBrandLogo(MultipartFile file);
+    Integer getProductCountByBrand(Long brandID);
+    Map<Long, Integer> getProductCountByBrandPage(List<BrandDto> brandDtoList);
 
     //? products
     PaginationInfo getAllProduct(Integer pageNo, Integer pageSize);
@@ -63,5 +66,4 @@ public interface AdminService {
     PaginationInfo filterOrderByDate(Integer pageNo, Integer pageSize,String startDate, String endDate);
     PaginationInfo filterOrderByDayAndStatus(Integer pageNo, Integer pageSize, Date date, Integer statusFilter);
     PaginationInfo filterOrderByDateAndStatus(Integer pageNo, Integer pageSize,String startDate, String endDate, Integer statusFilter);
-
 }

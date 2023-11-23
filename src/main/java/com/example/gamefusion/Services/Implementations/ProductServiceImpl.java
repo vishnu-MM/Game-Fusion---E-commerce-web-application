@@ -4,6 +4,7 @@ import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUt
 import com.example.gamefusion.Dto.CategoryDto;
 import com.example.gamefusion.Dto.PaginationInfo;
 import com.example.gamefusion.Dto.ProductDto;
+import com.example.gamefusion.Entity.Brand;
 import com.example.gamefusion.Entity.Product;
 import com.example.gamefusion.Repository.ProductRepository;
 import com.example.gamefusion.Services.ProductService;
@@ -124,5 +125,10 @@ public class ProductServiceImpl implements ProductService {
     public void updateQuantity(Long productID, Integer qty) {
         if (productID == null || qty == null) return;
         productRepository.updateQty(productID,qty);
+    }
+
+    @Override
+    public Integer getCountByBrand(Brand brand) {
+        return productRepository.countAllByBrand(brand);
     }
 }
