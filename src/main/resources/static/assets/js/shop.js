@@ -1,4 +1,6 @@
+
 (function ($) {
+
     'use strict';
     /*Product Details*/
     var productDetails = function () {
@@ -63,21 +65,28 @@
             });
         });
         //Qty Up-Down
+
         $('.detail-qty').each(function () {
-            var qtyval = parseInt($(this).find('.qty-val').text(), 10);
+            qtyVal = parseInt($(this).find('.qty-val').text(), 10);
             $('.qty-up').on('click', function (event) {
                 event.preventDefault();
-                qtyval = qtyval + 1;
-                $(this).prev().text(qtyval);
+                qtyVal = qtyVal + 1;
+                if (qtyVal <= qtyMax) {
+                    $(this).next().text(qtyVal);
+                } else {
+                    qtyVal = qtyMax;
+                    $(this).prev().text(qtyVal);
+                }
+
             });
             $('.qty-down').on('click', function (event) {
                 event.preventDefault();
-                qtyval = qtyval - 1;
-                if (qtyval > 1) {
-                    $(this).next().text(qtyval);
+                qtyVal = qtyVal - 1;
+                if (qtyVal > 1) {
+                    $(this).prev().text(qtyVal);
                 } else {
-                    qtyval = 1;
-                    $(this).next().text(qtyval);
+                    qtyVal = 1;
+                    $(this).prev().text(qtyVal);
                 }
             });
         });
@@ -95,3 +104,21 @@
     });
 
 })(jQuery);
+var qtyVal
+var qtyMax = document.getElementById('product-qty').value
+alertify.set('notifier', 'position', 'top-center');
+function addToCart(productId) {
+    $.ajax({
+        type: 'GET',
+        url: '/add-to-cart/qty?ProductId=' + productId + '&Quantity=' + qtyVal,
+        success: function(data) {
+            if (data) alertify.success('Product successfully added to cart');
+            else alertify.error("Something went wrong!!")
+        },
+        error: function() {
+            alertify.error("Something went wrong!!!")
+            console.log('Error fetching user data');
+        }
+    });
+}
+

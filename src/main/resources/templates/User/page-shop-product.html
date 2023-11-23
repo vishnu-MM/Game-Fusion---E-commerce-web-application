@@ -78,12 +78,17 @@
                                     <div class="bt-1 border-color-1 mt-30 mb-30"></div>
                                     <div class="detail-extralink">
                                         <div class="detail-qty border radius">
-                                            <a href="#" class="qty-down"><i class="fi-rs-angle-small-down"></i></a>
-                                            <span class="qty-val">1</span>
+                                            <input type="number" id="product-qty" th:value="${ProductDetails.qty}" hidden="hidden">
                                             <a href="#" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
+                                            <span class="qty-val">1</span>
+                                            <a href="#" class="qty-down"><i class="fi-rs-angle-small-down"></i></a>
                                         </div>
                                         <div class="product-extra-link2">
-                                            <button type="submit" class="button button-add-to-cart">Add to cart</button>
+                                            <button type="submit" th:data-id="${ProductDetails.id}"
+                                                    th:onclick="addToCart(this.getAttribute('data-id'))"
+                                                    id="button-add-to-cart" class="button button-add-to-cart">
+                                                Add to cart
+                                            </button>
                                             <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#"><i class="fi-rs-heart"></i></a>
                                             <a aria-label="Compare" class="action-btn hover-up" href="#"><i class="fi-rs-shuffle"></i></a>
                                         </div>
@@ -223,6 +228,7 @@
 <th:block th:replace="~{Fragments/UserFragments.html::footer}"></th:block>
 <!-- js -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
 <script th:src="@{/assets/js/AjaxFile.js}"></script>
 <script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
 <script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>

@@ -81,16 +81,17 @@
                                                 </div>
                                                 <div class="product-action-1 show">
                                                     <!-- ADD TO CART -->
-                                                    <form method="post" th:action="@{/add-to-cart}">
-                                                        <label for="ProductId"></label>
-                                                        <label for="Quantity"></label>
-                                                        <input type="number" name="ProductId" id="ProductId"
-                                                               th:value="${product.id}" hidden="hidden">
-                                                        <input type="number" name="Quantity" id="Quantity" value="1" hidden="hidden">
-                                                        <button aria-label="Add To Cart" class="action-btn hover-up" >
-                                                            <i class="fi-rs-shopping-bag-add"></i>
+<!--                                                    <form method="post" th:action="@{/add-to-cart}">-->
+<!--                                                        <label for="ProductId"></label>-->
+<!--                                                        <label for="Quantity"></label>-->
+<!--                                                        <input type="number" name="ProductId" id="ProductId"-->
+<!--                                                               th:value="${product.id}" hidden="hidden">-->
+<!--                                                        <input type="number" name="Quantity" id="Quantity" value="1" hidden="hidden">-->
+                                                        <button aria-label="Add To Cart"  th:data-id="${product.id}"
+                                                                th:onclick="addToCart(this.getAttribute('data-id'))"
+                                                                class="action-btn hover-up" ><i class="fi-rs-shopping-bag-add"></i>
                                                         </button>
-                                                    </form>
+<!--                                                    </form>-->
                                                 </div>
                                             </div>
                                         </div>
@@ -141,6 +142,7 @@
     <div th:replace="~{Fragments/UserFragments.html::footer}"></div>
     <!-- JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
     <script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
     <script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
     <script th:src="@{/assets/js/vendor/jquery-migrate-3.3.0.min.js}"></script>
@@ -163,6 +165,23 @@
     <script th:src="@{/assets/js/plugins/jquery.elevatezoom.js}"></script>
     <script th:src="@{/assets/js/main.js}"></script>
     <script th:src="@{/assets/js/shop.js}"></script>
-    <script th:src="@{/assets/js/AjaxFile.js}"></script>
+    <script>
+        function addToCart(productId) {
+            alertify.set('notifier', 'position', 'top-center');
+            alert(productId)
+            $.ajax({
+                type: 'GET',
+                url: '/add-to-cart/qty?ProductId=' + productId,
+                success: function(data) {
+                    if (data) alertify.success('Product successfully added to cart');
+                    else alertify.error("Something went wrong!!")
+                },
+                error: function() {
+                    alertify.error("Something went wrong!!!")
+                    console.log('Error fetching user data');
+                }
+            });
+        }
+    </script>
 </body>
 </html>
