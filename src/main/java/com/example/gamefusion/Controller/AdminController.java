@@ -7,6 +7,7 @@ import com.example.gamefusion.Services.AdminService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -237,6 +238,14 @@ public class AdminController {
                                    @RequestParam("productId") Long productId ) {
         adminService.uploadImage(file,productId);
         return "redirect:/dashboard/update-images/" + productId;
+    }
+
+    @PostMapping(value = "/update-images/save/ajax", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseBody
+    public Boolean editProductImagesAjax(@RequestParam("imageFiles") List<MultipartFile> files,
+                                         @RequestParam("productId") Long productId ) {
+        adminService.uploadImage(files, productId);
+        return true;
     }
 
     @DeleteMapping("/delete-image")

@@ -10,42 +10,39 @@
     <meta property="og:type" content="">
     <meta property="og:url" content="">
     <meta property="og:image" content="">
-    <meta name="_csrf" th:content="${_csrf.token}" />
-    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
-
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/admin-assets/imgs/theme/favicon.svg}">
     <link th:href="@{/assets/admin-assets/css/main.css}" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css"  />
-<style>
-img {
-    display: block;
-    max-width: 100%;
-}
-.preview {
-    overflow: hidden;
-    width: 160px;
-    height: 160px;
-    margin: 10px;
-    border: 1px solid red;
-}
+    <style>
+        img {
+            display: block;
+            max-width: 100%;
+        }
+        .preview {
+            overflow: hidden;
+            width: 160px;
+            height: 160px;
+            margin: 10px;
+            border: 1px solid red;
+        }
 
-</style>
-<script>
-    function confirmDelete(form) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'Do you want to Delete this image?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, Delete',
-            cancelButtonText: 'No, cancel',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.submit();
-            }
-        });
-    }
-</script>
+    </style>
+    <script>
+        function confirmDelete(form) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you want to Delete this image?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Delete',
+                cancelButtonText: 'No, cancel',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        }
+    </script>
 </head>
 <body>
 <div class="screen-overlay"></div>
@@ -99,6 +96,9 @@ img {
     </nav>
 </aside>
 <main class="main-wrap">
+
+    <th:block th:replace="~{Fragments/AdminFragments.html::main-header}"></th:block>
+    <!-- MODAL -->
     <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -113,7 +113,7 @@ img {
                         <div class="row">
                             <div class="col-md-8">
                                 <!--  default image where we will set the src via jquery-->
-                                <img id="image">
+<!--                                <img id="image">-->
                             </div>
                             <div class="col-md-4">
                                 <div class="preview"></div>
@@ -128,8 +128,7 @@ img {
             </div>
         </div>
     </div>
-
-    <th:block th:replace="~{Fragments/AdminFragments.html::main-header}"></th:block>
+    <!-- MODAL ENDS -->
     <section class="content-main">
         <div class="row">
             <div class="col-9">
@@ -156,15 +155,30 @@ img {
                                                 <h4>Upload New Images</h4>
                                             </div>
                                             <div class="card-body">
-                                                <div class="d-flex flex-column align-items-center input-upload">
-                                                <!-- ADD NEW IMAGE-->
-                                                    <input type="hidden" id="productId" th:value="${Product.id}">
+                                                <div class="input-upload">
+                                                    <!-- ADD NEW IMAGE-->
                                                     <img th:src="@{/assets/admin-assets/imgs/theme/upload.svg}" alt="">
-                                                    <input class="form-control" type="file" id="imageFiles" name="imageFiles" multiple="multiple" required="required">
+                                                    <form th:action="@{/dashboard/update-images/save}" method="post" enctype="multipart/form-data">
+                                                        <input type="hidden" name="productId" th:value="${productId}">
+                                                        <input class="form-control" type="file" id="imageFiles" name="imageFiles" multiple="multiple" required="required">
+                                                        <div style="height: 50px"></div>
+                                                        <button class="btn btn-primary" type="submit">Upload Images</button>
+                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="card-header">
+                                        <h4>New Images</h4>
+                                    </div>
+                                    <div class="card card-product-grid">
+                                        <div class="info-wrap">
+                                            <div class="">
+                                                <div class="gallery d-flex flex-row overflow-scroll"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="card-header">
                                         <h4>Existing Images</h4>
                                     </div>
@@ -200,7 +214,6 @@ img {
         </div>
     </section>
 </main>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script th:src="@{/assets/admin-assets/js/vendors/jquery-3.6.0.min.js}"></script>
 <script th:src="@{/assets/admin-assets/js/vendors/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/assets/admin-assets/js/vendors/select2.min.js}"></script>
@@ -211,77 +224,60 @@ img {
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
-<script>
-    var bs_modal = $('#modal');
-    var image = document.getElementById('image');
-    var cropper, reader, file, originalFileName;
-    var productId = document.getElementById('productId').value;
-    $("body").on("change", "#imageFiles", function(e) {
-        var files = e.target.files;
-        if (files && files.length > 0) {
-            file = files[0];
-            originalFileName = file.name;
-            var done = function (url) {
-                image.src = url;
-                bs_modal.modal('show');
-            };
-            if (URL) {
-                done(URL.createObjectURL(file));
-            } else if (FileReader) {
-                reader = new FileReader();
-                reader.onload = function (e) {
-                    done(reader.result);
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-    });
-    bs_modal.on('shown.bs.modal', function () {
-        cropper = new Cropper(image, {
-            aspectRatio: 1,
-            viewMode: 3,
-            preview: '.preview'
-        });
-    })
-    .on('hidden.bs.modal', function () {
-        cropper.destroy();
-        cropper = null;
-    });
+<script th:src="@{/assets/admin-assets/js/ImageCroper.js}"></script>
+<!--<script>-->
 
-    $("#crop").click(function () {
-        var canvas = cropper.getCroppedCanvas();
-        var croppedImageDataURL = canvas.toDataURL();
-        var blob = dataURItoBlob(croppedImageDataURL);
-        var file = new File([blob], originalFileName, { type: 'image/png' });
-        var formData = new FormData();
-        formData.append('imageFiles', file);
-        formData.append('productId', productId);
-        $.ajax({
-            url: '/dashboard/update-images/save/ajax',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            beforeSend: function(xhr) {
-                xhr.setRequestHeader($("meta[name='_csrf_header']").attr("content"), $("meta[name='_csrf']").attr("content"));
-            },
-            success: function(response) {
-                console.log(response);
-            },
-            error: function(error) {
-                console.error(error);
-            }
-        });
-    });
-    function dataURItoBlob(dataURI) {
-        var byteString = atob(dataURI.split(',')[1]);
-        var ab = new ArrayBuffer(byteString.length);
-        var ia = new Uint8Array(ab);
-        for (var i = 0; i < byteString.length; i++) {
-            ia[i] = byteString.charCodeAt(i);
-        }
-        return new Blob([ab], { type: 'image/png' });
-    }
-</script>
+<!--    var bs_modal = $('#modal');-->
+<!--    var image = document.getElementById('image');-->
+<!--    var cropper,reader,file;-->
+
+
+<!--    $("body").on("change", "#imageFiles", function(e) {-->
+<!--        var files = e.target.files;-->
+<!--        var done = function(url) {-->
+<!--            image.src = url;-->
+<!--            bs_modal.modal('show');-->
+<!--        };-->
+
+
+<!--        if (files && files.length > 0) {-->
+<!--            file = files[0];-->
+
+<!--            if (URL) {-->
+<!--                done(URL.createObjectURL(file));-->
+<!--            } else if (FileReader) {-->
+<!--                reader = new FileReader();-->
+<!--                reader.onload = function(e) {-->
+<!--                    done(reader.result);-->
+<!--                };-->
+<!--                reader.readAsDataURL(file);-->
+<!--            }-->
+<!--        }-->
+<!--    });-->
+
+<!--    bs_modal.on('shown.bs.modal', function() {-->
+<!--        cropper = new Cropper(image, {-->
+<!--            aspectRatio: 1,-->
+<!--            viewMode: 3,-->
+<!--            preview: '.preview'-->
+<!--        });-->
+<!--    }).on('hidden.bs.modal', function() {-->
+<!--        cropper.destroy();-->
+<!--        cropper = null;-->
+<!--    });-->
+
+<!--    $("#crop").click(function() {-->
+<!--        canvas = cropper.getCroppedCanvas({-->
+<!--            width: 160,-->
+<!--            height: 160,-->
+<!--        });-->
+
+<!--        // Create a new window and display the cropped image-->
+<!--        $($.parseHTML('<img class="m-2 border border-dark rounded">'))-->
+<!--            .attr('src', canvas.toDataURL()).appendTo();-->
+<!--        // win.document.write('<img src="' + canvas.toDataURL() + '" />');-->
+<!--    });-->
+
+<!--</script>-->
 </body>
 </html>
