@@ -4,8 +4,12 @@ import com.example.gamefusion.Dto.*;
 import com.example.gamefusion.Entity.BrandLogo;
 import com.example.gamefusion.Entity.OrderMain;
 import com.example.gamefusion.Services.AdminService;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -381,25 +385,94 @@ public class AdminController {
                                 @RequestParam(value = "endDate", required = false) String endDate,
                                 @RequestParam(value = "StatusFilter", defaultValue = "0", required = false) Integer statusFilter) {
 
-            PaginationInfo paginationInfo;
+        PaginationInfo paginationInfo;
 
-            if ( isValidDate(startDate) && isValidDate(endDate) && statusFilter == 0) {
-                paginationInfo = adminService.getAllOrders(pageNo, pageSize);
-            }
-            else if (statusFilter == 0 ) {
-                paginationInfo = adminService.filterOrderByDate(pageNo, pageSize, startDate, endDate);
-            }
-            else {
-                paginationInfo = adminService.filterOrderByDateAndStatus(pageNo,pageSize,startDate,endDate,statusFilter);
-            }
-            model.addAttribute("StartDate", startDate);
-            model.addAttribute("EndDate", endDate);
-            model.addAttribute("StatusFilter", statusFilter);
-            model.addAttribute("OrderMainList", paginationInfo);
-            return "Admin/page-sales-report";
+        if ( isValidDate(startDate) && isValidDate(endDate) && statusFilter == 0) {
+            paginationInfo = adminService.getAllOrders(pageNo, pageSize);
         }
+        else if (statusFilter == 0 ) {
+            paginationInfo = adminService.filterOrderByDate(pageNo, pageSize, startDate, endDate);
+        }
+        else {
+            paginationInfo = adminService.filterOrderByDateAndStatus(pageNo,pageSize,startDate,endDate,statusFilter);
+        }
+        model.addAttribute("StartDate", startDate);
+        model.addAttribute("EndDate", endDate);
+        model.addAttribute("StatusFilter", statusFilter);
+        model.addAttribute("OrderMainList", paginationInfo);
+        return "Admin/page-sales-report";
+    }
 
-        private static Boolean isValidDate(String dateString) {
-            return dateString == null || Objects.equals(dateString, "") || dateString.trim().isEmpty();
+    private static Boolean isValidDate(String dateString) {
+        return dateString == null || Objects.equals(dateString, "") || dateString.trim().isEmpty();
+    }
+
+    //* COUPON MANAGEMENT
+
+    @GetMapping("/view-coupons")
+    public String viewCoupons(Model model,
+                              @RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
+                              @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize) {
+        model.addAttribute("CouponList",adminService.getAllCoupons(pageNo,pageSize));
+        return "Admin/page-coupon";
+    }
+
+    @GetMapping("/coupon-details/{couponID}")
+    @ResponseBody
+    public ResponseEntity<CouponDto> getCouponDetails(@PathVariable("couponID") Integer couponId) {
+        if (!adminService.isCouponExist(couponId))
+            return ResponseEntity.notFound().build();
+        return new ResponseEntity<>(adminService.getCoupon(couponId),HttpStatus.OK);
+    }
+
+    @GetMapping("/generate-coupon-code")
+    @ResponseBody
+    public ResponseEntity<String> getCouponCode() {
+        return new ResponseEntity<>(adminService.getCouponCode(),HttpStatus.OK);
+    }
+
+    @GetMapping("/add-coupon")
+    public String addNewCoupon(Model model) {
+        model.addAttribute("NewCoupon",new CouponDto());
+        return "Admin/page-add-coupon";
+    }
+
+    @PostMapping("/add-coupon/save")
+    public String saveNewCoupon(@Valid @ModelAttribute("NewCoupon") CouponDto couponDto, BindingResult result,
+                                Model model) {
+        if (result.hasErrors()){
+            model.addAttribute("NewCoupon", new CouponDto());
+            return "Admin/page-add-coupon";
         }
+        adminService.saveOrUpdate(couponDto);
+        return "redirect:/dashboard/view-coupons";
+    }
+
+    @GetMapping("/edit-coupon/{couponId}")
+    public String getEditForm(@PathVariable("couponId") Integer couponId, Model model ) {
+        if (adminService.isCouponExist(couponId)) {
+            model.addAttribute("Coupon",adminService.getCoupon(couponId));
+            return "Admin/page-edit-coupon";
+        }
+        return "redirect:/dashboard/view-coupons";
+    }
+
+    @PutMapping("/edit-coupon/update")
+    public String updateCoupon(@Valid @ModelAttribute("Coupon") CouponDto couponDto, BindingResult result,
+                               Model model) {
+        if (result.hasErrors()){
+            model.addAttribute("Coupon", couponDto);
+            return "Admin/page-add-coupon";
+        }
+        adminService.saveOrUpdate(couponDto);
+        return "redirect:/dashboard/view-coupons";
+    }
+
+    @DeleteMapping("/delete-coupon")
+    public String deleteCoupon( @RequestParam("couponID") Integer couponId) {
+        if (adminService.isCouponExist(couponId)) {
+            adminService.deleteCoupon(couponId);
+        }
+        return "redirect:/dashboard/view-coupons";
+    }
 }

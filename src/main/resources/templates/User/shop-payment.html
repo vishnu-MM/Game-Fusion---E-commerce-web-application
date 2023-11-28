@@ -41,8 +41,8 @@
                                             <span class="product-qty" th:text="${'x '+product.qty}"></span>
                                             <p class="font-xs" ></p>
                                         </td>
-                                        <td>
-                                            <span th:text="${productDtoMap.get(product.productId).price}"></span>
+                                        <td class="text-end">
+                                            <span th:text="${productDtoMap.get(product.productId).discountPrice}"></span>
                                         </td>
                                     </tr>
                                     <!--PRODUCT LOOP ENDS HERE-->
@@ -128,8 +128,9 @@
     <script th:src="@{/assets/js/main.js}"></script>
     <script th:src="@{/assets/js/shop.js}"></script>
     <script th:src="@{/assets/js/AjaxFile.js}"></script>
-    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script th:src="@{/assets/js/Payment-RazerPay.js}"></script>
 </body>
 </html>

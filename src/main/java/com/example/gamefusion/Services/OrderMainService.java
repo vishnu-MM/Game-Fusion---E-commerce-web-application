@@ -22,7 +22,7 @@ public interface OrderMainService {
     PaginationInfo findAllFilterByDay(Integer pageNo, Integer pageSize, Date date);
     PaginationInfo findOrderByUser(UserDto userDto,Integer pageNo, Integer pageSize);
     PaginationInfo findOrderByStatus(String status, Integer pageNo, Integer pageSize);
-    OrderMainDto save(Integer addressId, Integer paymentOption, UserDto userDto, Integer totalAmount);
+    OrderMainDto save(Integer addressId, Integer paymentOption, UserDto userDto, Integer totalAmount,Double discount);
     PaginationInfo findAllBetweenDay(Integer pageNo, Integer pageSize, Date startDate, Date endDate);
     PaginationInfo findByDayAndStatus(Integer pageNo, Integer pageSize, Date date, String statusFilter);
     PaginationInfo findByDatesBetweenAndStatus(Integer pageNo, Integer pageSize, Date startDate, Date endDate, String status);

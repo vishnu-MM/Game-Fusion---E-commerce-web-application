@@ -26,6 +26,9 @@ public class Product {
     @Column(name = "price", nullable = false)
     private int price;
 
+    @Column(name = "discount_price", nullable = false)
+    private int discountPrice;
+
     @Column(name = "qty", nullable = false)
     private int qty;
 

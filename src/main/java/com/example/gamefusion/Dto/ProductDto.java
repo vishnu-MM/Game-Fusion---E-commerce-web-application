@@ -22,6 +22,8 @@ public class ProductDto {
     @NotNull(message = "Price should not be empty")
     @Positive(message = "Price must be a positive number")
     private int price;
+    @Positive(message = "Price must be a positive number")
+    private int discountPrice;
     @NotNull(message = "Quantity should not be empty")
     @Positive(message = "Quantity must be a positive number")
     private int qty;

@@ -78,7 +78,8 @@ public class CartServiceImpl implements CartService {
         for ( Cart cart : cartList ) {
             Product product = cart.getProduct();
             if ( product.getStatus()) {
-                int price = product.getPrice();
+                int price = (product.getPrice() == product.getDiscountPrice()) ?
+                                product.getPrice() : product.getDiscountPrice();
                 int qty = cart.getQty();
                 totalAmount += price * qty;
             }

@@ -13,23 +13,26 @@ import java.util.Optional;
 @Component
 public class EntityDtoConversionUtil {
     private final ModelMapper mapper;
+    private final UserRepository userRepository;
+    private final CouponRepository couponRepository;
     private final ImagesRepository imagesRepository;
     private final AddressRepository addressRepository;
     private final ProductRepository productRepository;
-    private final OrderSubRepository orderSubRepository;
     private final OrderMainRepository orderMainRepository;
     private final BrandLogoRepository brandLogoRepository;
-    private final BrandRepository brandRepository;
     @Autowired
-    public EntityDtoConversionUtil(ModelMapper mapper, ImagesRepository imagesRepository, AddressRepository addressRepository, ProductRepository productRepository, OrderSubRepository orderSubRepository, OrderMainRepository orderMainRepository, BrandLogoRepository brandLogoRepository, BrandRepository brandRepository) {
+    public EntityDtoConversionUtil(ModelMapper mapper, ImagesRepository imagesRepository,
+                                   AddressRepository addressRepository, ProductRepository productRepository,
+                                   OrderMainRepository orderMainRepository, BrandLogoRepository brandLogoRepository,
+                                   UserRepository userRepository, CouponRepository couponRepository) {
         this.mapper = mapper;
         this.imagesRepository = imagesRepository;
         this.addressRepository = addressRepository;
         this.productRepository = productRepository;
-        this.orderSubRepository = orderSubRepository;
         this.orderMainRepository = orderMainRepository;
         this.brandLogoRepository = brandLogoRepository;
-        this.brandRepository = brandRepository;
+        this.userRepository = userRepository;
+        this.couponRepository = couponRepository;
     }
 
     //? ENTITY TO DTO
@@ -45,6 +48,13 @@ public class EntityDtoConversionUtil {
     }
     public CategoryDto entityToDto(Category category) {
         return mapper.map(category,CategoryDto.class);
+    }
+    public UserCouponsDto entityToDto(UserCoupons userCoupons) {
+        return new UserCouponsDto(
+            userCoupons.getId(),
+            userCoupons.getUser().getId(),
+            userCoupons.getCoupon().getId()
+        );
     }
     public BrandDto entityToDto(Brand brand) {
         BrandDto brandDto = new BrandDto();
@@ -85,6 +95,9 @@ public class EntityDtoConversionUtil {
     }
     public PaymentDto entityToDto(Payment payment) {
       return mapper.map(payment,PaymentDto.class);
+    }
+    public CouponDto entityToDto(Coupon coupon) {
+      return mapper.map(coupon,CouponDto.class);
     }
 
     //? DTO TO ENTITY
@@ -140,6 +153,9 @@ public class EntityDtoConversionUtil {
     public OrderMain dtoToEntity(OrderMainDto orderMainDto) {
         return mapper.map(orderMainDto,OrderMain.class);
     }
+    public Coupon dtoToEntity(CouponDto couponDto) {
+        return mapper.map(couponDto,Coupon.class);
+    }
     public OrderSub dtoToEntity(OrderSubDto orderSubDto) {
         OrderSub orderSub = mapper.map(orderSubDto,OrderSub.class);
         orderSub.setOrderMain(
@@ -160,5 +176,12 @@ public class EntityDtoConversionUtil {
             orderMainRepository.findById(paymentDto.getOrderId()).orElse(null)
         );
         return payment;
+    }
+    public UserCoupons dtoToEntity(UserCouponsDto userCouponsDto) {
+        UserCoupons userCoupons = new UserCoupons();
+        userCoupons.setUser(userRepository.findById(userCouponsDto.getUserId()).orElse(null));
+        userCoupons.setCoupon(couponRepository.findById(userCouponsDto.getCouponId()).orElse(null));
+        if (userCouponsDto.getId() != null ) userCoupons.setId(userCouponsDto.getId());
+        return userCoupons;
     }
 }

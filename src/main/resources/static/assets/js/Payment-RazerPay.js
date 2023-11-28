@@ -1,4 +1,4 @@
-    let payment_method = 'RazorPay'
+    // let payment_method = 'RazorPay'
     let discount = 0
     let grandTotal = parseFloat($('#grandTotal').val())*100;
     let orderId = $('#orderId').val();
@@ -10,16 +10,10 @@
     "currency": "INR",
     "name": "Game Fusion",
     "description": "Purchases",
-    "image": "http://localhost:8080/static/Images/51mWHXY8hyL.jpg",
+    "image": "https://neonmama.com/cdn/shop/products/pink_70c0d167-714a-4122-a090-f7e959706fbd_1600x.png?v=1635060263",
     "payment_id": orderId,
-    
-    "theme": {
-        "color": "#088178",
-    },
-    "handler": function (response){
-        console.log(response)
-        window.location.href = '/verify-payment?orderId='+orderMainId
-    }
+    "theme": { "color": "#088178",},
+    "handler": function (response){ window.location.href = '/verify-payment?orderId='+orderMainId }
 };
 
 let rzp1 = new Razorpay(options);
@@ -31,10 +25,34 @@ rzp1.on('payment.failed', function (response){
     console.log(response.error.reason+" "+5);
     console.log(response.error.metadata+" "+6);
     console.log(response.error.metadata.payment_id+" "+7);
-    window.location.href = '/online-payment?orderId='+orderMainId
+    Swal.fire({
+        title: 'Payment failed!!!',
+        text: 'Oops! Something went wrong...',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Try again',
+        cancelButtonText: 'Try, after some times',
+    }).then((result) => {
+        if (result.isConfirmed) rzp1.open();
+        else window.location.href='/my-orders'
+    });
 });
 
 document.getElementById('rzp-button1').onclick = function(e){
-    rzp1.open();    
-    e.preventDefault();
+    $.ajax({
+        type: 'GET',
+        url: '/payment-status-confirmation/'+$('#orderId').val(),
+        success:function (response){
+            if (response){
+                rzp1.open();
+                e.preventDefault();
+            } else {
+                alertify.set('notifier', 'position', 'top-center');
+                alertify.success('Payment is already completed');
+                window.location.href='/my-orders'
+            }
+        },
+        error : function (error){console.log(error)}
+    })
+
 }

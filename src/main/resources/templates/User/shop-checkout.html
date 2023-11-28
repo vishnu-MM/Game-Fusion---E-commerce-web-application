@@ -97,9 +97,10 @@
                                     <div class="form-group">
                                         <label for="coupon-field"></label>
                                         <input type="text" id="coupon-field" placeholder="Enter Coupon Code...">
+                                        <span style="color: red" id="coupon-field-error"></span>
                                     </div>
                                     <div class="form-group">
-                                        <button class="btn  btn-md" name="login">Apply Coupon</button>
+                                        <button class="btn  btn-md" name="login" id="coupon-btn">Apply Coupon</button>
                                     </div>
                                 </form>
                             </div>
@@ -172,13 +173,14 @@
                                                 </a></h5>
                                                 <span class="product-qty" th:text="'x '+${cart.qty}"></span>
                                             </td>
-                                            <td><span th:text="'&#8377; '+${cart.product.price}"></span></td>
+                                            <td><span th:text="'&#8377; '+${cart.product.discountPrice}"></span></td>
                                         </tr>
                                     <!--PRODUCT LOOP ENDS HERE-->
                                         <tr>
                                             <th>SubTotal</th>
                                             <td class="product-subtotal" colspan="2">
-                                                <span th:text="'&#8377; '+${TotalAmount}"></span>
+                                                <span class="bold pr-2"></span>
+                                                <span class="total-amount-no-discount" th:text="'&#8377; '+${TotalAmount}"></span>
                                             </td>
                                         </tr>
                                         <tr>
@@ -188,7 +190,8 @@
                                         <tr>
                                             <th>Total</th>
                                             <td colspan="2" class="product-subtotal">
-                                                <span class="font-xl text-brand fw-900" th:text="'&#8377; '+${TotalAmount}"></span>
+                                                <span class="font-xl text-brand fw-900 pr-2"></span>
+                                                <span class="font-xl text-brand fw-900 total-amount-no-discount" th:text="'&#8377; '+${TotalAmount}"></span>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -253,6 +256,7 @@
     <script th:src="@{/assets/js/AjaxFile.js}"></script>
     <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
     <script>
+        let couponCode
         function checkForCredentials(form) {
             let addressId = form.querySelector('input[name="addressId"]:checked');
             if (!addressId) {
@@ -266,8 +270,44 @@
                 alertify.error('Please select a payment method');
                 return;
             }
+            if(couponCode){
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'coupon',
+                    value: couponCode
+                }).appendTo(form);
+            }
             form.submit();
         }
+        $('#coupon-btn').on('click',function (e){
+            e.stopPropagation();
+            e.preventDefault();
+            couponCode = document.getElementById('coupon-field').value
+            const totalAmount = [[${TotalAmount}]]
+            const csrfHeader = $("meta[name='_csrf_header']").attr("content")
+            const csrfToken =  $("meta[name='_csrf']").attr("content")
+            $.ajax({
+                type: 'POST',
+                url: '/apply-coupon',
+                dataType: 'json',
+                data : { total : totalAmount, couponCode : couponCode },
+                beforeSend : function (xhr){ xhr.setRequestHeader(csrfHeader ,csrfToken) },
+                success : function (response){
+                    $('.total-amount-no-discount')
+                        .css("text-decoration","line-through")
+                        .prev()
+                        .text('\u20B9' + (totalAmount - ((response / 100 ) * totalAmount )));
+
+                },
+                error : function (error){
+                    let msg = "Something went wrong"
+                    if( error.status === 400 ) msg = "To use this Coupon you have to purchase for minimum "+error.responseText
+                    if( error.status === 404 ) msg = "Invalid coupon code"
+                    if( error.status === 409 ) msg = "You are already used this coupon"
+                    $('#coupon-field-error').text(msg)
+                }
+            })
+        })
     </script>
 </body>
 </html>

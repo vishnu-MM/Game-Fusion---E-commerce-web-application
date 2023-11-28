@@ -75,8 +75,9 @@
                                                 </div>
                                                 <!--RATING END-->
                                                 <div class="product-price">
-                                                    <span th:text="'&#8377' +${product.price}"></span>
-                                                    <span class="old-price" th:text="'&#8377' +${product.price}"></span>
+                                                    <span th:text="'&#8377' +${product.discountPrice}"></span>
+                                                    <span th:if="${product.price != product.discountPrice}" class="old-price"
+                                                           th:text="'&#8377' +${product.price}"></span>
                                                 </div>
                                                 <div class="product-action-1 show">
                                                     <!-- ADD TO CART -->

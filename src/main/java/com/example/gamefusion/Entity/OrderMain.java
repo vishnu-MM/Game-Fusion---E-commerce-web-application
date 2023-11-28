@@ -21,7 +21,7 @@ public class OrderMain {
     @Column(name = "date")
     private Date date;
     @Column(name = "amount")
-    private Integer amount;
+    private Double amount;
     @Column(name = "status")
     private String status;
     @Column(name = "payment_method")

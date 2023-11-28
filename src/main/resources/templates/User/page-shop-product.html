@@ -59,9 +59,10 @@
                                     <div class="clearfix product-price-cover">
                                         <div class="product-price primary-color float-left">
                                             <ins><span class="text-brand"
-                                                       th:text="'&#8377; '+${ProductDetails.price}"></span></ins>
-                                            <ins><span class="old-price font-md ml-15" th:text="'&#8377; '+${ProductDetails.price}"></span></ins>
-                                            <span class="save-price  font-md color3 ml-15">25% Off</span>
+                                                       th:text="'&#8377; '+${ProductDetails.discountPrice}"></span></ins>
+                                            <ins><span th:if="${ProductDetails.price != ProductDetails.discountPrice}" class="old-price font-md ml-15"
+                                                        th:text="'&#8377; '+${ProductDetails.price}"></span></ins>
+                                            <span id="save-price" class="save-price  font-md color3 ml-15"></span>
                                         </div>
                                     </div>
                                     <div class="bt-1 border-color-1 mt-15 mb-15"></div>
@@ -252,5 +253,16 @@
 <script th:src="@{/assets/js/plugins/jquery.elevatezoom.js}"></script>
 <script th:src="@{/assets/js/main.js}"></script>
 <script th:src="@{/assets/js/shop.js}"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    $(document).ready(function () {
+        let originalPrice = [[${ProductDetails.price}]]
+        let offerPrice = [[${ProductDetails.discountPrice}]]
+        if(!(originalPrice===offerPrice)){
+            let discountPercentage = ((originalPrice-offerPrice)/originalPrice)*100
+            $('#save-price').text(discountPercentage+'% Off')
+        }
+    })
+</script>
 </body>
 </html>

@@ -1,8 +1,7 @@
 ﻿<!DOCTYPE html>
 <html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
 <th:block th:replace="~{Fragments/UserFragments.html::head-tag}"></th:block>
-<body onload="m()">
-    
+<body>
     <div th:replace="~{Fragments/UserFragments.html::header}"> </div>
     <div th:replace="~{Fragments/UserFragments.html::mobile-view}"></div>
     <main class="main">
@@ -76,22 +75,16 @@
                                                 </div>
                                                 <!--RATING END-->
                                                 <div class="product-price">
-                                                    <span th:text="'&#8377' +${product.price}"></span>
-                                                    <span class="old-price" th:text="'&#8377' +${product.price}"></span>
+                                                    <span th:text="'&#8377' +${product.discountPrice}"></span>
+                                                    <span  th:if="${product.price != product.discountPrice}"
+                                                           class="old-price" th:text="'&#8377' +${product.price}">
+                                                    </span>
                                                 </div>
                                                 <div class="product-action-1 show">
-                                                    <!-- ADD TO CART -->
-<!--                                                    <form method="post" th:action="@{/add-to-cart}">-->
-<!--                                                        <label for="ProductId"></label>-->
-<!--                                                        <label for="Quantity"></label>-->
-<!--                                                        <input type="number" name="ProductId" id="ProductId"-->
-<!--                                                               th:value="${product.id}" hidden="hidden">-->
-<!--                                                        <input type="number" name="Quantity" id="Quantity" value="1" hidden="hidden">-->
-                                                        <button aria-label="Add To Cart"  th:data-id="${product.id}"
-                                                                th:onclick="addToCart(this.getAttribute('data-id'))"
-                                                                class="action-btn hover-up" ><i class="fi-rs-shopping-bag-add"></i>
-                                                        </button>
-<!--                                                    </form>-->
+                                                    <button aria-label="Add To Cart"  th:data-id="${product.id}"
+                                                            th:onclick="addToCart(this.getAttribute('data-id'))"
+                                                            class="action-btn hover-up" ><i class="fi-rs-shopping-bag-add"></i>
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -170,14 +163,14 @@
             alertify.set('notifier', 'position', 'top-center');
             $.ajax({
                 type: 'GET',
-                url: '/add-to-cart/qty?ProductId=' + productId,
+                url: '/add-to-cart?ProductId=' + productId,
                 success: function(data) {
                     if (data) alertify.success('Product successfully added to cart');
                     else alertify.error("Something went wrong!!")
                 },
-                error: function() {
+                error: function(error) {
                     alertify.error("Something went wrong!!!")
-                    console.log('Error fetching user data');
+                    console.log('Error fetching user data'+error);
                 }
             });
         }

@@ -18,7 +18,7 @@ public class PaymentDto {
     private Integer id;
     private String paymentId;
     @NotNull
-    private Integer amount;
+    private Double amount;
     @NotNull
     private Date date;
     @NotNull

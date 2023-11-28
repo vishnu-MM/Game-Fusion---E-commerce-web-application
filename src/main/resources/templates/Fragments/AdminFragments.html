@@ -59,14 +59,19 @@
             </li>
             <li class="menu-item ">
                 <a class="menu-link" th:href="@{/dashboard/view-sales-report}">
-                    <i class="icon material-icons md-pie_chart"></i><span class="text">Sales Report</span>
+                       <i class="icon material-icons md-pie_chart"></i><span class="text">Sales Report</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a class="menu-link" th:href="@{/dashboard/view-coupons}">
+                    <i class="icon material-icons md-local_offer"></i><span class="text">Coupons</span>
                 </a>
             </li>
         </ul>
     </nav>
 </aside>
 
-<header class="main-header navbar" th:fragment="main-header">
+<header class="main-header navbar" th:fragment="main-header" >
     <div class="col-search">
         <form class="searchform">
             <div class="input-group">
@@ -125,5 +130,6 @@
     </div>
 </header>
 <script th:src="@{/assets/js/AjaxFile.js}"></script>
+<script th:src="@{/assets/admin-assets/js/PeriodicRefresh.js}"></script>
 </body>
 </html>

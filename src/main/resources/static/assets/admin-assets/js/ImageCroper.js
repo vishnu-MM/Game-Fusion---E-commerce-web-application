@@ -97,3 +97,77 @@ $("#crop").click(function() {
     });
 });
 
+var bs_modal = $('#modal');
+var image = document.getElementById('image');
+var cropper, reader, file, originalFileName;
+var productId = document.getElementById('productId').value;
+$("body").on("change", "#imageFiles", function(e) {
+    var files = e.target.files;
+    if (files && files.length > 0) {
+        file = files[0];
+        originalFileName = file.name;
+        var done = function (url) {
+            image.src = url;
+            bs_modal.modal('show');
+        };
+        if (URL) {
+            done(URL.createObjectURL(file));
+        } else if (FileReader) {
+            reader = new FileReader();
+            reader.onload = function (e) {
+                done(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+});
+bs_modal.on('shown.bs.modal', function () {
+    cropper = new Cropper(image, {
+        aspectRatio: 1,
+        viewMode: 3,
+        preview: '.preview'
+    });
+})
+    .on('hidden.bs.modal', function () {
+        cropper.destroy();
+        cropper = null;
+    });
+
+$("#crop").click(function () {
+    var canvas = cropper.getCroppedCanvas();
+    var croppedImageDataURL = canvas.toDataURL();
+    var blob = dataURItoBlob(croppedImageDataURL);
+    var file = new File([blob], originalFileName, { type: 'image/png' });
+    var formData = new FormData();
+    formData.append('imageFiles', file);
+    formData.append('productId', productId);
+    $.ajax({
+        url: '/dashboard/update-images/save/ajax',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader($("meta[name='_csrf_header']").attr("content"), $("meta[name='_csrf']").attr("content"));
+        },
+        success: function(response) {
+            location.reload()
+        },
+        error: function(error) {
+            console.error(error);
+        }
+    });
+});
+function dataURItoBlob(dataURI) {
+    var byteString = atob(dataURI.split(',')[1]);
+    var ab = new ArrayBuffer(byteString.length);
+    var ia = new Uint8Array(ab);
+    for (var i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ab], { type: 'image/png' });
+}
+$('.close-modal').on('click',function (e){
+    bs_modal.hide()
+    location.reload()
+})

@@ -23,35 +23,38 @@ import java.util.Map;
 @Service
 public class AdminServiceImpl implements AdminService {
     private final UserService userService;
-    private final ProductService productService;
-    private final CategoryService categoryService;
-    private final StorageService storageService;
-    private final ImagesService imagesService;
     private final BrandService brandService;
-    private final OrderMainService orderMainService;
-    private final OrderSubService orderSubService;
+    private final ImagesService imagesService;
+    private final CouponService couponService;
+    private final StorageService storageService;
+    private final ProductService productService;
     private final AddressService addressService;
     private final PaymentService paymentService;
+    private final CategoryService categoryService;
+    private final OrderSubService orderSubService;
+    private final OrderMainService orderMainService;
     private final EntityDtoConversionUtil conversionUtil;
 
     @Autowired
     public AdminServiceImpl(
+            ImagesService imagesService, BrandService brandService,
             UserService userService, @Lazy ProductService productService,
             CategoryService categoryService, StorageService storageService,
-            ImagesService imagesService, BrandService brandService,
-            OrderMainService orderMainService, OrderSubService orderSubService,
-            AddressService addressService, PaymentService paymentService, EntityDtoConversionUtil conversionUtil) {
+            CouponService couponService, OrderMainService orderMainService,
+            OrderSubService orderSubService, AddressService addressService,
+            PaymentService paymentService, EntityDtoConversionUtil conversionUtil) {
         this.userService = userService;
-        this.productService = productService;
-        this.categoryService = categoryService;
-        this.storageService = storageService;
-        this.imagesService = imagesService;
         this.brandService = brandService;
-        this.orderMainService = orderMainService;
-        this.orderSubService = orderSubService;
+        this.imagesService = imagesService;
+        this.couponService = couponService;
+        this.productService = productService;
+        this.storageService = storageService;
         this.addressService = addressService;
         this.paymentService = paymentService;
         this.conversionUtil = conversionUtil;
+        this.categoryService = categoryService;
+        this.orderSubService = orderSubService;
+        this.orderMainService = orderMainService;
     }
 
     //* USER OPS
@@ -389,5 +392,40 @@ public class AdminServiceImpl implements AdminService {
             }
         }
         return date;
+    }
+
+    @Override
+    public PaginationInfo getAllCoupons(Integer pageNo, Integer pageSize) {
+        return couponService.findAll(pageNo,pageSize);
+    }
+
+    @Override
+    public CouponDto getCoupon(Integer couponId) {
+        return couponService.findById(couponId);
+    }
+
+    @Override
+    public CouponDto saveOrUpdate(CouponDto couponDto) {
+        return couponService.save(couponDto);
+    }
+
+    @Override
+    public PaginationInfo filterByExpiryStatus(Integer pageNo, Integer pageSize) {
+        return null;
+    }
+
+    @Override
+    public Boolean isCouponExist(Integer couponId) {
+        return couponService.isExistById(couponId);
+    }
+
+    @Override
+    public String getCouponCode() {
+        return couponService.generateCoupon();
+    }
+
+    @Override
+    public void deleteCoupon(Integer couponId) {
+        couponService.delete(couponId);
     }
 }

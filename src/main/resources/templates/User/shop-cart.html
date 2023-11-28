@@ -1,6 +1,11 @@
 ﻿<!DOCTYPE html>
 <html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
 <th:block th:replace="~{Fragments/UserFragments.html::head-tag}"></th:block>
+<style>
+    .old-price {
+        text-decoration: line-through;
+    }
+</style>
 <body>
 <th:block th:replace="~{Fragments/UserFragments.html::header}"></th:block>
 <th:block th:replace="~{Fragments/UserFragments.html::mobile-view}"></th:block>
@@ -66,8 +71,10 @@
                                 <!-- CART LOOP STARTS -->
                                     <tr th:each="cart :${ProductDetails}">
                                         <td class="image product-thumbnail">
-                                            <img th:src="@{/images/{imgId}(imgId=${cart.product.images[0].id})}"
-                                                 alt="">
+                                            <img th:unless="${#lists.isEmpty(cart.product.images)}" alt=""
+                                                 th:src="@{/images/{imgId}(imgId=${cart.product.images[0].id})}">
+                                            <img th:if="${#lists.isEmpty(cart.product.images)}" alt="NoImage"
+                                                 th:src="@{/assets/admin-assets/imgs/items/No-Image.png}">
                                         </td>
                                         <td class="product-des product-name">
                                             <h5 class="product-name" th:if="${cart.product.status}">
@@ -88,38 +95,35 @@
                                             </div>
                                         </td>
                                         <td class="price" data-title="Price">
-                                            <span th:text="'&#8377; '+${cart.product.price}"></span>
+                                            <span class="h6 px-1" th:text="'&#8377' +${cart.product.discountPrice}"></span>
+                                            <span  th:if="${cart.product.price != cart.product.discountPrice}"
+                                                   class="old-price" th:text="'&#8377' +${cart.product.price}">
+                                            </span>
                                         </td>
                                         <td class="text-center " data-title="Stock">
                                             <!--  QUANTITY UPDATE-->
                                             <div class="button-group row">
-                                                <div class="detail-qty border radius m-auto col-lg-8">
-                                                    <span th:text="${cart.qty}"></span>
-                                                </div>
-                                                <button th:data-id="${cart.id}"
-                                                        th:data-qty="${cart.product.qty}"
-                                                        th:onclick="showModal(this.getAttribute('data-id'),this.getAttribute('data-qty'))"
-                                                        class="d-flex border-0 center_icon p-2 col-lg-4">
-                                                    <i class="material-icons fi-rs-edit" id="editButton"></i>
+                                                <div class="detail-qty border radius m-auto col-lg-8"><span th:text="${cart.qty}"></span></div>
+                                                <button th:data-id="${cart.id}" th:data-qty="${cart.product.qty}"
+                                                        class="d-flex border-0 center_icon p-2 col-lg-4"
+                                                        th:onclick="showModal(this.getAttribute('data-id'),this.getAttribute('data-qty'))">
+                                                        <i class="material-icons fi-rs-edit" id="editButton"></i>
                                                 </button>
                                             </div>
                                             <!-- QUANTITY UPDATE-->
                                         </td>
                                         <td class="price" data-title="Price">
-                                            <span th:text="'&#8377; '+${cart.product.price*cart.qty}"></span>
+                                            <span th:text="'&#8377; '+${cart.product.discountPrice*cart.qty}"></span>
                                         </td>
                                         <td class="action" data-title="Remove">
-                                            <form th:method="delete"
-                                                  th:action="@{/delete-product/{CartId}(CartId = ${cart.id})}"
-                                                  onsubmit="return false">
-                                               <button class="btn border-0"
-                                                       onclick="confirmDelete(this.form)"> <i
-                                                       class="fi-rs-trash" ></i> </button>
+                                            <form th:method="delete" onsubmit="return false"
+                                                  th:action="@{/delete-product/{CartId}(CartId = ${cart.id})}">
+                                               <button class="btn border-0" onclick="confirmDelete(this.form)">
+                                                   <i class="fi-rs-trash" ></i>
+                                               </button>
                                             </form>
                                         </td>
-
                                     </tr>
-
                                 <!-- CART LOOP END -->
                                     <tr>
                                         <td colspan="6" class="text-end">
@@ -135,36 +139,13 @@
                             </table>
                         </div>
                         <div class="cart-action text-end">
-                            <a class="btn "><i class="fi-rs-shopping-bag mr-10"></i>Continue Shopping</a><!-- LINK TO HOME-->
+                            <a class="btn" th:href="@{/user/home}">
+                                <i class="fi-rs-shopping-bag mr-10"></i>Continue Shopping
+                            </a>
                         </div>
                         <div class="divider center_icon mt-50 mb-50"><i class="fi-rs-fingerprint"></i></div>
                         <div class="row mb-50">
-                            <div class="col-lg-6 col-md-12">
-                                <div class="mb-30 mt-50">
-                                    <div class="heading_s1 mb-3">
-                                        <h4>Apply Coupon</h4>
-                                    </div>
-                                    <div class="total-amount">
-                                        <div class="left">
-                                            <div class="coupon">
-                                                <form action="#" target="_blank">
-                                                    <div class="form-row row justify-content-center">
-                                                        <div class="form-group col-lg-6">
-                                                            <label>
-                                                                <input class="font-medium" name="Coupon" placeholder="Enter Your Coupon">
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-group col-lg-6">
-                                                            <button class="btn btn-success-light btn-sm"><i
-                                                                    class="fi-rs-label mr-10"></i>Apply</button>
-                                                        </div>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <div class="col-lg-6 col-md-12"></div>
                             <div class="col-lg-6 col-md-12">
                                 <div class="border p-md-4 p-30 border-radius cart-totals">
                                     <div class="heading_s1 mb-3">
@@ -184,16 +165,17 @@
                                                 </tr>
                                                 <tr>
                                                     <td class="cart_total_label">Total</td>
-                                                    <td class="cart_total_amount"><strong><span
-                                                            class="font-xl fw-900 text-brand"
-                                                            th:text="'&#8377; '+${TotalAmount}"></span></strong></td>
+                                                    <td class="cart_total_amount">
+                                                        <strong>
+                                                            <span class="font-xl fw-900 text-brand" th:text="'&#8377; '+${TotalAmount}"></span>
+                                                        </strong>
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
-                                    <a th:href="@{/checkout-page}" class="btn btn-brand"> <i
-                                            class="fi-rs-box-alt mr-10"></i>
-                                        Proceed To CheckOut
+                                    <a th:href="@{/checkout-page}" class="btn btn-brand">
+                                        <i class="fi-rs-box-alt mr-10"></i>Proceed To CheckOut
                                     </a>
                                 </div>
                             </div>

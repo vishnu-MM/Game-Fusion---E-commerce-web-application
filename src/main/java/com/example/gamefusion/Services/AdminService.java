@@ -60,6 +60,7 @@ public interface AdminService {
     void updateOrderMain(OrderMainDto orderMainDto);
     List<OrderSubDto> findOrderSubByMain(Integer orderId);
     AddressDto getUserAddress(Integer addressId);
+    Map<Integer, PaymentDto> getPaymentInfoByOrder(List<OrderMain> contents);
 
     //? Sales Report
     Map<String,Integer> filterGraphBasedOnDate(String filterBy);
@@ -68,5 +69,13 @@ public interface AdminService {
     PaginationInfo filterOrderByDayAndStatus(Integer pageNo, Integer pageSize, Date date, Integer statusFilter);
     PaginationInfo filterOrderByDateAndStatus(Integer pageNo, Integer pageSize,String startDate, String endDate, Integer statusFilter);
 
-    Map<Integer, PaymentDto> getPaymentInfoByOrder(List<OrderMain> contents);
+    //? Coupon
+    PaginationInfo getAllCoupons(Integer pageNo, Integer pageSize);
+    CouponDto getCoupon(Integer id);
+    CouponDto saveOrUpdate(CouponDto couponDto);
+    PaginationInfo filterByExpiryStatus(Integer pageNo, Integer pageSize);
+    Boolean isCouponExist(Integer couponId);
+    String getCouponCode();
+
+    void deleteCoupon(Integer couponId);
 }

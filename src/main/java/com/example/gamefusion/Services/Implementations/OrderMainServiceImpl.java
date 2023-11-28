@@ -148,20 +148,21 @@ public class OrderMainServiceImpl implements OrderMainService {
 
     @Override
     public OrderMainDto save(Integer addressId, Integer paymentOption,
-                             UserDto userDto, Integer totalAmount) {
+                             UserDto userDto, Integer totalAmount, Double discount) {
 
+        Double discountedAmount = totalAmount - ((discount / 100) * totalAmount);
         String paymentMethod = PaymentMethodUtil.getPaymentMethodByValue(paymentOption);
-        OrderMainDto orderMainDto = new OrderMainDto();
-        orderMainDto.setDate( Date.valueOf(LocalDate.now()) );
-        orderMainDto.setStatus(String.valueOf(OrderStatusUtil.PENDING));
-        orderMainDto.setUserId(userDto.getId());
-        orderMainDto.setAddressId(addressId);
-        orderMainDto.setAmount(totalAmount);
-        orderMainDto.setPaymentMethod(paymentMethod);
 
-        orderMainDto = save(orderMainDto);;
-        //decrementQuantity(orderMainDto);
+        OrderMainDto orderMainDto = new OrderMainDto();
+        orderMainDto.setAddressId(addressId);
+        orderMainDto.setAmount(discountedAmount);
+        orderMainDto.setPaymentMethod(paymentMethod);
+        orderMainDto.setStatus(String.valueOf(OrderStatusUtil.PENDING));
+        orderMainDto.setDate(Date.valueOf(LocalDate.now()));
+        orderMainDto.setUserId(userDto.getId());
+        orderMainDto = save(orderMainDto);
         orderMainDto.setOrderId(generateOrderId(orderMainDto));
+
         return save(orderMainDto);
     }
 

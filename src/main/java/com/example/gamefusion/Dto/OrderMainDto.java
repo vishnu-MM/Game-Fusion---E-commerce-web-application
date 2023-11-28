@@ -19,7 +19,7 @@ public class OrderMainDto {
     private Date date;
     @NotNull
     @PositiveOrZero
-    private Integer amount;
+    private Double amount;
     @NotNull
     private String paymentMethod;
     @NotNull
