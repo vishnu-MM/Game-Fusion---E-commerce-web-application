@@ -20,8 +20,8 @@ public interface AdminService {
      void unBlockUser(Integer id);
 
      //? Category
-     void addNewCategory(CategoryDto categoryDto);
-     void updateCategory(CategoryDto categoryDto);
+     CategoryDto addNewCategory(CategoryDto categoryDto);
+     CategoryDto updateCategory(CategoryDto categoryDto);
      PaginationInfo getAllCategory(Integer pageNo, Integer pageSize);
      List<CategoryDto> getAllCategory();
      CategoryDto getCategoryInfo(Long id);
@@ -61,6 +61,7 @@ public interface AdminService {
     List<OrderSubDto> findOrderSubByMain(Integer orderId);
     AddressDto getUserAddress(Integer addressId);
     Map<Integer, PaymentDto> getPaymentInfoByOrder(List<OrderMain> contents);
+    Integer getCancelOrderRequestCount();
 
     //? Sales Report
     Map<String,Integer> filterGraphBasedOnDate(String filterBy);
@@ -76,6 +77,14 @@ public interface AdminService {
     PaginationInfo filterByExpiryStatus(Integer pageNo, Integer pageSize);
     Boolean isCouponExist(Integer couponId);
     String getCouponCode();
-
     void deleteCoupon(Integer couponId);
+
+    //? Category Offer
+    Boolean isCategoryOfferExists(CategoryDto categoryDto);
+    CategoryOfferDto saveCategoryOffer(CategoryOfferDto categoryOfferDto);
+    CategoryOfferDto getCategoryOffer(Long categoryId);
+
+    PaginationInfo getCancelRequest(Integer pageNo, Integer pageSize);
+
+    void approveCancelRequest(Integer orderId);
 }

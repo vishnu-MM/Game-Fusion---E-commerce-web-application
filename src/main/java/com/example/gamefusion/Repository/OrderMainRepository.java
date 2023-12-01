@@ -16,6 +16,7 @@ import java.util.Map;
 public interface OrderMainRepository extends JpaRepository<OrderMain,Integer> {
 
     Integer countAllByDate(Date date);
+    Integer countAllByStatus(String status);
     @Query("SELECT COUNT(o) FROM OrderMain o where year(o.date) = ?1 and month(o.date) = ?2")
     Integer countAllByDateYearAndDateMonth(int year, int month);
     Page<OrderMain> findByUser(Pageable pageable, User user);

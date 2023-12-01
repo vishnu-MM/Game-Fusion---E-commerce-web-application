@@ -3,12 +3,10 @@ package com.example.gamefusion.Controller;
 import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
 import com.example.gamefusion.Dto.*;
 import com.example.gamefusion.Entity.Cart;
-import com.example.gamefusion.Entity.Coupon;
 import com.example.gamefusion.Entity.OrderSub;
 import com.example.gamefusion.Services.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,6 +18,7 @@ import java.util.List;
 public class OrderController {
     private final UserService userService;
     private final CartService cartService;
+    private final WalletService walletService;
     private final CouponService couponService;
     private final AddressService addressService;
     private final PaymentService paymentService;
@@ -30,11 +29,13 @@ public class OrderController {
 
     @Autowired
     public OrderController(UserService userService, AddressService addressService,
-                           CartService cartService, CouponService couponService, PaymentService paymentService,
+                           CartService cartService, WalletService walletService,
+                           CouponService couponService, PaymentService paymentService,
                            OrderSubService orderSubService, OrderMainService orderMainService,
                            UserCouponsService userCouponsService, EntityDtoConversionUtil conversionUtil) {
         this.userService = userService;
         this.cartService = cartService;
+        this.walletService = walletService;
         this.couponService = couponService;
         this.conversionUtil = conversionUtil;
         this.paymentService = paymentService;
@@ -84,9 +85,12 @@ public class OrderController {
         orderSubService.save(orderMainDto.getId(),cart);
         paymentService.save(paymentOption,orderMainDto);
 
-        if (paymentOption != 1) {
+        if (paymentOption == 2)
             return "redirect:/online-payment?orderId="+orderMainDto.getId();
-        }
+
+        else if (paymentOption == 3)
+            return "redirect:/wallet-payment?orderId="+orderMainDto.getId();
+
         return "User/shop-place_order-success";
     }
 
@@ -112,7 +116,7 @@ public class OrderController {
     @PutMapping("/cancel-order/{orderID}")
     private String cancelOrder(@PathVariable("orderID") Integer orderId) {
         if (orderMainService.isExistsByID(orderId))
-            orderMainService.cancelOrder(orderId);
+            orderMainService.requestCancelOrder(orderId);
         return "redirect:/my-orders";
     }
 

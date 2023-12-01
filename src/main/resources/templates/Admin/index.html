@@ -13,7 +13,7 @@
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/admin-assets/imgs/theme/favicon.svg}">
     <link th:href="@{/assets/admin-assets/css/main.css}" rel="stylesheet" type="text/css" />
 </head>
-<body>
+<body onload="timedRefresh(5000);">
 <div class="screen-overlay"></div>
 <th:block th:replace="~{Fragments/AdminFragments.html::navbar-aside}"></th:block>
 <main class="main-wrap">
@@ -94,5 +94,7 @@
 <script th:src="@{/assets/admin-assets/js/main.js}" type="text/javascript"></script>
 <script th:src="@{/assets/js/AjaxFile.js}"></script>
 <script th:src="@{/assets/admin-assets/js/custom-chart.js}" type="text/javascript"></script>
+<script th:src="@{/assets/admin-assets/js/PeriodicRefresh.js}" type="text/javascript"></script>
+<script th:src="@{/assets/admin-assets/js/OrderCancelNotification.js}"></script>
 </body>
 </html>

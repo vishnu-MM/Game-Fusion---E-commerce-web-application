@@ -12,25 +12,29 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/user")
 public class UserHomeController {
-    private final ProductService productService;
     private final UserService userService;
-    private final CategoryService categoryService;
     private final BrandService brandService;
+    private final WalletService walletService;
     private final AddressService addressService;
+    private final ProductService productService;
+    private final CategoryService categoryService;
     @Autowired
     public UserHomeController(ProductService productService, UserService userService,
                               CategoryService categoryService, BrandService brandService,
-                              AddressService addressService) {
-        this.productService = productService;
+                              AddressService addressService, WalletService walletService) {
         this.userService = userService;
-        this.categoryService = categoryService;
         this.brandService = brandService;
+        this.walletService = walletService;
         this.addressService = addressService;
+        this.productService = productService;
+        this.categoryService = categoryService;
     }
 
 
@@ -167,6 +171,19 @@ public class UserHomeController {
         }
         addressService.save(newAddress);
         return "redirect:/user/my-address";
+    }
+
+    @GetMapping("/my-wallet")
+    public String getMyWallet(Model model, Principal principal) {
+        double balance = 0;
+        UserDto userDto = userService.findByUsername(principal.getName());
+        List<WalletDto> walletDtoList = walletService.findByUser(userDto);
+        if(walletService.existByUser(userDto.getId())) {
+            balance = walletService.getWalletBalance(userDto);
+        }
+        model.addAttribute("Balance",balance);
+        model.addAttribute("TransactionHistory",walletDtoList);
+        return "User/page-my-wallet";
     }
 }
 

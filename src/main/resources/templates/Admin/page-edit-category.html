@@ -75,37 +75,6 @@
     </nav>
 </aside>`
 <main class="main-wrap">
-    <!--<header class="main-header navbar">
-        <div class="col-search">
-            <form class="searchform">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search term">
-                    <button class="btn btn-light bg" type="button"> <i class="material-icons md-search"></i></button>
-                </div>
-            </form>
-        </div>
-        <div class="col-nav">
-            <button class="btn btn-icon btn-mobile me-auto" data-trigger="#offcanvas_aside"> <i class="material-icons md-apps"></i> </button>
-            <ul class="nav">
-                <li class="nav-item">
-                    <a class="nav-link btn-icon darkmode" href="#"> <i class="material-icons md-nights_stay"></i> </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="requestfullscreen nav-link btn-icon"><i class="material-icons md-cast"></i></a>
-                </li>
-                <li class="dropdown nav-item">
-
-                    <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false"> <img class="img-xs rounded-circle" th:src="@{/assets/admin-assets/imgs/people/avatar-2-admin.png}" alt="User"></a>
-                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
-                        <a class="dropdown-item" href="#"><i class="material-icons md-perm_identity"></i>Edit Profile</a>
-                        <a class="dropdown-item" href="#"><i class="material-icons md-settings"></i>Change Password</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item text-danger" href="#"><i class="material-icons md-exit_to_app"></i>Logout</a>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </header>-->
     <th:block th:replace="~{Fragments/AdminFragments.html::main-header}"></th:block>
     <section class="content-main">
         <div class="content-header">
@@ -126,7 +95,9 @@
                         <div class="alert alert-danger v1" th:if="${#fields.hasErrors('CategoryDetails.name')}" th:errors="*{CategoryDetails.name}" ></div>
                         <div class="alert alert-danger v1" th:if="${#fields.hasErrors('CategoryDetails.status')}" th:errors="*{CategoryDetails.status}" ></div>
                     </div>
-                    <form th:method="put" th:action="@{/dashboard/edit-category/update}" th:object="${CategoryDetails}">
+                    <form th:method="put" id="add-category-form"
+                          th:action="@{/dashboard/edit-category/update}" th:object="${CategoryDetails}">
+                        <input type="hidden" name="offerId" th:value="${(OfferDetails == null)? '' : OfferDetails.id}">
                         <div class="container">
                             <div class="row">
                                 <div class="column"><h5>Category Name</h5></div>
@@ -152,11 +123,40 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row"></div>
+                        <div class="pb-2 d-flex justify-content-center align-items-center">
+                            <label>
+                                <span class="px-3">Do you want to add <span class="bold">Offer</span> for this Category</span>
+                                <input type="checkbox" id="show-offer-input" class="form-check-input" checked>
+                            </label>
+                        </div>
+                        <div class="row" id="offer-input">
+                            <div class="column"></div>
+                            <div class="column">
+                                <label for="offer-input-minimum"><h5>Minimum Price Eligible</h5></label>
+                                <input type="number" id="offer-input-minimum" class="form-control"
+                                       placeholder="Minimum Amount Eligible for discount"
+                                       th:value="${(OfferDetails == null)? '' : OfferDetails.minimumAmount}">
+                                <span id="offer-input-minimum-error" style="color: red"></span>
+                            </div>
+                            <div class="column">
+                                <label for="offer-input-percentage"><h5>Offer Percentage</h5></label>
+                                <input type="number" id="offer-input-percentage" class="form-control"
+                                       placeholder="Discount percentage"
+                                       th:value="${(OfferDetails == null)? '' : OfferDetails.discount}">
+                                <span id="offer-input-percentage-error" style="color: red"></span>
+                            </div>
+                            <div class="column">
+                                <label for="offer-input-expiryDate"><h5>Expiry Date</h5></label>
+                                <input type="date" id="offer-input-expiryDate" class="form-control"
+                                       th:value="${(OfferDetails == null)? '' : OfferDetails.expiryDate}">
+                                <span id="offer-input-expiryDate-error" style="color: red"></span>
+                            </div>
+                            <div class="column"></div>
+                        </div>
                         <div class="row">
                             <div class="column"></div>
                             <div class="column">
-                                <button type="submit" class="btn btn btn-primary">Submit </button>
+                                <button type="submit" id="add-category-btn" class="btn btn btn-primary">Submit </button>
                             </div>
                             <div class="column"></div>
                         </div>
@@ -166,12 +166,15 @@
         </div>
     </section>
 </main>
-<script th:src="@{assets/admin-assets/js/vendors/jquery-3.6.0.min.js}"></script>
-<script th:src="@{assets/admin-assets/js/vendors/bootstrap.bundle.min.js}"></script>
-<script th:src="@{assets/admin-assets/js/vendors/select2.min.js}"></script>
-<script th:src="@{assets/admin-assets/js/vendors/perfect-scrollbar.js}"></script>
-<script th:src="@{assets/admin-assets/js/vendors/jquery.fullscreen.min.js}"></script>
-<script th:src="@{assets/admin-assets/js/main.js}" type="text/javascript"></script>
+<script th:src="@{/assets/admin-assets/js/vendors/jquery-3.6.0.min.js}"></script>
+<script th:src="@{/assets/admin-assets/js/vendors/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/assets/admin-assets/js/vendors/select2.min.js}"></script>
+<script th:src="@{/assets/admin-assets/js/vendors/perfect-scrollbar.js}"></script>
+<script th:src="@{/assets/admin-assets/js/vendors/jquery.fullscreen.min.js}"></script>
+<script th:src="@{/assets/admin-assets/js/main.js}" type="text/javascript"></script>
 <script th:src="@{/assets/js/AjaxFile.js}"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script th:src="@{/assets/admin-assets/js/CategoryOffer.js}"></script>
+<script th:src="@{/assets/admin-assets/js/OrderCancelNotification.js}"></script>
 </body>
 </html>

@@ -56,13 +56,18 @@
                                             <span class="font-small ml-5 text-muted"> (25 reviews)</span>
                                         </div>
                                     </div>
-                                    <div class="clearfix product-price-cover">
+                                    <div class="clearfix product-price-cover row">
                                         <div class="product-price primary-color float-left">
                                             <ins><span class="text-brand"
                                                        th:text="'&#8377; '+${ProductDetails.discountPrice}"></span></ins>
                                             <ins><span th:if="${ProductDetails.price != ProductDetails.discountPrice}" class="old-price font-md ml-15"
                                                         th:text="'&#8377; '+${ProductDetails.price}"></span></ins>
                                             <span id="save-price" class="save-price  font-md color3 ml-15"></span>
+                                        </div>
+                                        <div class="p-2">
+                                            <span class="h6  primary-color"></span>
+                                            <span id="category-offer" class="h4  text-success"></span>
+                                            <span class="h6  primary-color"></span>
                                         </div>
                                     </div>
                                     <div class="bt-1 border-color-1 mt-15 mb-15"></div>
@@ -262,6 +267,22 @@
             let discountPercentage = ((originalPrice-offerPrice)/originalPrice)*100
             $('#save-price').text(discountPercentage+'% Off')
         }
+
+        let category = [[${ProductDetails.categoryId}]]
+        let product = [[${ProductDetails.id}]]
+        let offerTag = $('#category-offer');
+        $.ajax({
+            type:'GET',
+            url:'/get-category-offer',
+            dataType:'JSON',
+            data:{categoryId:category,productId:product},
+            success:function (response){
+                offerTag.prev().text("Product in this category have ")
+                offerTag.text(+response.discount+"%")
+                offerTag.next().text(" Discount")
+            },
+            error:function (error){console.log(error)}
+        })
     })
 </script>
 </body>

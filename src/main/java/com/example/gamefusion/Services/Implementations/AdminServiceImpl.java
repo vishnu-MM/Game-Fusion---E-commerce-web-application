@@ -19,6 +19,7 @@ import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -34,9 +35,11 @@ public class AdminServiceImpl implements AdminService {
     private final OrderSubService orderSubService;
     private final OrderMainService orderMainService;
     private final EntityDtoConversionUtil conversionUtil;
+    private final CategoryOfferService categoryOfferService;
 
     @Autowired
     public AdminServiceImpl(
+            CategoryOfferService categoryOfferService,
             ImagesService imagesService, BrandService brandService,
             UserService userService, @Lazy ProductService productService,
             CategoryService categoryService, StorageService storageService,
@@ -55,6 +58,7 @@ public class AdminServiceImpl implements AdminService {
         this.categoryService = categoryService;
         this.orderSubService = orderSubService;
         this.orderMainService = orderMainService;
+        this.categoryOfferService = categoryOfferService;
     }
 
     //* USER OPS
@@ -90,13 +94,13 @@ public class AdminServiceImpl implements AdminService {
     //* CATEGORY OPS
 
     @Override
-    public void addNewCategory(CategoryDto categoryDto) {
-        categoryService.save(categoryDto);
+    public CategoryDto addNewCategory(CategoryDto categoryDto) {
+        return categoryService.save(categoryDto);
     }
 
     @Override
-    public void updateCategory(CategoryDto categoryDto) {
-        categoryService.save(categoryDto);
+    public CategoryDto updateCategory(CategoryDto categoryDto) {
+        return categoryService.save(categoryDto);
     }
 
     @Override
@@ -140,8 +144,8 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public Long addOrUpdateProduct(ProductDto productDto) {
-//        ProductDto oldProductDto = productService.getProductById(productDto.getId());
-//        productDto.setImageIds(oldProductDto.getImageIds());
+/*      ProductDto oldProductDto = productService.getProductById(productDto.getId());
+        productDto.setImageIds(oldProductDto.getImageIds());*/
         return productService.save(productDto);
     }
 
@@ -236,7 +240,6 @@ public class AdminServiceImpl implements AdminService {
             }
             case "YEAR" -> {
                 LocalDate startDate = LocalDate.parse(endDate.getYear()+"-01-01");
-                LocalDate newEndDate = LocalDate.parse(endDate.getYear()+"-12-31");
                 if (startDate.isAfter(endDate))
                     throw new DateTimeException("Invalid Start and Ending date");
                 return orderMainService.getOrderCountByYear(startDate, endDate);
@@ -363,6 +366,12 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public Integer getCancelOrderRequestCount() {
+        Integer count =  orderMainService.countCancelRequest();
+        return (count == null) ? 0 : count;
+    }
+
+    @Override
     public Integer getProductCountByBrand(Long brandID) {
         if (brandService.existsById(brandID)) throw new EntityNotFoundException("Brand Not found");
         Brand brand = conversionUtil.dtoToEntity(brandService.findById(brandID));
@@ -427,5 +436,35 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void deleteCoupon(Integer couponId) {
         couponService.delete(couponId);
+    }
+
+    @Override
+    public Boolean isCategoryOfferExists(CategoryDto categoryDto) {
+        return categoryOfferService.isExistsByCategory(categoryDto);
+    }
+
+    @Override
+    public CategoryOfferDto saveCategoryOffer(CategoryOfferDto categoryOfferDto) {
+        return categoryOfferService.save(categoryOfferDto);
+    }
+
+    @Override
+    public CategoryOfferDto getCategoryOffer(Long categoryId) {
+        CategoryDto categoryDto = categoryService.findById(categoryId);
+        if (!categoryOfferService.isExistsByCategory(categoryDto)) return null;
+        return categoryOfferService.findByCategory(categoryDto);
+    }
+
+    @Override
+    public PaginationInfo getCancelRequest(Integer pageNo, Integer pageSize) {
+        return orderMainService.findOrderByStatus(String.valueOf(OrderStatusUtil.REQUEST_CANCEL),pageNo,pageSize);
+    }
+
+    @Override
+    public void approveCancelRequest(Integer orderId) {
+       String status = orderMainService.findOrderById(orderId).getStatus();
+       if (Objects.equals(status, String.valueOf(OrderStatusUtil.REQUEST_CANCEL)) ||
+           Objects.equals(status, String.valueOf(OrderStatusUtil.REQUEST_REPLACE)) )
+           orderMainService.approveCancelRequest(orderId);
     }
 }

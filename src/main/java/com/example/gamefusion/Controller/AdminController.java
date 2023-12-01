@@ -1,15 +1,12 @@
 package com.example.gamefusion.Controller;
 
+import com.example.gamefusion.Configuration.UtilityClasses.PageToListUtil;
 import com.example.gamefusion.Dto.*;
 import com.example.gamefusion.Entity.BrandLogo;
 import com.example.gamefusion.Entity.OrderMain;
 import com.example.gamefusion.Services.AdminService;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +15,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.sql.Date;
+import java.text.DecimalFormat;
 import java.util.*;
 
 @Controller
@@ -67,7 +67,7 @@ public class AdminController {
                                     @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize) {
         model.addAttribute("Error",error);
         model.addAttribute("UserList", adminService.getAllUsers(pageNo, pageSize));
-        return "Admin/page-users-list";
+        return "Admin/page-view-users";
     }
 
     @PutMapping("/block-unblock-user/{id}")
@@ -89,7 +89,7 @@ public class AdminController {
                                        @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize) {
         PaginationInfo paginationInfo = adminService.getAllCategory(pageNo, pageSize);
         model.addAttribute("CategoryList", paginationInfo);
-        return "Admin/page-categories";
+        return "Admin/page-view-categories";
     }
 
     @GetMapping("/get-category/{parentId}")
@@ -112,38 +112,67 @@ public class AdminController {
     }
 
     @PostMapping("/add-category/save")
-    public String addNewCategory(@Valid @ModelAttribute("NewCategory") CategoryDto newCategory, BindingResult result) {
-        if(adminService.isCategoryNameExist(newCategory.getName())){
-            result.rejectValue("name", String.valueOf(HttpStatus.CONFLICT),"Category with the same name exists");
+    public String addNewCategory(@Valid @ModelAttribute("NewCategory") CategoryDto newCategory, BindingResult result,
+                                 @RequestParam( name = "minimumAmount", required = false) Integer minimumAmount,
+                                 @RequestParam( name = "discount", required = false) Double discount,
+                                 @RequestParam( name = "expiryDate", required = false) String expiryDate) {
+
+        if(adminService.isCategoryNameExist(newCategory.getName()))
+            result.rejectValue("name", String.valueOf(HttpStatus.CONFLICT),
+                                "Category with the same name exists");
+
+        if (result.hasErrors()) return "Admin/page-add-category";
+
+        CategoryDto categoryDto = adminService.addNewCategory(newCategory);
+
+        if (minimumAmount != null && discount != null && expiryDate != null) {
+            CategoryOfferDto categoryOffer = new CategoryOfferDto();
+            categoryOffer.setMinimumAmount(minimumAmount);
+            categoryOffer.setExpiryDate(Date.valueOf(expiryDate));
+            categoryOffer.setCategoryId(categoryDto.getId());
+            categoryOffer.setDiscount(
+                    Double.valueOf(new DecimalFormat("000.00").format(discount))
+            );
+            adminService.saveCategoryOffer(categoryOffer);
         }
-        if (result.hasErrors()) {
-            return "Admin/page-add-category";
-        }
-        adminService.addNewCategory(newCategory);
         return "redirect:/dashboard/view-categories?success";
     }
 
     @GetMapping("/edit-category/{id}")
     public String getEditCategoryForm(@PathVariable("id") Long id, Model model) {
         model.addAttribute("parentList", adminService.getAllCategory());
+        model.addAttribute("OfferDetails", adminService.getCategoryOffer(id));
         model.addAttribute("CategoryDetails", adminService.getCategoryInfo(id));
         return "Admin/page-edit-category";
     }
 
     @PutMapping("/edit-category/update")
     public String editCategory(@Valid @ModelAttribute("NewCategory") CategoryDto newCategory,
-                               BindingResult result, Model model) {
-        boolean isSuccess;
+                               BindingResult result, Model model,
+                               @RequestParam( name = "offerId", required = false) Long offerId,
+                               @RequestParam( name = "minimumAmount", required = false) Integer minimumAmount,
+                               @RequestParam( name = "discount", required = false) Double discount,
+                               @RequestParam( name = "expiryDate", required = false) String expiryDate) {
+
         if (result.hasErrors()) {
             model.addAttribute("parentList", adminService.getAllCategory());
             model.addAttribute("CategoryDetails", adminService.getCategoryInfo(newCategory.getId()));
-            isSuccess = false;
+            return "Admin/page-edit-category";
         } else {
-            adminService.updateCategory(newCategory);
-            isSuccess = true;
+            CategoryDto categoryDto = adminService.updateCategory(newCategory);
+            if (minimumAmount != null && discount != null && expiryDate != null) {
+                CategoryOfferDto categoryOffer = new CategoryOfferDto();
+                categoryOffer.setMinimumAmount(minimumAmount);
+                categoryOffer.setExpiryDate(Date.valueOf(expiryDate));
+                categoryOffer.setCategoryId(categoryDto.getId());
+                categoryOffer.setDiscount(
+                        Double.valueOf(new DecimalFormat("000.00").format(discount))
+                );
+                if(offerId != null) categoryOffer.setId(offerId);
+                adminService.saveCategoryOffer(categoryOffer);
+            }
         }
-        model.addAttribute("success",isSuccess);
-        return "Admin/page-edit-category";
+        return "redirect:/dashboard/view-categories?success";
     }
 
     @PutMapping("/update-status/{id}")
@@ -159,7 +188,7 @@ public class AdminController {
                                   @RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
                                   @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
         model.addAttribute("ProductPage", adminService.getAllProduct(pageNo,pageSize));
-        return "Admin/page-products-grid";
+        return "Admin/page-view-products";
     }
 
     @GetMapping("/add-product")
@@ -270,28 +299,24 @@ public class AdminController {
     public String viewAllBrands(Model model,
                                 @RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
                                 @RequestParam(value = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
+        PageToListUtil<BrandDto> conversionUtil = new PageToListUtil<>();
         PaginationInfo paginationInfo = adminService.getAllBrands(pageNo, pageSize);
-        Map<Long,Integer> brandCount = adminService.getProductCountByBrandPage((List<BrandDto>) paginationInfo.getContents());
+        Map<Long,Integer> brandCount = adminService.getProductCountByBrandPage(conversionUtil.convert(paginationInfo));
 
         model.addAttribute("BrandPage",paginationInfo);
         model.addAttribute("BrandCount",brandCount);
-        return "Admin/page-brands";
+        return "Admin/page-view-brands";
     }
-
-//    @GetMapping("/brand/{BrandID}")
-//    public String viewBrand(@PathVariable("BrandID") String brandId) {
-//        return "";
-//    }
 
     @GetMapping("/add-new-brand")
     public String addNewBrand(Model model) {
         model.addAttribute("NewBrand",new BrandDto());
         return "Admin/page-add-brand";
     }
-    
+
     @PostMapping("/add-new-brand/save")
-    public String addNewBrandSave(@ModelAttribute("NewBrand") BrandDto brandDto,BindingResult result,
-                                  MultipartFile file,Model model) {
+    public String addNewBrandSave(@ModelAttribute("NewBrand") BrandDto brandDto,
+                                  BindingResult result, MultipartFile file,Model model) {
         if (result.hasErrors()) {
             model.addAttribute("NewBrand",new BrandDto());
             return "Admin/page-add-brand";
@@ -304,15 +329,22 @@ public class AdminController {
         return "redirect:/dashboard/brands";
     }
 
-//    @GetMapping("/edit-brand/{BrandID}")
-//    public String editBrand(@PathVariable("BrandID") String brandId) {
-//        return "";
-//    }
-//
-//    @PutMapping("/edit-brand/update")
-//    public String editBrandUpdate() {
-//        return "";
-//    }
+/*
+    @GetMapping("/brand/{BrandID}")
+    public String viewBrand(@PathVariable("BrandID") String brandId) {
+        return "";
+    }
+
+    @GetMapping("/edit-brand/{BrandID}")
+    public String editBrand(@PathVariable("BrandID") String brandId) {
+        return "";
+    }
+
+    @PutMapping("/edit-brand/update")
+    public String editBrandUpdate() {
+        return "";
+    }
+ */
 
     @PutMapping("/update-brand-status/{BrandID}")
     public String updateBrandStatus(@PathVariable("BrandID") Long brandId) {
@@ -327,11 +359,14 @@ public class AdminController {
     public String viewAllOrders(Model model,
                                 @RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
                                 @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize) {
+
+        PageToListUtil<OrderMain> conversionUtil = new PageToListUtil<>();
         PaginationInfo paginationInfo = adminService.getAllOrders(pageNo, pageSize);
-        Map<Integer,PaymentDto> paymentInfo = adminService.getPaymentInfoByOrder((List<OrderMain>) paginationInfo.getContents());
+        Map<Integer,PaymentDto> paymentInfo = adminService.getPaymentInfoByOrder(conversionUtil.convert(paginationInfo));
+
         model.addAttribute("OrderMainList", paginationInfo);
         model.addAttribute("paymentInfo", paymentInfo);
-        return "Admin/page-orders-1";
+        return "Admin/page-view-orders";
     }
 
     @GetMapping("/order-details")
@@ -400,7 +435,7 @@ public class AdminController {
         model.addAttribute("EndDate", endDate);
         model.addAttribute("StatusFilter", statusFilter);
         model.addAttribute("OrderMainList", paginationInfo);
-        return "Admin/page-sales-report";
+        return "Admin/page-view-sales_report";
     }
 
     private static Boolean isValidDate(String dateString) {
@@ -414,7 +449,7 @@ public class AdminController {
                               @RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
                               @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize) {
         model.addAttribute("CouponList",adminService.getAllCoupons(pageNo,pageSize));
-        return "Admin/page-coupon";
+        return "Admin/page-view-coupons";
     }
 
     @GetMapping("/coupon-details/{couponID}")
@@ -474,5 +509,54 @@ public class AdminController {
             adminService.deleteCoupon(couponId);
         }
         return "redirect:/dashboard/view-coupons";
+    }
+
+    @GetMapping("/cancel-order-request/count")
+    @ResponseBody
+    public Integer getCancelOrderRequestCount() {
+        return adminService.getCancelOrderRequestCount();
+    }
+
+    @GetMapping("/cancel-order-request")
+    public String getCancelOrderRequest(Model model,
+                                        @RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
+                                        @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize) {
+
+        PageToListUtil<OrderMain> conversionUtil = new PageToListUtil<>();
+        PaginationInfo paginationInfo = adminService.getCancelRequest(pageNo, pageSize);
+        Map<Integer,PaymentDto> paymentInfo = adminService.getPaymentInfoByOrder(conversionUtil.convert(paginationInfo));
+
+        model.addAttribute("OrderMainList", paginationInfo);
+        model.addAttribute("paymentInfo", paymentInfo);
+        return "Admin/page-view-orders-cancel-request";
+    }
+
+    @GetMapping("/order-details/{orderId}")
+    public String getOrderDetails(@PathVariable Integer orderId,Model model) {
+        if (!adminService.isOrderExists(orderId))
+            return "redirect:/dashboard";
+
+        OrderMainDto orderMainDto = adminService.getOrderById(orderId);
+        List<OrderSubDto> orderSub = adminService.findOrderSubByMain(orderId);
+        AddressDto addressDto = adminService.getUserAddress(orderMainDto.getAddressId());
+        Map<Integer,ProductDto> orderProducts = new HashMap<>();
+        for (OrderSubDto osd : orderSub)
+            orderProducts.put(osd.getId(), adminService.getProduct(osd.getProductId()));
+
+        model.addAttribute("OrderMainDto",orderMainDto);
+        model.addAttribute("Products",orderProducts);
+        model.addAttribute("OrderSubDto",orderSub);
+        model.addAttribute("Address",addressDto);
+
+        return "Admin/page-view-orders-details";
+    }
+
+
+    @GetMapping("/approve-cancel")
+    public String approveCancelRequest(@RequestParam("OrderId") Integer orderId) {
+        if (!adminService.isOrderExists(orderId))
+            return "redirect:/dashboard/cancel-order-request";
+        adminService.approveCancelRequest(orderId);
+        return "redirect:/dashboard/cancel-order-request";
     }
 }

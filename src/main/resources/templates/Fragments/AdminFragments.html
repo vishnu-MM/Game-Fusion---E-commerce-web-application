@@ -13,7 +13,6 @@
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/admin-assets/imgs/theme/favicon.svg}">
     <link th:href="@{/assets/admin-assets/css/main.css}" rel="stylesheet" type="text/css" />
 </head>
-
 <body>
 
 <aside class="navbar-aside" id="offcanvas_aside" th:fragment="navbar-aside">
@@ -118,6 +117,12 @@
                 <!-- PROFILE ENDS-->
             </li>
             <li class="nav-item">
+                <a class="nav-link btn-icon" th:href="@{/dashboard/cancel-order-request}">
+                    <i class="material-icons md-notifications animation-shake"></i>
+                    <span class="badge rounded-pill" id="cancel-request-notification"></span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link btn-icon darkmode" href="#"> <i class="material-icons md-nights_stay"></i> </a>
             </li>
             <li class="nav-item">
@@ -131,5 +136,6 @@
 </header>
 <script th:src="@{/assets/js/AjaxFile.js}"></script>
 <script th:src="@{/assets/admin-assets/js/PeriodicRefresh.js}"></script>
+<script th:src="@{/assets/admin-assets/js/OrderCancelNotification.js}"></script>
 </body>
 </html>

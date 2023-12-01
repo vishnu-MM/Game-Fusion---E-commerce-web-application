@@ -18,21 +18,24 @@ public class EntityDtoConversionUtil {
     private final ImagesRepository imagesRepository;
     private final AddressRepository addressRepository;
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
     private final OrderMainRepository orderMainRepository;
     private final BrandLogoRepository brandLogoRepository;
     @Autowired
-    public EntityDtoConversionUtil(ModelMapper mapper, ImagesRepository imagesRepository,
+    public EntityDtoConversionUtil(ModelMapper mapper,
+                                   UserRepository userRepository, CouponRepository couponRepository,
                                    AddressRepository addressRepository, ProductRepository productRepository,
-                                   OrderMainRepository orderMainRepository, BrandLogoRepository brandLogoRepository,
-                                   UserRepository userRepository, CouponRepository couponRepository) {
+                                   CategoryRepository categoryRepository, ImagesRepository imagesRepository,
+                                   OrderMainRepository orderMainRepository, BrandLogoRepository brandLogoRepository) {
         this.mapper = mapper;
+        this.userRepository = userRepository;
         this.imagesRepository = imagesRepository;
+        this.couponRepository = couponRepository;
         this.addressRepository = addressRepository;
         this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
         this.orderMainRepository = orderMainRepository;
         this.brandLogoRepository = brandLogoRepository;
-        this.userRepository = userRepository;
-        this.couponRepository = couponRepository;
     }
 
     //? ENTITY TO DTO
@@ -98,6 +101,12 @@ public class EntityDtoConversionUtil {
     }
     public CouponDto entityToDto(Coupon coupon) {
       return mapper.map(coupon,CouponDto.class);
+    }
+    public CategoryOfferDto entityToDto(CategoryOffer categoryOffer) {
+      return mapper.map(categoryOffer,CategoryOfferDto.class);
+    }
+    public WalletDto entityToDto(Wallet wallet) {
+      return mapper.map(wallet,WalletDto.class);
     }
 
     //? DTO TO ENTITY
@@ -177,6 +186,13 @@ public class EntityDtoConversionUtil {
         );
         return payment;
     }
+    public CategoryOffer dtoToEntity(CategoryOfferDto categoryOfferDto) {
+        CategoryOffer categoryOffer = mapper.map(categoryOfferDto,CategoryOffer.class);
+        categoryOffer.setCategory(
+            categoryRepository.findById(categoryOfferDto.getCategoryId()).orElse(null)
+        );
+        return categoryOffer;
+    }
     public UserCoupons dtoToEntity(UserCouponsDto userCouponsDto) {
         UserCoupons userCoupons = new UserCoupons();
         userCoupons.setUser(userRepository.findById(userCouponsDto.getUserId()).orElse(null));
@@ -184,4 +200,12 @@ public class EntityDtoConversionUtil {
         if (userCouponsDto.getId() != null ) userCoupons.setId(userCouponsDto.getId());
         return userCoupons;
     }
+    public Wallet dtoToEntity(WalletDto walletDto) {
+        Wallet wallet = mapper.map(walletDto,Wallet.class);
+        wallet.setUser(
+            userRepository.findById(walletDto.getUserId()).orElse(null)
+        );
+        return wallet;
+    }
+
 }

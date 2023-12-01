@@ -1,11 +1,7 @@
 ﻿<!DOCTYPE html>
 <html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
 <th:block th:replace="~{Fragments/UserFragments.html::head-tag}"></th:block>
-<style>
-    .old-price {
-        text-decoration: line-through;
-    }
-</style>
+<style>.old-price {text-decoration: line-through;}</style>
 <body>
 <th:block th:replace="~{Fragments/UserFragments.html::header}"></th:block>
 <th:block th:replace="~{Fragments/UserFragments.html::mobile-view}"></th:block>
@@ -78,10 +74,18 @@
                                         </td>
                                         <td class="product-des product-name">
                                             <h5 class="product-name" th:if="${cart.product.status}">
+
                                                 <a href="#"><span th:text="${#strings.abbreviate(cart.product.name,50)}"></span></a>
+
+                                                <span  th:unless="${#maps.isEmpty(OfferApplied.get(cart.product.id))}" class="" style="color: green">
+                                                    <span th:each="offer :${OfferApplied.get(cart.product.id).keySet()}">
+                                                        <br>
+                                                        <span th:text="${offer}+' '+
+                                                                ${OfferApplied.get(cart.product.id).get(offer)}+'%'"></span>
+                                                    </span>
+                                                </span>
                                             </h5>
-                                            <div class="d-flex flex-column justify-content-center"
-                                                 th:unless="${cart.product.status}">
+                                            <div class="d-flex flex-column justify-content-center" th:unless="${cart.product.status}">
                                                 <div>
                                                     <h5 class="product-name">
                                                         <a href="#">
@@ -97,8 +101,7 @@
                                         <td class="price" data-title="Price">
                                             <span class="h6 px-1" th:text="'&#8377' +${cart.product.discountPrice}"></span>
                                             <span  th:if="${cart.product.price != cart.product.discountPrice}"
-                                                   class="old-price" th:text="'&#8377' +${cart.product.price}">
-                                            </span>
+                                                   class="old-price" th:text="'&#8377' +${cart.product.price}"></span>
                                         </td>
                                         <td class="text-center " data-title="Stock">
                                             <!--  QUANTITY UPDATE-->
@@ -107,7 +110,7 @@
                                                 <button th:data-id="${cart.id}" th:data-qty="${cart.product.qty}"
                                                         class="d-flex border-0 center_icon p-2 col-lg-4"
                                                         th:onclick="showModal(this.getAttribute('data-id'),this.getAttribute('data-qty'))">
-                                                        <i class="material-icons fi-rs-edit" id="editButton"></i>
+                                                    <i class="material-icons fi-rs-edit" id="editButton"></i>
                                                 </button>
                                             </div>
                                             <!-- QUANTITY UPDATE-->
@@ -128,8 +131,7 @@
                                     <tr>
                                         <td colspan="6" class="text-end">
                                             <form th:method="delete" th:action="@{/clear-cart}" onsubmit="return false">
-                                                <button class="text-muted btn border-0"
-                                                        onclick="confirmClear(this.form)">
+                                                <button class="text-muted btn border-0" onclick="confirmClear(this.form)">
                                                     <i class="fi-rs-cross-small"></i> Clear Cart
                                                 </button>
                                             </form>
@@ -148,20 +150,19 @@
                             <div class="col-lg-6 col-md-12"></div>
                             <div class="col-lg-6 col-md-12">
                                 <div class="border p-md-4 p-30 border-radius cart-totals">
-                                    <div class="heading_s1 mb-3">
-                                        <h4>Cart Totals</h4>
-                                    </div>
+                                    <div class="heading_s1 mb-3"><h4>Cart Totals</h4></div>
                                     <div class="table-responsive">
                                         <table class="table">
                                             <tbody>
                                                 <tr>
                                                     <td class="cart_total_label">Cart Subtotal</td>
-                                                    <td class="cart_total_amount"><span
-                                                            class="font-lg fw-900 text-brand" th:text="'&#8377; '+${TotalAmount}"></span></td>
+                                                    <td class="cart_total_amount">
+                                                        <span class="font-lg fw-900 text-brand" th:text="'&#8377; '+${TotalAmount}"></span>
+                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <td class="cart_total_label">Shipping</td>
-                                                    <td class="cart_total_amount"> <i class="ti-gift mr-5"></i> Free Shipping</td>
+                                                    <td class="cart_total_amount"><i class="ti-gift mr-5"></i>Free Shipping</td>
                                                 </tr>
                                                 <tr>
                                                     <td class="cart_total_label">Total</td>
@@ -186,35 +187,35 @@
         </section>
     </main>
 <th:block th:replace="~{Fragments/UserFragments.html::footer}"></th:block>
-    <!-- Vendor JS-->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Vendor JS-->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
-<script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script th:src="@{/assets/js/vendor/jquery-migrate-3.3.0.min.js}"></script>
+<script th:src="@{/assets/js/plugins/jquery.countdown.min.js}"></script>
+<script th:src="@{/assets/js/plugins/jquery.theia.sticky.js}"></script>
 <script th:src="@{/assets/js/vendor/bootstrap.bundle.min.js}"></script>
-<script th:src="@{/assets/js/plugins/slick.js}"></script>
 <script th:src="@{/assets/js/plugins/jquery.syotimer.min.js}"></script>
-<script th:src="@{/assets/js/plugins/wow.js}"></script>
-<script th:src="@{/assets/js/plugins/jquery-ui.js}"></script>
+<script th:src="@{/assets/js/plugins/jquery.elevatezoom.js}"></script>
+<script th:src="@{/assets/js/plugins/jquery.vticker-min.js}"></script>
+<script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
 <script th:src="@{/assets/js/plugins/perfect-scrollbar.js}"></script>
+<script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
 <script th:src="@{/assets/js/plugins/magnific-popup.js}"></script>
+<script th:src="@{/assets/js/plugins/images-loaded.js}"></script>
 <script th:src="@{/assets/js/plugins/select2.min.js}"></script>
 <script th:src="@{/assets/js/plugins/waypoints.js}"></script>
 <script th:src="@{/assets/js/plugins/counterup.js}"></script>
-<script th:src="@{/assets/js/plugins/jquery.countdown.min.js}"></script>
-<script th:src="@{/assets/js/plugins/images-loaded.js}"></script>
-<script th:src="@{/assets/js/plugins/isotope.js}"></script>
+<script th:src="@{/assets/js/plugins/jquery-ui.js}"></script>
 <script th:src="@{/assets/js/plugins/scrollup.js}"></script>
-<script th:src="@{/assets/js/plugins/jquery.vticker-min.js}"></script>
-<script th:src="@{/assets/js/plugins/jquery.theia.sticky.js}"></script>
-<script th:src="@{/assets/js/plugins/jquery.elevatezoom.js}"></script>
+<script th:src="@{/assets/js/plugins/isotope.js}"></script>
+<script th:src="@{/assets/js/plugins/slick.js}"></script>
+<script th:src="@{/assets/js/plugins/wow.js}"></script>
+<script th:src="@{/assets/js/AjaxFile.js}"></script>
 <script th:src="@{/assets/js/main.js}"></script>
 <script th:src="@{/assets/js/shop.js}"></script>
-<script th:src="@{/assets/js/AjaxFile.js}"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
     function confirmDelete(form) {
         Swal.fire({

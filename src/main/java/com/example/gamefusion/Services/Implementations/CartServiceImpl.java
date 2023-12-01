@@ -5,10 +5,9 @@ import com.example.gamefusion.Dto.CartDto;
 import com.example.gamefusion.Dto.PaginationInfo;
 import com.example.gamefusion.Dto.ProductDto;
 import com.example.gamefusion.Dto.UserDto;
-import com.example.gamefusion.Entity.Cart;
-import com.example.gamefusion.Entity.Product;
-import com.example.gamefusion.Entity.User;
+import com.example.gamefusion.Entity.*;
 import com.example.gamefusion.Repository.CartRepository;
+import com.example.gamefusion.Repository.CategoryOfferRepository;
 import com.example.gamefusion.Services.CartService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -18,16 +17,24 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
+    private final CategoryOfferRepository categoryOfferRepository;
     private final EntityDtoConversionUtil conversionUtil;
     @Autowired
-    public CartServiceImpl(CartRepository cartRepository, EntityDtoConversionUtil conversionUtil) {
+    public CartServiceImpl(CartRepository cartRepository,
+                           CategoryOfferRepository categoryOfferRepository,
+                           EntityDtoConversionUtil conversionUtil) {
         this.cartRepository = cartRepository;
+        this.categoryOfferRepository = categoryOfferRepository;
         this.conversionUtil = conversionUtil;
     }
 
@@ -71,20 +78,54 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    public Map<Long,Map<String,Double>> getOfferCount(List<CartDto> cartListDto) {
+        List<Cart> cartList = cartListDto.stream().map(conversionUtil::dtoToEntity).toList();
+        Map<Long,Map<String,Double>> offerList = new HashMap<>();
+        for ( Cart cart : cartList ) {
+            Product product = cart.getProduct();
+            if (!product.getStatus()) continue;
+
+            if (product.getDiscountPrice() != product.getPrice()){
+                Double discount =   ((product.getPrice() - (double) product.getDiscountPrice()) / product.getPrice()) * 100;
+                offerList.put(product.getId(),Map.of("Product Offer", discount));
+            }
+
+            if(getFinalDiscount(product) != 0.0){
+                offerList.put(product.getId(),Map.of("Category Offer", getFinalDiscount(product)));
+            }
+        }
+        return offerList;
+    }
+
+
+    @Override
     public Integer totalAmount(List<CartDto> cartListDto) {
         List<Cart> cartList = cartListDto.stream().map(conversionUtil::dtoToEntity).toList();
-
         int totalAmount = 0;
         for ( Cart cart : cartList ) {
             Product product = cart.getProduct();
-            if ( product.getStatus()) {
-                int price = (product.getPrice() == product.getDiscountPrice()) ?
-                                product.getPrice() : product.getDiscountPrice();
-                int qty = cart.getQty();
-                totalAmount += price * qty;
-            }
+            if (!product.getStatus())
+                continue;
+            int price = product.getDiscountPrice();
+            price = (int) (price - ((getFinalDiscount(product) / 100) * price));
+            int qty = cart.getQty();
+            totalAmount += price * qty;
         }
         return totalAmount;
+    }
+
+    private Double getFinalDiscount(Product product) {
+        int price = product.getDiscountPrice();
+        Category category = product.getCategory();
+        if (!categoryOfferRepository.existsByCategory(category))
+            return 0.0;
+
+        CategoryOffer Offer = categoryOfferRepository.findByCategory(category);
+        if (price < Offer.getMinimumAmount() ||
+            LocalDate.now().isAfter(Offer.getExpiryDate().toLocalDate()))
+            return 0.0;
+
+        return Offer.getDiscount();
     }
 
     @Override

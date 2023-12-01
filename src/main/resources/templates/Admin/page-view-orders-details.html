@@ -1,0 +1,202 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Game Fusion - Dashboard</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="">
+    <meta property="og:type" content="">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/admin-assets/imgs/theme/favicon.svg}">
+    <link th:href="@{/assets/admin-assets/css/main.css}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</head>
+
+<body onload="timedRefresh()">
+<div class="screen-overlay"></div>
+    <aside class="navbar-aside" id="offcanvas_aside">
+        <div class="aside-top">
+            <a href="#" class="brand-wrap">
+                <img th:src="@{/assets/admin-assets/imgs/theme/New-logo.svg}" class="logo" alt="Evara Dashboard">
+            </a>
+            <div>
+                <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button>
+            </div>
+        </div>
+        <nav>
+            <ul class="menu-aside">
+                <li class="menu-item ">
+                    <a class="menu-link" th:href="@{/dashboard}">
+                        <i class="icon material-icons md-home"></i><span class="text">Dashboard</span>
+                    </a>
+                </li>
+                <li class="menu-item ">
+                    <a class="menu-link" th:href="@{/dashboard/view-products}">
+                        <i class="icon material-icons md-shopping_bag"></i><span class="text">Products</span>
+                    </a>
+                </li>
+                <li class="menu-item ">
+                    <a class="menu-link" th:href="@{/dashboard/view-users}">
+                        <i class="icon material-icons md-person"></i><span class="text">Users</span>
+                    </a>
+                </li>
+                <li class="menu-item ">
+                    <a class="menu-link" th:href="@{/dashboard/brands}">
+                        <i class="icon material-icons md-store"></i><span class="text">Sellers</span>
+                    </a>
+                </li>
+                <li class="menu-item ">
+                    <a class="menu-link" th:href="@{/dashboard/view-categories}">
+                        <i class="icon material-icons md-add_box"></i><span class="text">Categories</span>
+                    </a>
+                </li>
+                <li class="menu-item active">
+                    <a class="menu-link" href="#">
+                        <i class="icon material-icons md-shopping_cart md-monetization_on"></i><span class="text">Orders</span>
+                    </a>
+                </li>
+                <li class="menu-item ">
+                    <a class="menu-link" th:href="@{/dashboard/view-sales-report}">
+                         <i class="icon material-icons md-pie_chart"></i><span class="text">Sales Report</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a class="menu-link" th:href="@{/dashboard/view-coupons}">
+                    <i class="icon material-icons md-local_offer"></i><span class="text">Coupons</span>
+                </a>
+            </li>
+        </ul>
+        </nav>
+    </aside>
+    <main class="main-wrap">
+        <th:block th:replace="~{Fragments/AdminFragments.html::main-header}"></th:block>
+        <section class="content-main">
+            <div class="content-header">
+                <div>
+                    <h2 class="content-title card-title">Dashboard </h2>
+                    <p>Whole data about your business here</p>
+                </div>
+                <div>
+                    <a id="btn-approve" class="btn btn-success px-5"><span>Approve</span></a>
+                    <a id="btn-reject" class="btn btn-danger px-5"><span>Reject</span></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-8 col-lg-12">
+                    <div class="card mb-4">
+                        <article class="card-body">
+                            <h5 class="card-title">Sale statistics</h5>
+                            <div class="table-responsive order_table text-center">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th colspan="2">Product</th>
+                                        <th>Total</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <!--PRODUCT LOOP-->
+                                    <tr th:each="cart : ${OrderSubDto}" >
+                                        <td class="image product-thumbnail">
+                                            <img th:src="@{/images/{imgId}(imgId=${Products.get(cart.id).imageIds[0]})}"
+                                                 style="width: 100px" alt="#">
+                                        </td>
+                                        <td>
+                                            <h5><a href="#">
+                                                <span th:text="${#strings.abbreviate(Products.get(cart.id).name,40)}"></span>
+                                            </a></h5>
+                                        </td>
+                                        <td><span class="h6" th:text="'&#8377;'+${Products.get(cart.id).price}+' x '+${cart.qty}"></span></td>
+                                    </tr>
+                                    <!--PRODUCT LOOP ENDS HERE-->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </article>
+                    </div>
+
+                </div>
+                <div class="col-xl-4 col-lg-12">
+                    <div class="card mb-4">
+                        <article class="card-body">
+                            <h5 class="card-title d-flex center_icon"><i class="material-icons md-location_on"></i>Delivery
+                                Address</h5>
+                            <hr>
+                            <p class="h5"><span th:text="${Address.streetAddress}"></span></p>
+                            <p class="h6">
+                                <span th:text="${Address.district}"></span>,
+                                <span th:text="${Address.state}"></span>,
+                                <span th:text="${Address.country}"></span>
+                            </p>
+                            <p class="h6"><span th:text="'Pin code: '+${Address.pinCode}"></span> </p>
+                            <p class="h6"><span th:text="'Phone: '+${Address.phone}"></span> </p>
+                        </article>
+                    </div>
+                 <div class="card mb-4">
+                        <article class="card-body">
+                            <h5 class="card-title">Order Details</h5>
+                            <table class="table">
+                                <tr>
+                                    <th class="h6">Total Amount</th>
+                                    <td colspan="2" class="product-subtotal">
+                                        <span class="font-xl text-brand fw-900" th:text="'&#8377;'+${OrderMainDto.amount}"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="h6">Date of Order</th>
+                                    <td colspan="2" class="product-subtotal">
+                                        <span class="font-xl text-brand fw-900" th:text="${OrderMainDto.date}"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="h6">Payment Method</th>
+                                    <td colspan="2">
+                                            <span class="font-xl text-brand fw-900 "
+                                                  th:if="${OrderMainDto.paymentMethod}=='CASH_ON_DELIVERY'">
+                                                  Cash On Delivery
+                                            </span>
+                                        <span class="font-xl text-brand fw-900 "
+                                              th:if="${OrderMainDto.paymentMethod}=='ONLINE_PAYMENT'">
+                                                  Online Payment
+                                            </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="h6">Offers Applied</th>
+                                    <td colspan="2">No Offer Applied</td>
+                                </tr>
+                            </table>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <input type="hidden" th:value="${OrderMainDto.id}" id="order-main-id">
+    </main>
+    <script th:src="@{/assets/admin-assets/js/vendors/jquery-3.6.0.min.js}"></script>
+    <script th:src="@{/assets/admin-assets/js/vendors/bootstrap.bundle.min.js}"></script>
+    <script th:src="@{/assets/admin-assets/js/vendors/select2.min.js}"></script>
+    <script th:src="@{/assets/admin-assets/js/vendors/perfect-scrollbar.js}"></script>
+    <script th:src="@{/assets/admin-assets/js/vendors/jquery.fullscreen.min.js}"></script>
+    <script th:src="@{/assets/admin-assets/js/main.js}" type="text/javascript"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script th:src="@{/assets/js/AjaxFile.js}"></script>
+    <script th:src="@{/assets/admin-assets/js/PeriodicRefresh.js}" type="text/javascript"></script>
+    <script th:src="@{/assets/admin-assets/js/OrderCancelNotification.js}"></script>
+    <script>
+        $('#btn-approve').on('click',function (){
+            window.location.href="/dashboard/approve-cancel?OrderId="+$('#order-main-id').val()
+        })
+        $('#btn-reject').on('click',function (){
+
+        })
+    </script>
+</body>
+</html>

@@ -1,4 +1,3 @@
-function timedRefresh(timeoutPeriod) {
-    alert("refreshing")
-    setTimeout("location.reload();",timeoutPeriod);
+function timedRefresh() {
+    setTimeout("location.reload();",10000);
 }

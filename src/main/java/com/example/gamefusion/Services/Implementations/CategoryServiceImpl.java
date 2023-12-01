@@ -29,19 +29,16 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void save(CategoryDto dto) {
+    public CategoryDto save(CategoryDto dto) {
         Category category = conversionUtil.dtoToEntity(dto);
-        categoryRepository.save(category);
+        return conversionUtil.entityToDto(categoryRepository.save(category));
     }
 
     @Override
     public CategoryDto findById(Long id) throws EntityNotFoundException{
         Optional<Category> category = categoryRepository.findById(id);
-        if (category.isPresent()) {
-            return conversionUtil.entityToDto(category.get());
-        } else {
-            throw new EntityNotFoundException("Category not found");
-        }
+        if (category.isPresent()) return conversionUtil.entityToDto(category.get());
+        else throw new EntityNotFoundException("Category not found");
     }
 
     @Override

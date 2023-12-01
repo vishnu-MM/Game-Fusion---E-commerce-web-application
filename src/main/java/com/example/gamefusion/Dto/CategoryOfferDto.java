@@ -1,22 +1,24 @@
 package com.example.gamefusion.Dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.sql.Date;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryDto {
-
+public class CategoryOfferDto {
     private Long id;
-    @NotBlank(message = "Name cannot be blank")
-    private String name;
-    @NotNull(message = "status cannot be blank")
-    private Boolean status;
+    @NotNull
     private Integer minimumAmount;
+    @NotNull
     private Double discount;
-    private Long parentId;
+    @NotNull
+    private Date expiryDate;
+    @NotNull
+    private Long categoryId;
 }

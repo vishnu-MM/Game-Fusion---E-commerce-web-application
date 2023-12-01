@@ -199,9 +199,7 @@
                             </div>
                             <div class="bt-1 border-color-1 mt-30 mb-30"></div>
                             <div class="payment_method">
-                                <div class="mb-25">
-                                    <h5>Payment</h5>
-                                </div>
+                                <div class="mb-25"><h5>Payment</h5></div>
                                 <div class="payment_option">
                                     <div class="custome-radio">
                                         <input class="form-check-input" required="" value="1" type="radio"
@@ -212,8 +210,12 @@
                                         <input class="form-check-input" required="" value="2" type="radio"
                                                name="payment_option" id="exampleRadios4">
                                         <label class="form-check-label" for="exampleRadios4"
-                                               aria-controls="bankTranfer">
-                                            Online Payment
+                                               aria-controls="bankTranfer">Online Payment
+                                        </label><br><br>
+                                        <input class="form-check-input" required="" value="3" type="radio"
+                                               name="payment_option" id="exampleRadios5">
+                                        <label class="form-check-label" for="exampleRadios5"
+                                               aria-controls="bankTranfer">Wallet Payment
                                         </label>
                                     </div>
                                 </div>
@@ -231,32 +233,34 @@
     <th:block th:replace="~{Fragments/UserFragments.html::footer}" ></th:block>
     <!-- Vendor JS-->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
     <script th:src="@{/assets/js/vendor/jquery-migrate-3.3.0.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.countdown.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.theia.sticky.js}"></script>
     <script th:src="@{/assets/js/vendor/bootstrap.bundle.min.js}"></script>
-    <script th:src="@{/assets/js/plugins/slick.js}"></script>
     <script th:src="@{/assets/js/plugins/jquery.syotimer.min.js}"></script>
-    <script th:src="@{/assets/js/plugins/wow.js}"></script>
-    <script th:src="@{/assets/js/plugins/jquery-ui.js}"></script>
+    <script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.elevatezoom.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.vticker-min.js}"></script>
     <script th:src="@{/assets/js/plugins/perfect-scrollbar.js}"></script>
+    <script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
     <script th:src="@{/assets/js/plugins/magnific-popup.js}"></script>
+    <script th:src="@{/assets/js/plugins/images-loaded.js}"></script>
     <script th:src="@{/assets/js/plugins/select2.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery-ui.js}"></script>
     <script th:src="@{/assets/js/plugins/waypoints.js}"></script>
     <script th:src="@{/assets/js/plugins/counterup.js}"></script>
-    <script th:src="@{/assets/js/plugins/jquery.countdown.min.js}"></script>
-    <script th:src="@{/assets/js/plugins/images-loaded.js}"></script>
-    <script th:src="@{/assets/js/plugins/isotope.js}"></script>
     <script th:src="@{/assets/js/plugins/scrollup.js}"></script>
-    <script th:src="@{/assets/js/plugins/jquery.vticker-min.js}"></script>
-    <script th:src="@{/assets/js/plugins/jquery.theia.sticky.js}"></script>
-    <script th:src="@{/assets/js/plugins/jquery.elevatezoom.js}"></script>
+    <script th:src="@{/assets/js/plugins/isotope.js}"></script>
+    <script th:src="@{/assets/js/plugins/slick.js}"></script>
+    <script th:src="@{/assets/js/plugins/wow.js}"></script>
+    <script th:src="@{/assets/js/AjaxFile.js}"></script>
     <script th:src="@{/assets/js/main.js}"></script>
     <script th:src="@{/assets/js/shop.js}"></script>
-    <script th:src="@{/assets/js/AjaxFile.js}"></script>
-    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
     <script>
+        alertify.set('notifier', 'position', 'top-center');
         let couponCode
+        const totalAmount = [[${TotalAmount}]]
         function checkForCredentials(form) {
             let addressId = form.querySelector('input[name="addressId"]:checked');
             if (!addressId) {
@@ -277,13 +281,28 @@
                     value: couponCode
                 }).appendTo(form);
             }
-            form.submit();
+            $.ajax({
+                type:'GET',
+                url:'/wallet-balance',
+                success:function (response){
+                    if(response >= totalAmount)
+                        form.submit();
+                    else {
+                        alertify.success("In Sufficient Balance in Wallet")
+                        alertify.warning("Please try again with another payment option")
+                    }
+                },
+                error: function (error){
+                    alertify.error("Some thing went wrong")
+                    alertify.success("Please try again with another payment option")
+                }
+            })
+
         }
         $('#coupon-btn').on('click',function (e){
             e.stopPropagation();
             e.preventDefault();
             couponCode = document.getElementById('coupon-field').value
-            const totalAmount = [[${TotalAmount}]]
             const csrfHeader = $("meta[name='_csrf_header']").attr("content")
             const csrfToken =  $("meta[name='_csrf']").attr("content")
             $.ajax({

@@ -106,7 +106,9 @@
                     <div class="slider-arrow slider-arrow-2 carausel-6-columns-arrow" id="carausel-6-columns-arrows"></div>
                     <div class="carausel-6-columns" id="carausel-6-columns">
                         <!-- CATEGORY NAME LOOP -->
-                        <div class="card-1" th:each=" category : ${CategoryList}">
+                        <div class="card-1 ribb" th:each=" category : ${CategoryList}">
+<!--                            <img th:if="${category.id}%2 == 0" id="category-offer-img-banner"-->
+<!--                                 th:src="@{/assets/imgs/banner/offer-banner.png}" alt="">-->
                            <a th:href="@{/user/category-filter/{categoryId}(categoryId = ${category.id})}">
                                <h5 th:text="${category.name}"></h5>
                            </a>
@@ -136,26 +138,27 @@
     <!-- JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
-    <script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
     <script th:src="@{/assets/js/vendor/jquery-migrate-3.3.0.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.countdown.min.js}"></script>
     <script th:src="@{/assets/js/vendor/bootstrap.bundle.min.js}"></script>
-    <script th:src="@{/assets/js/plugins/slick.js}"></script>
     <script th:src="@{/assets/js/plugins/jquery.syotimer.min.js}"></script>
-    <script th:src="@{/assets/js/plugins/wow.js}"></script>
-    <script th:src="@{/assets/js/plugins/jquery-ui.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.theia.sticky.js}"></script>
+    <script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.vticker-min.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.elevatezoom.js}"></script>
     <script th:src="@{/assets/js/plugins/perfect-scrollbar.js}"></script>
+    <script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
     <script th:src="@{/assets/js/plugins/magnific-popup.js}"></script>
+    <script th:src="@{/assets/js/plugins/images-loaded.js}"></script>
     <script th:src="@{/assets/js/plugins/select2.min.js}"></script>
     <script th:src="@{/assets/js/plugins/waypoints.js}"></script>
     <script th:src="@{/assets/js/plugins/counterup.js}"></script>
-    <script th:src="@{/assets/js/plugins/jquery.countdown.min.js}"></script>
-    <script th:src="@{/assets/js/plugins/images-loaded.js}"></script>
-    <script th:src="@{/assets/js/plugins/isotope.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery-ui.js}"></script>
     <script th:src="@{/assets/js/plugins/scrollup.js}"></script>
-    <script th:src="@{/assets/js/plugins/jquery.vticker-min.js}"></script>
-    <script th:src="@{/assets/js/plugins/jquery.theia.sticky.js}"></script>
-    <script th:src="@{/assets/js/plugins/jquery.elevatezoom.js}"></script>
+    <script th:src="@{/assets/js/plugins/isotope.js}"></script>
+    <script th:src="@{/assets/js/plugins/slick.js}"></script>
+    <script th:src="@{/assets/js/plugins/wow.js}"></script>
+    <script th:src="@{/assets/js/AjaxFile.js}"></script>
     <script th:src="@{/assets/js/main.js}"></script>
     <script th:src="@{/assets/js/shop.js}"></script>
     <script>

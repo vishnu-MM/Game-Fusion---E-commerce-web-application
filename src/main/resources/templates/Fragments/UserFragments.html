@@ -12,9 +12,11 @@
     <meta property="og:image" content="">
     <meta name="_csrf" th:content="${_csrf.token}" />
     <meta name="_csrf_header" th:content="${_csrf.headerName}" />
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/imgs/theme/favicon.svg}">
     <link rel="stylesheet" th:href="@{/assets/css/main.css}">
     <link rel="stylesheet" th:href="@{/assets/admin-assets/css/main.css}">
@@ -48,12 +50,11 @@
                                     <span  id="phone"></span>
                                 </div>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" th:href="@{/my-orders}" ><i class="material-icons md-shopping_bag">
-                                    </i>My Orders</a>
+                                <a class="dropdown-item" th:href="@{/my-orders}" ><i class="material-icons md-shopping_bag"></i>My Orders</a>
+                                <a class="dropdown-item" th:href="@{/user/my-wallet}" ><i class="material-icons md-money"></i>My Wallet</a>
                                 <a class="dropdown-item" th:href="@{/user/my-address}"><i class="material-icons md-receipt"></i>My Address</a>
                                 <a class="dropdown-item" id="editProfileLink" th:href="@{/user/edit-profile}"><i class="material-icons md-person_outline"></i>Edit Profile</a>
-                                <a class="dropdown-item" th:href="@{/forget-password}">
-                                    <i class="material-icons md-lock"></i>Forget Password</a>
+                                <a class="dropdown-item" th:href="@{/forget-password}"><i class="material-icons md-lock"></i>Forget Password</a>
                                 <div class="dropdown-divider"></div>
                                 <form id="logoutForm" th:action="@{/logout}" method="post">
                                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
@@ -114,14 +115,14 @@
                                     <!-- WISH LIST LINK -->
                                     <a>
                                         <img class="svgInject" alt="Evara" th:src="@{/assets/imgs/theme/icons/icon-heart.svg}">
-                                        <span class="pro-count blue">4</span>
+<!--                                        <span class="pro-count blue">4</span>-->
                                     </a>
                                 </div>
                                 <div class="header-action-icon-2">
                                     <!-- CART LINK -->
                                     <a class="mini-cart-icon" th:href="@{/cart-products}">
                                         <img alt="Evara" th:src="@{/assets/imgs/theme/icons/icon-cart.svg}">
-                                        <span class="pro-count blue">2</span>
+<!--                                        <span class="pro-count blue">2</span>-->
                                     </a>
                                 </div>
                             </div>
@@ -137,7 +138,7 @@
         <div class="mobile-header-wrapper-inner">
             <div class="mobile-header-top">
                 <div class="mobile-header-logo">
-                    <a th:href="@{User/index.html}"><img th:src="@{/assets/imgs/theme/New-logo.svg}" alt="logo"></a>
+                    <a href="#"><img th:src="@{/assets/imgs/theme/New-logo.svg}" alt="logo"></a>
                 </div>
                 <div class="mobile-menu-close close-style-wrap close-style-position-inherit">
                     <button class="close-style search-close">
@@ -263,9 +264,6 @@
                             <li class="menu-item-has-children"><span class="menu-expand"></span><a href="#">Language</a>
                                 <ul class="dropdown">
                                     <li><a href="#">English</a></li>
-                                    <li><a href="#">French</a></li>
-                                    <li><a href="#">German</a></li>
-                                    <li><a href="#">Spanish</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -428,45 +426,30 @@
             </div>
         </section>
     </footer>
-
-    <div th:fragment="preloader" id="preloader-active">
-        <div class="preloader d-flex align-items-center justify-content-center">
-            <div class="preloader-inner position-relative">
-                <div class="text-center">
-                    <h5 class="mb-5">Now Loading</h5>
-                    <div class="loader">
-                        <div class="bar bar1"></div>
-                        <div class="bar bar2"></div>
-                        <div class="bar bar3"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     <!-- JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
-    <script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
     <script th:src="@{/assets/js/vendor/jquery-migrate-3.3.0.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.countdown.min.js}"></script>
     <script th:src="@{/assets/js/vendor/bootstrap.bundle.min.js}"></script>
-    <script th:src="@{/assets/js/plugins/slick.js}"></script>
     <script th:src="@{/assets/js/plugins/jquery.syotimer.min.js}"></script>
-    <script th:src="@{/assets/js/plugins/wow.js}"></script>
-    <script th:src="@{/assets/js/plugins/jquery-ui.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.theia.sticky.js}"></script>
+    <script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.vticker-min.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery.elevatezoom.js}"></script>
     <script th:src="@{/assets/js/plugins/perfect-scrollbar.js}"></script>
+    <script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
     <script th:src="@{/assets/js/plugins/magnific-popup.js}"></script>
+    <script th:src="@{/assets/js/plugins/images-loaded.js}"></script>
     <script th:src="@{/assets/js/plugins/select2.min.js}"></script>
+    <script th:src="@{/assets/js/plugins/jquery-ui.js}"></script>
     <script th:src="@{/assets/js/plugins/waypoints.js}"></script>
     <script th:src="@{/assets/js/plugins/counterup.js}"></script>
-    <script th:src="@{/assets/js/plugins/jquery.countdown.min.js}"></script>
-    <script th:src="@{/assets/js/plugins/images-loaded.js}"></script>
-    <script th:src="@{/assets/js/plugins/isotope.js}"></script>
     <script th:src="@{/assets/js/plugins/scrollup.js}"></script>
-    <script th:src="@{/assets/js/plugins/jquery.vticker-min.js}"></script>
-    <script th:src="@{/assets/js/plugins/jquery.theia.sticky.js}"></script>
-    <script th:src="@{/assets/js/plugins/jquery.elevatezoom.js}"></script>
+    <script th:src="@{/assets/js/plugins/isotope.js}"></script>
+    <script th:src="@{/assets/js/plugins/slick.js}"></script>
+    <script th:src="@{/assets/js/plugins/wow.js}"></script>
+    <script th:src="@{/assets/js/AjaxFile.js}"></script>
     <script th:src="@{/assets/js/main.js}"></script>
     <script th:src="@{/assets/js/shop.js}"></script>
-    <script th:src="@{/assets/js/AjaxFile.js}"></script>
 </body>
 </html>

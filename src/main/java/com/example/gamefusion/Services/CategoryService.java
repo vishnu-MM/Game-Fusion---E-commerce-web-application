@@ -7,8 +7,8 @@ import com.example.gamefusion.Entity.Category;
 import java.util.List;
 
 public interface CategoryService {
-    
-    void save(CategoryDto dto);
+
+    CategoryDto save(CategoryDto dto);
     void activateCategory(Long id);
     void deActivateCategory(Long id);
     CategoryDto findById(Long id);

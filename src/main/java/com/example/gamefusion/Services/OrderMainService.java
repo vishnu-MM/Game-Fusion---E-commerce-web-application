@@ -9,7 +9,9 @@ import java.time.LocalDate;
 import java.util.Map;
 
 public interface OrderMainService {
-    void cancelOrder(Integer orderId);
+    void requestCancelOrder(Integer orderId);
+    void approveCancelRequest(Integer orderId);
+    Integer countCancelRequest();
     Boolean isExistsByID(Integer orderId);
     OrderMainDto findOrderById(Integer orderId);
     OrderMainDto save(OrderMainDto orderMainDto);

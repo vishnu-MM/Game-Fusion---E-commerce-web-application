@@ -33,8 +33,10 @@ public class CartController {
         UserDto userDto = userService.findByUsername(principal.getName());
         List<Cart> cart = cartService.findByUser(userDto);
         List<CartDto> cartDto = cart.stream().map(conversionUtil::entityToDto).toList();
-        model.addAttribute("TotalAmount",cartService.totalAmount(cartDto));
+
         model.addAttribute("ProductDetails", cart);
+        model.addAttribute("TotalAmount",cartService.totalAmount(cartDto));
+        model.addAttribute("OfferApplied", cartService.getOfferCount(cartDto));
         return "User/shop-cart";
     }
 
