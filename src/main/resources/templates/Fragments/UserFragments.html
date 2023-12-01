@@ -34,34 +34,26 @@
                                 <img class="img-xs rounded-circle" th:src="@{/assets/admin-assets/imgs/people/avatar-2-admin.png}" alt="User">
                             </a>
                             <div class="dropdown-menu">
-                                <div class="dropdown-item">
-                                    <i class="material-icons md-person"></i>
-                                    <span> </span>
-                                    <span  id="name"></span>
-                                </div>
-                                <div class="dropdown-item">
-                                    <i class="material-icons md-email"></i>
-                                    <span> </span>
-                                    <span  id="email"></span>
-                                </div>
-                                <div class="dropdown-item">
-                                    <i class="material-icons md-phone_android"></i>
-                                    <span> </span>
-                                    <span  id="phone"></span>
-                                </div>
+                                <div class="dropdown-item"><i class="material-icons md-person"></i><span></span><span id="name"></span></div>
+                                <div class="dropdown-item"><i class="material-icons md-email"></i><span></span><span id="email"></span></div>
+                                <div class="dropdown-item"><i class="material-icons md-phone_android"></i><span></span><span id="phone"></span></div>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" th:href="@{/my-orders}" ><i class="material-icons md-shopping_bag"></i>My Orders</a>
-                                <a class="dropdown-item" th:href="@{/user/my-wallet}" ><i class="material-icons md-money"></i>My Wallet</a>
-                                <a class="dropdown-item" th:href="@{/user/my-address}"><i class="material-icons md-receipt"></i>My Address</a>
-                                <a class="dropdown-item" id="editProfileLink" th:href="@{/user/edit-profile}"><i class="material-icons md-person_outline"></i>Edit Profile</a>
-                                <a class="dropdown-item" th:href="@{/forget-password}"><i class="material-icons md-lock"></i>Forget Password</a>
-                                <div class="dropdown-divider"></div>
-                                <form id="logoutForm" th:action="@{/logout}" method="post">
-                                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-                                    <button class="dropdown-item btn btn-outline-success-light font-lg" type="submit">
-                                        <i class="material-icons md-exit_to_app "></i>  Logout
-                                    </button>
-                                </form>
+                                    <a class="dropdown-item" th:href="@{/my-orders}" ><i class="material-icons md-shopping_bag"></i>My Orders</a>
+                                    <a class="dropdown-item" th:href="@{/user/my-wallet}" ><i class="material-icons md-money"></i>My Wallet</a>
+                                    <a class="dropdown-item" th:href="@{/user/my-address}"><i class="material-icons md-receipt"></i>My Address</a>
+                                    <a class="dropdown-item" id="editProfileLink" th:href="@{/user/edit-profile}"><i class="material-icons md-person_outline"></i>Edit Profile</a>
+                                    <a class="dropdown-item" th:href="@{/forget-password}"><i class="material-icons md-lock"></i>Forget Password</a>
+
+                                    <a data-bs-toggle="modal" data-bs-target="#referralModal" class="dropdown-item" id="invite-link">
+                                        <i class="material-icons md-share"></i>Invite a friend</a>
+
+                                    <div class="dropdown-divider"></div>
+                                    <form id="logoutForm" th:action="@{/logout}" method="post">
+                                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+                                        <button class="dropdown-item btn btn-outline-success-light font-lg" type="submit">
+                                            <i class="material-icons md-exit_to_app "></i>  Logout
+                                        </button>
+                                    </form>
                             </div>
                         </div>
                     </div>

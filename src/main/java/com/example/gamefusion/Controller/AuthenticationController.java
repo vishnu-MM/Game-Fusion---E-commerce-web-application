@@ -1,8 +1,10 @@
 package com.example.gamefusion.Controller;
 
 import com.example.gamefusion.Dto.UserDto;
+import com.example.gamefusion.Dto.WalletDto;
 import com.example.gamefusion.Services.OTPService;
 import com.example.gamefusion.Services.UserService;
+import com.example.gamefusion.Services.WalletService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -16,17 +18,25 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Collection;
+import java.util.UUID;
 
 @Controller
 public class AuthenticationController {
 
-    private final UserService userService;
     private final OTPService otpService;
+    private final UserService userService;
+    private final WalletService walletService;
     @Autowired
-    public AuthenticationController(UserService userService, OTPService otpService) {
-        this.userService = userService;
+    public AuthenticationController(OTPService otpService,
+                                    UserService userService,
+                                    WalletService walletService) {
         this.otpService = otpService;
+        this.userService = userService;
+        this.walletService = walletService;
     }
 
     @GetMapping("/")
@@ -45,21 +55,29 @@ public class AuthenticationController {
     }
 
     @GetMapping("/login-or-registration")
-    public String getLoginForm(Authentication authentication, Model model, HttpServletRequest request) {
+    public String getLoginForm(Authentication authentication, Model model, HttpServletRequest request,
+                               HttpSession session,
+                               @RequestParam(name = "referralID", required = false) UUID referralID) {
         if (authentication != null) return "redirect:/";
         request.getSession(true);
+
+        if (referralID != null)
+            session.setAttribute("Referral",referralID);
+
         model.addAttribute("NewUser", new UserDto());
         return "User/page-login-register";
     }
 
     @PostMapping("/user-registration/verify")
-    public String saveNewUser( @Valid @ModelAttribute("NewUser") UserDto userDto,BindingResult result, HttpSession session ) {
-        if (userService.isExistsByUsername(userDto.getUsername())) {
-            result.rejectValue("username", String.valueOf(HttpStatus.CONFLICT),"User with this email is already exist");
-        }
-        if (result.hasErrors()) {
+    public String saveNewUser(@Valid @ModelAttribute("NewUser") UserDto userDto,
+                              BindingResult result, HttpSession session ) {
+        if (userService.isExistsByUsername(userDto.getUsername()))
+            result.rejectValue("username", String.valueOf(HttpStatus.CONFLICT),
+                                "User with this email is already exist");
+
+        if (result.hasErrors())
             return "User/page-login-register";
-        }
+
         session.setAttribute("UserDetails",userDto);
         return "redirect:/sent-otp";
     }
@@ -77,18 +95,41 @@ public class AuthenticationController {
     }
 
     @PostMapping("/otp-validation/verify")
-    public String validateOTP(@RequestParam("otp") String otp, Model model,
-                              HttpSession session) {
+    public String validateOTP(@RequestParam("otp") String otp, Model model,HttpSession session) {
+
         UserDto userDto = (UserDto) session.getAttribute("UserDetails");
         String msg = otpService.verifyOTP(userDto.getUsername(), otp);
-        if (msg.equals("SUCCESS")) {
-            userService.save(userDto);
-            session.removeAttribute("UserDetails");
-            model.addAttribute("Success",true);
+
+        if (!msg.equals("SUCCESS")) {
+            getError(model, msg);
             return "User/page-otp-verification";
         }
-        getError(model, msg);
-        return "User/page-otp-verification";
+
+        UserDto savedUser = userService.save(userDto);
+        session.removeAttribute("UserDetails");
+
+        model.addAttribute("Success",true);
+        if (session.getAttribute("Referral") == null)
+            return "User/page-otp-verification";
+
+        UUID referralID = (UUID) session.getAttribute("Referral");
+        if (!userService.isUserExistsByReferralCode(referralID))
+            return "User/page-otp-verification";
+
+        WalletDto walletDto = new WalletDto();
+        walletDto.setAmount(51.0);
+        walletDto.setUserId(savedUser.getId());
+        walletDto.setTransactionType("Credit");
+        walletDto.setDateTime(Date.valueOf(LocalDate.now()));
+        walletDto.setDescription("Rewarded for completing a referral");
+        walletService.save(walletDto);
+
+        UserDto existingUser = userService.findUserByReferralCode(referralID);
+        walletDto.setAmount(501.0);
+        walletDto.setUserId(existingUser.getId());
+        walletService.save(walletDto);
+
+         return "User/page-otp-verification";
     }
 
     @GetMapping("/forget-password")

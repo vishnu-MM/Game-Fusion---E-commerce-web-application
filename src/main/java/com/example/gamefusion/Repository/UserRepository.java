@@ -8,13 +8,16 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 @Repository
 public interface UserRepository extends JpaRepository<User,Integer> {
 
     User findByUsername(String username);
-//    User findUserByUsername(String username);
     Page<User> findUsersByRole(String role, Pageable pageable);
     Boolean existsByUsername(String username);
+    Boolean existsByReferralCode(UUID referralCode);
+    User findByReferralCode(UUID referralCode);
     boolean existsById(Integer id);
 
     @Modifying

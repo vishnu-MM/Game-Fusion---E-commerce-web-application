@@ -17,22 +17,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
+    private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final EntityDtoConversionUtil conversionUtil;
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, EntityDtoConversionUtil conversionUtil) {
-        this.userRepository = userRepository;
+    public UserServiceImpl(UserRepository repository, PasswordEncoder passwordEncoder, EntityDtoConversionUtil conversionUtil) {
+        this.repository = repository;
         this.passwordEncoder = passwordEncoder;
         this.conversionUtil = conversionUtil;
     }
 
     @Override
-    public void save(UserDto newUser) {
+    public UserDto save(UserDto newUser) {
         User user = new User();
         user.setFirstName(newUser.getFirstName());
         user.setLastName(newUser.getLastName());
@@ -40,27 +41,28 @@ public class UserServiceImpl implements UserService {
         user.setUsername(newUser.getUsername());
         user.setRole("USER");
         user.setIsActive(true);
+        user.setReferralCode(UUID.randomUUID());
         user.setPassword(
                 passwordEncoder.encode(newUser.getPassword())
         );
-        userRepository.save(user);
+        return conversionUtil.entityToDto(repository.save(user));
     }
 
     @Override
     public void update(UserDto userDto) {
         User user = conversionUtil.dtoToEntity(userDto);
-        userRepository.save(user);
+        repository.save(user);
     }
 
     @Override
     public UserDto findByUsername(String receiver) {
-        User user = userRepository.findByUsername(receiver);
+        User user = repository.findByUsername(receiver);
         return conversionUtil.entityToDto(user);
     }
 
     @Override
     public UserDto findById(Integer id) {
-        Optional<User> user = userRepository.findById(id);
+        Optional<User> user = repository.findById(id);
         if (user.isPresent())
             return conversionUtil.entityToDto(user.get());
         else
@@ -69,23 +71,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean isExistsByUsername(String username) {
-        return userRepository.existsByUsername(username);
+        return repository.existsByUsername(username);
     }
 
     @Override
     public Boolean isExistsById(Integer id) {
-        return userRepository.existsById(id);
+        return repository.existsById(id);
     }
 
     @Override
     public Boolean isBlocked(Integer id) {
-        return userRepository.findIsActiveById(id);
+        return repository.findIsActiveById(id);
     }
 
     @Override
     public PaginationInfo findAllUsers(Integer pageNo, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id"));
-        Page<User> users = userRepository.findUsersByRole("USER",pageable);
+        Page<User> users = repository.findUsersByRole("USER",pageable);
         List<User> listOfUser = users.getContent();
         List<UserDto> contents = listOfUser.stream().map(conversionUtil::entityToDto).toList();
 
@@ -99,14 +101,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public void block(Integer id) {
         if (isExistsById(id) && isBlocked(id)) {
-            userRepository.blockUser(id);
+            repository.blockUser(id);
         }
     }
 
     @Override
     public void unBlock(Integer id) {
         if (isExistsById(id) && !isBlocked(id)) {
-            userRepository.unBlockUser(id);
+            repository.unBlockUser(id);
         }
     }
 
@@ -114,9 +116,19 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void resetPassword(Integer id, String password) {
         if (isExistsById(id)) {
-            userRepository.updatePasswordById( id,
+            repository.updatePasswordById( id,
                     passwordEncoder.encode(password)
             );
         }
+    }
+
+    @Override
+    public Boolean isUserExistsByReferralCode(UUID referral) {
+        return repository.existsByReferralCode(referral);
+    }
+
+    @Override
+    public UserDto findUserByReferralCode(UUID referral) {
+        return conversionUtil.entityToDto(repository.findByReferralCode(referral));
     }
 }

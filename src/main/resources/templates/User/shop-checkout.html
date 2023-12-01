@@ -281,22 +281,26 @@
                     value: couponCode
                 }).appendTo(form);
             }
-            $.ajax({
-                type:'GET',
-                url:'/wallet-balance',
-                success:function (response){
-                    if(response >= totalAmount)
-                        form.submit();
-                    else {
-                        alertify.success("In Sufficient Balance in Wallet")
-                        alertify.warning("Please try again with another payment option")
+
+            if (paymentOption.value === '3') {
+                $.ajax({
+                    type: 'GET',
+                    url: '/wallet-balance',
+                    success: function (response) {
+                        if (response >= totalAmount)
+                            form.submit();
+                        else {
+                            alertify.success("In Sufficient Balance in Wallet")
+                            alertify.warning("Please try again with another payment option")
+                        }
+                    },
+                    error: function (error) {
+                        alertify.error("Some thing went wrong")
+                        alertify.success("Please try again with another payment option")
                     }
-                },
-                error: function (error){
-                    alertify.error("Some thing went wrong")
-                    alertify.success("Please try again with another payment option")
-                }
-            })
+                })
+            }
+            else{ form.submit();}
 
         }
         $('#coupon-btn').on('click',function (e){

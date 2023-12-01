@@ -59,3 +59,11 @@
 .error-msg{
     color: firebrick;
 }
+
+.dot {
+    height: 35px;
+    width: 35px;
+    background-color: #dfdfdf;
+    border-radius: 50%;
+    display: inline-block;
+}

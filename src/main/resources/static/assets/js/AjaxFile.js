@@ -21,6 +21,19 @@ $(document).ready(function() {
         });
     });
 
+    $('#invite-link').on('click',function (){
+        $.ajax({
+            type: 'GET',
+            url:'/user/referral-link',
+            success: function (response){
+                $('#referral-link').attr('value',response)
+            },
+            error:function (error){
+                alert("Something went wrong")
+            }
+        })
+    })
+
     $('.dropdown-item').on('click', function() {
         toggleDropdown();
     });
@@ -55,4 +68,26 @@ function isValid() {
         return false;
     }
     return true;
+}
+function copyToClipBoard() {
+    alertify.set('notifier', 'position', 'middle-center');
+    $.ajax({
+        type: 'GET',
+        url:'/user/referral-link',
+        success: function (response){
+            navigator.clipboard.writeText(response)
+                .then(function() {
+
+                    alertify.success('Link copied to clipboard!');
+                })
+                .catch(function(error) {
+                    console.error('Error copying to clipboard: ', error);
+                    alertify.error('Something went wrong');
+                });
+        },
+        error:function (error){
+            alert("Something went wrong")
+        }
+    })
+
 }

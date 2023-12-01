@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -30,6 +31,8 @@ public class User {
     private String password;
     @Column( name = "active_status")
     private Boolean isActive;
+    @Column( name = "referral_id")
+    private UUID referralCode;
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     @EqualsAndHashCode.Exclude

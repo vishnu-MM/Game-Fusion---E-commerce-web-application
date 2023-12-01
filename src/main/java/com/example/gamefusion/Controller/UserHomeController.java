@@ -4,17 +4,15 @@ import com.example.gamefusion.Dto.*;
 import com.example.gamefusion.Services.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Controller
 @RequestMapping("/user")
@@ -25,6 +23,8 @@ public class UserHomeController {
     private final AddressService addressService;
     private final ProductService productService;
     private final CategoryService categoryService;
+    @Value("${referral_url}")
+    private String REFERRAL_URL;
     @Autowired
     public UserHomeController(ProductService productService, UserService userService,
                               CategoryService categoryService, BrandService brandService,
@@ -184,6 +184,14 @@ public class UserHomeController {
         model.addAttribute("Balance",balance);
         model.addAttribute("TransactionHistory",walletDtoList);
         return "User/page-my-wallet";
+    }
+
+    @GetMapping("/referral-link")
+    @ResponseBody
+    public String getReferralLink(Principal principal) {
+        UserDto userDto = userService.findByUsername(principal.getName());
+        System.out.println(REFERRAL_URL+"?referralID="+userDto.getReferralCode());
+        return REFERRAL_URL+"?referralID="+userDto.getReferralCode();
     }
 }
 

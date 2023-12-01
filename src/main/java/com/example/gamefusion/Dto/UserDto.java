@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -27,5 +28,6 @@ public class UserDto {
     @Size(min = 8 , message = "Password should be greater than 8 characters")
     private String password;
     private Boolean isActive;
+    private UUID referralCode;
     private List<Integer> addressId;
 }
