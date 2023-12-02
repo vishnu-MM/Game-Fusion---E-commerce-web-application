@@ -283,6 +283,11 @@ public class OrderMainServiceImpl implements OrderMainService {
     }
 
     @Override
+    public List<OrderMain> findAll() {
+        return repository.findAll(Sort.by("date").descending());
+    }
+
+    @Override
     public Integer countCancelRequest() {
         return repository.countAllByStatus(String.valueOf(OrderStatusUtil.REQUEST_CANCEL));
     }

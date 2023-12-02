@@ -205,6 +205,11 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public List<OrderMain> getAllOrders() {
+        return orderMainService.findAll();
+    }
+
+    @Override
     public OrderMainDto getOrderById(Integer orderId) {
         return orderMainService.findOrderById(orderId);
     }

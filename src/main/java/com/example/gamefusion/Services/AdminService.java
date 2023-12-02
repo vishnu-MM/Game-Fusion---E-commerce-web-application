@@ -55,6 +55,7 @@ public interface AdminService {
 
     //? Order Main & Sub
     PaginationInfo getAllOrders(Integer pageNo, Integer pageSize);
+    List<OrderMain> getAllOrders();
     OrderMainDto getOrderById(Integer orderId);
     Boolean isOrderExists(Integer orderId);
     void updateOrderMain(OrderMainDto orderMainDto);
@@ -83,8 +84,6 @@ public interface AdminService {
     Boolean isCategoryOfferExists(CategoryDto categoryDto);
     CategoryOfferDto saveCategoryOffer(CategoryOfferDto categoryOfferDto);
     CategoryOfferDto getCategoryOffer(Long categoryId);
-
     PaginationInfo getCancelRequest(Integer pageNo, Integer pageSize);
-
     void approveCancelRequest(Integer orderId);
 }

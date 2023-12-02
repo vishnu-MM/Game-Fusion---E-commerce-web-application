@@ -1,14 +1,11 @@
 package com.example.gamefusion.Controller;
 
-import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
-import com.example.gamefusion.Configuration.UtilityClasses.PDFGenerator;
 import com.example.gamefusion.Configuration.UtilityClasses.PageToListUtil;
+import com.example.gamefusion.Configuration.UtilityClasses.SalesReportExcelExporter;
 import com.example.gamefusion.Dto.*;
 import com.example.gamefusion.Entity.BrandLogo;
 import com.example.gamefusion.Entity.OrderMain;
-import com.example.gamefusion.Entity.OrderSub;
 import com.example.gamefusion.Services.AdminService;
-import com.example.gamefusion.Services.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,12 +29,9 @@ import java.util.*;
 public class AdminController {
 
     private final AdminService adminService;
-    private final EntityDtoConversionUtil conversionUtil;
     @Autowired
-    public AdminController(AdminService adminService,
-                           EntityDtoConversionUtil conversionUtil) {
+    public AdminController(AdminService adminService) {
         this.adminService = adminService;
-        this.conversionUtil = conversionUtil;
     }
     
     //* DASH BOARD
@@ -568,6 +562,19 @@ public class AdminController {
         adminService.approveCancelRequest(orderId);
         return "redirect:/dashboard/cancel-order-request";
     }
+    @GetMapping("/sales-report/download")
+    public void exportToExcel(HttpServletResponse response) {
+        response.setContentType("application/octet-stream");
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+        String currentDateTime = dateFormatter.format(new java.util.Date());
 
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=users_" + currentDateTime + ".xlsx";
+        response.setHeader(headerKey, headerValue);
+
+        List<OrderMain> orderMainList = adminService.getAllOrders();
+        SalesReportExcelExporter excelExporter = new SalesReportExcelExporter(orderMainList);
+        excelExporter.export(response);
+    }
 
 }
