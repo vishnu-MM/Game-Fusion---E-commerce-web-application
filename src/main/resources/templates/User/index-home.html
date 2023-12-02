@@ -42,9 +42,7 @@
                     <div class="col-lg-3">
                         <div class="widget-category mb-30">
                             <h5 class="section-title style-1 mb-30 wow fadeIn animated">Category</h5>
-                            <ul class="categories">
-                                <li><a th:href="@{User/shop-grid-right.html}">CATEGORY LIST</a></li>
-                            </ul>
+                            <ul class="categories"><li><a th:href="@{User/shop-grid-right.html}">CATEGORY LIST</a></li></ul>
                         </div>
                         <div class="widget-category mb-30">
                             <h5 class="section-title style-1 mb-30 wow fadeIn animated">Sort by</h5>
@@ -86,7 +84,10 @@
                                                     </a>
                                                 </div>
                                                 <div class="product-action-1">
-                                                    <a aria-label="Add To Wishlist" class="action-btn hover-up" th:href="@{User/shop-wishlist.html}"><i class="fi-rs-heart"></i></a>
+                                                    <a aria-label="Add To Wishlist" class="action-btn hover-up" th:data-id="${product.id}"
+                                                       th:onclick="addToWishList(this.getAttribute('data-id'))">
+                                                        <i class="fi-rs-heart"></i>
+                                                    </a>
                                                 </div>
                                             </div>
                                             <div class="product-content-wrap">
@@ -137,8 +138,6 @@
                     <div class="carausel-6-columns" id="carausel-6-columns">
                         <!-- CATEGORY NAME LOOP -->
                         <div class="card-1 ribb" th:each=" category : ${CategoryList}">
-<!--                            <img th:if="${category.id}%2 == 0" id="category-offer-img-banner"-->
-<!--                                 th:src="@{/assets/imgs/banner/offer-banner.png}" alt="">-->
                            <a th:href="@{/user/category-filter/{categoryId}(categoryId = ${category.id})}">
                                <h5 th:text="${category.name}"></h5>
                            </a>
@@ -167,7 +166,7 @@
     <div th:replace="~{Fragments/UserFragments.html::footer}"></div>
     <!-- JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
     <script th:src="@{/assets/js/vendor/jquery-migrate-3.3.0.min.js}"></script>
     <script th:src="@{/assets/js/plugins/jquery.countdown.min.js}"></script>
     <script th:src="@{/assets/js/vendor/bootstrap.bundle.min.js}"></script>
@@ -197,6 +196,24 @@
             $.ajax({
                 type: 'GET',
                 url: '/add-to-cart?ProductId=' + productId,
+                success: function(data) {
+                    if (data) alertify.success('Product successfully added to cart');
+                    else alertify.error("Something went wrong!!")
+                },
+                error: function(error) {
+                    alertify.error("Something went wrong!!!")
+                    console.log('Error fetching user data'+error);
+                }
+            });
+        }
+        function addToWishList(productId) {
+            alertify.set('notifier', 'position', 'top-center');
+            $.ajax({
+                type: 'POST',
+                url: '/add-to-wishlist?ProductId=' + productId,
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader($("meta[name='_csrf_header']").attr("content"), $("meta[name='_csrf']").attr("content"));
+                },
                 success: function(data) {
                     if (data) alertify.success('Product successfully added to cart');
                     else alertify.error("Something went wrong!!")

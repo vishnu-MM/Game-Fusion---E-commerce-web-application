@@ -58,10 +58,10 @@
                                     </div>
                                     <div class="clearfix product-price-cover row">
                                         <div class="product-price primary-color float-left">
-                                            <ins><span class="text-brand"
-                                                       th:text="'&#8377; '+${ProductDetails.discountPrice}"></span></ins>
-                                            <ins><span th:if="${ProductDetails.price != ProductDetails.discountPrice}" class="old-price font-md ml-15"
-                                                        th:text="'&#8377; '+${ProductDetails.price}"></span></ins>
+                                            <ins><span class="text-brand" th:text="'&#8377; '+${ProductDetails.discountPrice}"></span></ins>
+                                            <ins><span th:if="${ProductDetails.price != ProductDetails.discountPrice}"
+                                                       class="old-price font-md ml-15" th:text="'&#8377; '+${ProductDetails.price}">
+                                            </span></ins>
                                             <span id="save-price" class="save-price  font-md color3 ml-15"></span>
                                         </div>
                                         <div class="p-2">
@@ -95,8 +95,8 @@
                                                     id="button-add-to-cart" class="button button-add-to-cart">
                                                 Add to cart
                                             </button>
-                                            <a aria-label="Add To Wishlist" class="action-btn hover-up" href="#"><i class="fi-rs-heart"></i></a>
-                                            <a aria-label="Compare" class="action-btn hover-up" href="#"><i class="fi-rs-shuffle"></i></a>
+                                            <a aria-label="Add To Wishlist" class="action-btn hover-up"  th:data-id="${ProductDetails.id}"
+                                               th:onclick="addToWishList(this.getAttribute('data-id'))"><i class="fi-rs-heart"></i></a>
                                         </div>
                                     </div>
                                     <ul class="product-meta font-xs color-grey mt-50">
@@ -284,6 +284,21 @@
             error:function (error){console.log(error)}
         })
     })
+    function addToWishList(productId) {
+        alertify.set('notifier', 'position', 'top-center');
+        $.ajax({
+            type: 'POST',
+            url: '/add-to-wishlist?ProductId='+productId,
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader($("meta[name='_csrf_header']").attr("content"), $("meta[name='_csrf']").attr("content"));
+            },
+            success: function(data) {
+                if (data) { alertify.success('Product successfully added to cart')}
+                else { alertify.error("Something went wrong!!")}
+            },
+            error: function(error) { alertify.error("Something went wrong!!!")}
+        });
+    }
 </script>
 </body>
 </html>

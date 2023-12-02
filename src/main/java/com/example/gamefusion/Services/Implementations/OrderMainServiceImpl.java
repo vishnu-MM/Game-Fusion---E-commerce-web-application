@@ -245,7 +245,7 @@ public class OrderMainServiceImpl implements OrderMainService {
         Map<String, Integer> dateCountMap = new HashMap<>(12);
         LocalDate current = startDate;
         int year = current.getYear();
-        while (current.getMonthValue() <= endDate.getMonthValue()) {
+        while (current.isBefore(endDate) || current.isEqual(endDate)) {
             dateCountMap.put(
                 String.valueOf(current.getMonth()),
                 repository.countAllByDateYearAndDateMonth(year,current.getMonthValue())

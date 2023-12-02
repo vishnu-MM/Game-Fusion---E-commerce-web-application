@@ -90,6 +90,9 @@ public class EntityDtoConversionUtil {
     public CartDto entityToDto(Cart cart) {
       return mapper.map(cart,CartDto.class);
     }
+    public WishListDto entityToDto(WishList wishList) {
+      return mapper.map(wishList,WishListDto.class);
+    }
     public OrderMainDto entityToDto(OrderMain orderMain) {
       return mapper.map(orderMain,OrderMainDto.class);
     }
@@ -154,10 +157,15 @@ public class EntityDtoConversionUtil {
     }
     public Cart dtoToEntity(CartDto cartDto) {
         Cart cart = mapper.map(cartDto,Cart.class);
-        Product product = cart.getProduct();
-        product = productRepository.findById(product.getId()).orElse(null);
-        cart.setProduct(product);
+        cart.setProduct(productRepository.findById(cartDto.getProductID()).orElse(null));
+        cart.setUser(userRepository.findById(cartDto.getUserID()).orElse(null));
         return cart;
+    }
+    public WishList dtoToEntity(WishListDto wishListDto) {
+        WishList wishList = mapper.map(wishListDto,WishList.class);
+        wishList.setProduct(productRepository.findById(wishListDto.getProductId()).orElse(null));
+        wishList.setUser(userRepository.findById(wishListDto.getUserId()).orElse(null));
+        return wishList;
     }
     public OrderMain dtoToEntity(OrderMainDto orderMainDto) {
         return mapper.map(orderMainDto,OrderMain.class);

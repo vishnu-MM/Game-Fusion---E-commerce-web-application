@@ -159,9 +159,7 @@
         $.ajax({
             type: 'GET',
             url: '/dashboard/generate-coupon-code',
-            success: function(data) {
-                document.getElementById('couponCode').value = data
-            },
+            success: function(data) { document.getElementById('couponCode').value = data},
             error: function() {
                 alert("Sorry!! We cant create Coupon code Now, Try again..")
                 console.log('Error fetching user data');
@@ -171,14 +169,12 @@
     $('#form-submit').on('click', function (event) {
         event.preventDefault();
         let couponCodeValue = $('#couponCode').val();
-
         // Set the value of couponCode as a hidden input in the form
         $('<input>').attr({
             type: 'hidden',
             name: 'couponCode',
             value: couponCodeValue
         }).appendTo('#add-coupon-form');
-
         // Submit the form
         document.getElementById('add-coupon-form').submit();
     });

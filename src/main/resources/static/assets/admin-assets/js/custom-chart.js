@@ -75,10 +75,7 @@
 
     $('#YearlyButton').on('click', function () {
         fetchData('/dashboard/fetchData/year', function (yearlyData) {
-            const monthOrder = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-            // Sort the month names based on the desired order
-            const sortedLabels = Object.keys(yearlyData).sort((a, b) => monthOrder.indexOf(a) - monthOrder.indexOf(b));
             updateChart(yearlyData);
         });
     });
