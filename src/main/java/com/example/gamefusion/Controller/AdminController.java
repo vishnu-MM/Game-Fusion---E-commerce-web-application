@@ -1,10 +1,15 @@
 package com.example.gamefusion.Controller;
 
+import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
+import com.example.gamefusion.Configuration.UtilityClasses.PDFGenerator;
 import com.example.gamefusion.Configuration.UtilityClasses.PageToListUtil;
 import com.example.gamefusion.Dto.*;
 import com.example.gamefusion.Entity.BrandLogo;
 import com.example.gamefusion.Entity.OrderMain;
+import com.example.gamefusion.Entity.OrderSub;
 import com.example.gamefusion.Services.AdminService;
+import com.example.gamefusion.Services.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +22,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Date;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Controller
@@ -25,9 +32,12 @@ import java.util.*;
 public class AdminController {
 
     private final AdminService adminService;
+    private final EntityDtoConversionUtil conversionUtil;
     @Autowired
-    public AdminController(AdminService adminService) {
+    public AdminController(AdminService adminService,
+                           EntityDtoConversionUtil conversionUtil) {
         this.adminService = adminService;
+        this.conversionUtil = conversionUtil;
     }
     
     //* DASH BOARD
@@ -551,7 +561,6 @@ public class AdminController {
         return "Admin/page-view-orders-details";
     }
 
-
     @GetMapping("/approve-cancel")
     public String approveCancelRequest(@RequestParam("OrderId") Integer orderId) {
         if (!adminService.isOrderExists(orderId))
@@ -559,4 +568,6 @@ public class AdminController {
         adminService.approveCancelRequest(orderId);
         return "redirect:/dashboard/cancel-order-request";
     }
+
+
 }

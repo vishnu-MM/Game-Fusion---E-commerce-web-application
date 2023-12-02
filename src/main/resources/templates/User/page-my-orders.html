@@ -117,7 +117,6 @@
                             </div>
                             <div th:if="(${#strings.equals(order.status, 'PENDING')} or ${#strings.equals(order.status, 'SHIPPED')})
                                         and ${PaymentInfo.paymentStatus}" class=" p-1">
-
                                 <form th:method="put" th:action="@{/cancel-order/{orderID}(orderID = ${order.id})}">
                                     <button class="btn btn-outline-warning">
                                         <i class="material-icons md-close "></i>
@@ -125,10 +124,17 @@
                                     </button>
                                 </form>
                             </div>
+                            <div th:if="${#strings.equals(order.status, 'DELIVERED')} and ${PaymentInfo.paymentStatus}"
+                                 class=" p-1">
+                                    <form method="get" th:action="@{/download-invoice/{orderID}(orderID = ${order.id})}">
+                                    <button class="btn btn-success d-flex center_icon">
+                                        <i class="material-icons md-cloud_download pe-2"></i><span>Download Invoice</span>
+                                    </button>
+                                </form>
+                            </div>
                             <div class=" p-1" th:unless="${PaymentInfo.paymentStatus}">
-                                <label><input type="number" id="order-id" th:value="${PaymentInfo.orderId}"
-                                              hidden="hidden"></label>
-                                <button id="pay-now-btn" class="btn btn-outline-success d-flex center_icon ">
+                                <label><input type="number" id="order-id" th:value="${PaymentInfo.orderId}" hidden="hidden"></label>
+                                <button id="pay-now-btn" class="btn btn-outline-success d-flex center_icon">
                                     <i class="material-icons md-payment pe-2"></i>
                                     <span>Pay Now</span>
                                 </button>

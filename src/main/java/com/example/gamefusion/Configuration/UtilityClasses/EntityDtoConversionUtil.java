@@ -168,7 +168,11 @@ public class EntityDtoConversionUtil {
         return wishList;
     }
     public OrderMain dtoToEntity(OrderMainDto orderMainDto) {
-        return mapper.map(orderMainDto,OrderMain.class);
+        OrderMain orderMain = mapper.map(orderMainDto,OrderMain.class);
+        orderMain.setAddress(
+                addressRepository.findById(orderMainDto.getAddressId()).orElse(null)
+        );
+        return orderMain;
     }
     public Coupon dtoToEntity(CouponDto couponDto) {
         return mapper.map(couponDto,Coupon.class);

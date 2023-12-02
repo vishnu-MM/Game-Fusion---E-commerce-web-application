@@ -1,10 +1,12 @@
 package com.example.gamefusion.Controller;
 
 import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
+import com.example.gamefusion.Configuration.UtilityClasses.PDFGenerator;
 import com.example.gamefusion.Dto.*;
 import com.example.gamefusion.Entity.Cart;
 import com.example.gamefusion.Entity.OrderSub;
 import com.example.gamefusion.Services.*;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,6 +14,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 @Controller
@@ -120,7 +124,6 @@ public class OrderController {
         return "redirect:/my-orders";
     }
 
-
     @PostMapping("/add-new-address")
     public String saveNewAddress(@ModelAttribute("NewAddress") @Valid AddressDto newAddress, BindingResult result,
                                  Principal principal, Model model) {
@@ -131,5 +134,20 @@ public class OrderController {
         newAddress.setUserId(user.getId());
         addressService.save(newAddress);
         return "redirect:/checkout-page";
+    }
+
+    @GetMapping("/download-invoice/{orderID}")
+    public void generatePdf(HttpServletResponse response, @PathVariable Integer orderID) {
+        response.setContentType("application/pdf");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd:HH:mm:ss");
+        String currentDateTime = dateFormat.format(new java.util.Date());
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=pdf_order_invoice"+currentDateTime+".pdf";
+        response.setHeader(headerKey, headerValue);
+
+        OrderMainDto orderMainDto = orderMainService.findOrderById(orderID);
+        List<OrderSub> orderSubList = orderSubService.findOrderByOrder(orderMainDto)
+                .stream().map(conversionUtil::dtoToEntity).toList();
+        PDFGenerator.generate(response,orderSubList,conversionUtil.dtoToEntity(orderMainDto));
     }
 }
