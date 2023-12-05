@@ -17,10 +17,19 @@
         </div>
     </div>
 
-    <section class="section-padding footer-mid">
-
+    <section class="section-padding footer-mid"
+             th:if="${OrderDetails} == null or ${OrderSubDetails} == null or ${PaymentInfo} == null or ${Address} == null">
+        <div class="container d-flex justify-content-center">
+            <div class="d-flex flex-column">
+                <h3> No orders 🥺, Place your first Order 🎉</h3>
+                <a class="btn btn-success-light hover-up">Continue Shopping</a>
+            </div>
+        </div>
+    </section>
+    <section class="section-padding footer-mid"
+         th:unless="${OrderDetails} == null or ${OrderSubDetails} == null or ${PaymentInfo} == null or ${Address} == null">
         <div class="container pt-15 pb-20">
-            <div class="row">
+            <div class="row" >
                 <div class="login_wrap widget-taber-content bg-white shadow p-5 mb-3
                             background-white border-radius-5 border-light"
                             th:each="order : ${OrderDetails.contents}">
@@ -126,24 +135,25 @@
                             </div>
                             <div th:if="${#strings.equals(order.status, 'DELIVERED')} and ${PaymentInfo.paymentStatus}"
                                  class=" p-1">
-                                    <form method="get" th:action="@{/download-invoice/{orderID}(orderID = ${order.id})}">
+                                <form method="get" th:action="@{/download-invoice/{orderID}(orderID = ${order.id})}">
                                     <button class="btn btn-success d-flex center_icon">
                                         <i class="material-icons md-cloud_download pe-2"></i><span>Download Invoice</span>
                                     </button>
                                 </form>
+                                <button id="return-replace" class="btn btn-warning d-flex center_icon mt-2">
+                                    <i class="material-icons md-update pe-2"></i><span>Return / Replace</span>
+                                </button>
                             </div>
                             <div class=" p-1" th:unless="${PaymentInfo.paymentStatus}">
                                 <label><input type="number" id="order-id" th:value="${PaymentInfo.orderId}" hidden="hidden"></label>
                                 <button id="pay-now-btn" class="btn btn-outline-success d-flex center_icon">
-                                    <i class="material-icons md-payment pe-2"></i>
-                                    <span>Pay Now</span>
+                                    <i class="material-icons md-payment pe-2"></i><span>Pay Now</span>
                                 </button>
                             </div>
                       </div>
                     </div>
                 </div>
             </div>
-
             <!-- Pagination -->
             <div class="pagination-area mt-30 mb-50 ">
                 <nav aria-label="Page navigation example">
@@ -183,16 +193,16 @@
 <script th:src="@{/assets/js/plugins/magnific-popup.js}"></script>
 <script th:src="@{/assets/js/plugins/images-loaded.js}"></script>
 <script th:src="@{/assets/js/plugins/select2.min.js}"></script>
+<script th:src="@{/assets/js/plugins/counterup.js}"></script>
 <script th:src="@{/assets/js/plugins/jquery-ui.js}"></script>
 <script th:src="@{/assets/js/plugins/waypoints.js}"></script>
-<script th:src="@{/assets/js/plugins/counterup.js}"></script>
 <script th:src="@{/assets/js/plugins/scrollup.js}"></script>
 <script th:src="@{/assets/js/plugins/isotope.js}"></script>
 <script th:src="@{/assets/js/plugins/slick.js}"></script>
 <script th:src="@{/assets/js/plugins/wow.js}"></script>
 <script th:src="@{/assets/js/AjaxFile.js}"></script>
-<script th:src="@{/assets/js/main.js}"></script>
 <script th:src="@{/assets/js/shop.js}"></script>
+<script th:src="@{/assets/js/main.js}"></script>
 <script>
     $('#pay-now-btn').on('click',function (e){
         e.stopPropagation()

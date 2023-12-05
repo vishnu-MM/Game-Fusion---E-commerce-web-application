@@ -14,11 +14,11 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<User,Integer> {
 
     User findByUsername(String username);
-    Page<User> findUsersByRole(String role, Pageable pageable);
     Boolean existsByUsername(String username);
-    Boolean existsByReferralCode(UUID referralCode);
     User findByReferralCode(UUID referralCode);
-    boolean existsById(Integer id);
+    Boolean existsByReferralCode(UUID referralCode);
+    Page<User> findUsersByRole(String role, Pageable pageable);
+    Page<User> searchAllByUsernameContainingIgnoreCase(String search, Pageable pageable);
 
     @Modifying
     @Query("UPDATE User u SET u.password = :password WHERE u.id = :id")

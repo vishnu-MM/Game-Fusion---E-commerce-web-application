@@ -1,14 +1,15 @@
 package com.example.gamefusion.Repository;
 
+import java.util.List;
 import com.example.gamefusion.Entity.Brand;
-import com.example.gamefusion.Entity.Category;
-import com.example.gamefusion.Entity.Product;
 import org.springframework.data.domain.Page;
+import com.example.gamefusion.Entity.Product;
+import com.example.gamefusion.Entity.Category;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
@@ -28,10 +29,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("update Product p set p.status = true where p.id = ?1")
     void unBlockProduct(Long id);
 
-    Page<Product> findByStatus(boolean status, Pageable pageable);
-    Page<Product> findByCategoryAndStatusAndCategoryStatus(Category category, Boolean status, Boolean categoryStatus,Pageable pageable);
-    Page<Product> findByBrandAndStatusAndCategoryStatus(Brand brand, Boolean status, Boolean brandStatus,Pageable pageable);
-    Page<Product> findByStatusAndCategoryStatus(boolean product_status,boolean Category_status, Pageable pageable);
     Integer countAllByBrand(Brand brand);
+    Page<Product> findByStatus(boolean status, Pageable pageable);
+    List<Product> searchAllByNameContainsIgnoreCase(String name);
+    Page<Product> findByStatusAndCategoryStatus(boolean product_status,boolean Category_status, Pageable pageable);
+    Page<Product> findByBrandAndStatusAndCategoryStatus(Brand brand, Boolean status, Boolean brandStatus,Pageable pageable);
+    Page<Product> findByCategoryAndStatusAndCategoryStatus(Category category, Boolean status, Boolean categoryStatus,Pageable pageable);
 }
 

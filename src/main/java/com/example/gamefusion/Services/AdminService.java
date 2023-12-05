@@ -1,68 +1,69 @@
 package com.example.gamefusion.Services;
 
+import java.sql.Date;
+import java.util.Map;
+import java.util.List;
 import com.example.gamefusion.Dto.*;
-import com.example.gamefusion.Entity.Brand;
 import com.example.gamefusion.Entity.BrandLogo;
 import com.example.gamefusion.Entity.OrderMain;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.sql.Date;
-import java.util.List;
-import java.util.Map;
-
 public interface AdminService {
 
      //? User management
-     PaginationInfo getAllUsers(Integer pageNo, Integer pageSize);
-     Boolean isUserExists(Integer id);
-     Boolean isUserBlocked(Integer id);
      void blockUser(Integer id);
      void unBlockUser(Integer id);
+     Boolean isUserExists(Integer id);
+     Boolean isUserBlocked(Integer id);
+     PaginationInfo getAllUsers(Integer pageNo, Integer pageSize);
 
      //? Category
+     List<CategoryDto> getAllCategory();
+     void toggleCategoryStatus(Long id);
+     CategoryDto getCategoryInfo(Long id);
+     Boolean isCategoryNameExist(String name);
      CategoryDto addNewCategory(CategoryDto categoryDto);
      CategoryDto updateCategory(CategoryDto categoryDto);
      PaginationInfo getAllCategory(Integer pageNo, Integer pageSize);
-     List<CategoryDto> getAllCategory();
-     CategoryDto getCategoryInfo(Long id);
-     void toggleCategoryStatus(Long id);
-     Boolean isCategoryNameExist(String name);
 
     //?Brands
     List<BrandDto> getAllBrands();
-    PaginationInfo getAllBrands(Integer pageNo, Integer pageSize);
     BrandDto getBrandInfo(Long brandId);
-    BrandDto addOrUpdateBrand(BrandDto brandDto);
-    Boolean isBrandExistsById(Long brandId);
-    Boolean isBrandExistsByName(String name);
     Boolean isBrandActive(Long brandId);
     void toggleBrandStatus(Long brandId);
+    Boolean isBrandExistsById(Long brandId);
+    Boolean isBrandExistsByName(String name);
     BrandLogo saveBrandLogo(MultipartFile file);
+    BrandDto addOrUpdateBrand(BrandDto brandDto);
     Integer getProductCountByBrand(Long brandID);
+    PaginationInfo getAllBrands(Integer pageNo, Integer pageSize);
     Map<Long, Integer> getProductCountByBrandPage(List<BrandDto> brandDtoList);
 
     //? products
-    PaginationInfo getAllProduct(Integer pageNo, Integer pageSize);
-    Long addOrUpdateProduct(ProductDto productDto);
-    List<String> uploadImage(List<MultipartFile> file, Long productId);
-    ProductDto getProduct(Long id);
     void toggleStatus(Long id);
+    ProductDto getProduct(Long id);
+    Long addOrUpdateProduct(ProductDto productDto);
+    PaginationInfo getAllProduct(Integer pageNo, Integer pageSize);
+    List<String> uploadImage(List<MultipartFile> file, Long productId);
 
     //? Images
     byte[] getImages(Long imageId);
-    List<byte[]> getImageOfSingleProduct(Long productId);
     void deleteImage(Long imageId);
+    List<byte[]> getImageOfSingleProduct(Long productId);
 
     //? Order Main & Sub
-    PaginationInfo getAllOrders(Integer pageNo, Integer pageSize);
     List<OrderMain> getAllOrders();
-    OrderMainDto getOrderById(Integer orderId);
-    Boolean isOrderExists(Integer orderId);
-    void updateOrderMain(OrderMainDto orderMainDto);
-    List<OrderSubDto> findOrderSubByMain(Integer orderId);
-    AddressDto getUserAddress(Integer addressId);
-    Map<Integer, PaymentDto> getPaymentInfoByOrder(List<OrderMain> contents);
     Integer getCancelOrderRequestCount();
+    Boolean isOrderExists(Integer orderId);
+    OrderMainDto getOrderById(Integer orderId);
+    AddressDto getUserAddress(Integer addressId);
+    List<OrderSubDto> findOrderSubByMain(Integer orderId);
+    OrderMainDto updateOrderMain(OrderMainDto orderMainDto);
+    List<OrderHistoryDto> findOrderHistory(Integer orderId);
+    PaymentDto getPaymentInfoByOrder(OrderMainDto orderMain);
+    OrderHistoryDto saveOrderHistory(OrderMainDto orderMainDto);
+    PaginationInfo getAllOrders(Integer pageNo, Integer pageSize);
+    Map<Integer, PaymentDto> getPaymentInfoByOrder(List<OrderMain> contents);
 
     //? Sales Report
     Map<String,Integer> filterGraphBasedOnDate(String filterBy);
@@ -72,18 +73,24 @@ public interface AdminService {
     PaginationInfo filterOrderByDateAndStatus(Integer pageNo, Integer pageSize,String startDate, String endDate, Integer statusFilter);
 
     //? Coupon
-    PaginationInfo getAllCoupons(Integer pageNo, Integer pageSize);
-    CouponDto getCoupon(Integer id);
-    CouponDto saveOrUpdate(CouponDto couponDto);
-    PaginationInfo filterByExpiryStatus(Integer pageNo, Integer pageSize);
-    Boolean isCouponExist(Integer couponId);
     String getCouponCode();
+    CouponDto getCoupon(Integer id);
     void deleteCoupon(Integer couponId);
+    Boolean isCouponExist(Integer couponId);
+    CouponDto saveOrUpdate(CouponDto couponDto);
+    PaginationInfo getAllCoupons(Integer pageNo, Integer pageSize);
+    PaginationInfo filterByExpiryStatus(Integer pageNo, Integer pageSize);
 
     //? Category Offer
-    Boolean isCategoryOfferExists(CategoryDto categoryDto);
-    CategoryOfferDto saveCategoryOffer(CategoryOfferDto categoryOfferDto);
+    OrderMainDto approveCancelRequest(Integer orderId);
     CategoryOfferDto getCategoryOffer(Long categoryId);
+    Boolean isCategoryOfferExists(CategoryDto categoryDto);
     PaginationInfo getCancelRequest(Integer pageNo, Integer pageSize);
-    void approveCancelRequest(Integer orderId);
+    CategoryOfferDto saveCategoryOffer(CategoryOfferDto categoryOfferDto);
+
+    //? Search
+    List<UserDto> searchUser(String search);
+    List<BrandDto> searchBrand(String search);
+    List<ProductDto> searchProduct(String search);
+    List<CategoryDto> searchCategory(String search);
 }

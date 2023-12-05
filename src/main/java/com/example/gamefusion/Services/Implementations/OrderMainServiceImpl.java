@@ -27,16 +27,16 @@ public class OrderMainServiceImpl implements OrderMainService {
     private final UserService userService;
     private final WalletService walletService;
     private final ProductService productService;
+    private final OrderMainRepository repository;
     private final OrderSubService orderSubService;
     private final EntityDtoConversionUtil conversionUtil;
-    private final OrderMainRepository repository;
     @Autowired
     public OrderMainServiceImpl(UserService userService, OrderMainRepository repository,
                                 ProductService productService, EntityDtoConversionUtil conversionUtil,
                                 WalletService walletService, OrderSubService orderSubService) {
+        this.repository = repository;
         this.userService = userService;
         this.walletService = walletService;
-        this.repository = repository;
         this.conversionUtil = conversionUtil;
         this.productService = productService;
         this.orderSubService = orderSubService;
@@ -183,6 +183,11 @@ public class OrderMainServiceImpl implements OrderMainService {
     }
 
     @Override
+    public Boolean isExistsByUser(UserDto userDto) {
+        return repository.existsByUser(conversionUtil.dtoToEntity(userDto));
+    }
+
+    @Override
     public void decrementQuantity(OrderMainDto orderMainDto) {
         if (orderMainDto == null) return;
         List<OrderSubDto> orderSubDtoList = orderSubService.findOrderByOrder(orderMainDto);
@@ -256,14 +261,14 @@ public class OrderMainServiceImpl implements OrderMainService {
     }
 
     @Override
-    public void requestCancelOrder(Integer orderId) {
+    public OrderMainDto requestCancelOrder(Integer orderId) {
         OrderMainDto orderMainDto = findOrderById(orderId);
         orderMainDto.setStatus(String.valueOf(OrderStatusUtil.REQUEST_CANCEL));
-        save(orderMainDto);
+        return save(orderMainDto);
     }
 
     @Override
-    public void approveCancelRequest(Integer orderId) {
+    public OrderMainDto approveCancelRequest(Integer orderId) {
         OrderMainDto orderMainDto = findOrderById(orderId);
         UserDto userDto = userService.findById(orderMainDto.getUserId());
         orderMainDto.setStatus(String.valueOf(OrderStatusUtil.CANCELED));
@@ -278,8 +283,8 @@ public class OrderMainServiceImpl implements OrderMainService {
             walletService.save(walletDto);
         }
 
-        save(orderMainDto);
         incrementQuantity(orderMainDto);
+        return save(orderMainDto);
     }
 
     @Override

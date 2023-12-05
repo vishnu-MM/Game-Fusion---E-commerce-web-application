@@ -14,15 +14,17 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
+import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 public class OrderController {
     private final UserService userService;
     private final CartService cartService;
-    private final WalletService walletService;
     private final CouponService couponService;
     private final AddressService addressService;
     private final PaymentService paymentService;
@@ -30,16 +32,16 @@ public class OrderController {
     private final OrderMainService orderMainService;
     private final UserCouponsService userCouponsService;
     private final EntityDtoConversionUtil conversionUtil;
+    private final OrderHistoryService orderHistoryService;
 
     @Autowired
-    public OrderController(UserService userService, AddressService addressService,
-                           CartService cartService, WalletService walletService,
-                           CouponService couponService, PaymentService paymentService,
-                           OrderSubService orderSubService, OrderMainService orderMainService,
+    public OrderController(CartService cartService, CouponService couponService,
+                           UserService userService, AddressService addressService,
+                           PaymentService paymentService, OrderSubService orderSubService,
+                           OrderMainService orderMainService, OrderHistoryService orderHistoryService,
                            UserCouponsService userCouponsService, EntityDtoConversionUtil conversionUtil) {
         this.userService = userService;
         this.cartService = cartService;
-        this.walletService = walletService;
         this.couponService = couponService;
         this.conversionUtil = conversionUtil;
         this.paymentService = paymentService;
@@ -47,19 +49,23 @@ public class OrderController {
         this.orderSubService = orderSubService;
         this.orderMainService = orderMainService;
         this.userCouponsService = userCouponsService;
+        this.orderHistoryService = orderHistoryService;
     }
 
     @GetMapping("/checkout-page")
     public String getCheckOutPage(Model model, Principal principal) {
         AddressDto addressDto = new AddressDto();
+        List<AddressDto> addressDtoList = new ArrayList<>();
         UserDto user = userService.findByUsername(principal.getName());
-        List<AddressDto> addressDtoList = addressService.findByUser(user.getId(),true);
         List<CartDto> cartDtoList = cartService.findAvailableProductsByUser(user);
         List<Cart> cart = cartDtoList.stream().map(conversionUtil::dtoToEntity).toList();
 
+        if ( addressService.isExistsByUser(user.getId()))
+            addressDtoList = addressService.findByUser(user.getId(),true);
+
         model.addAttribute("User", user);
-        model.addAttribute("NewAddress", addressDto);
         model.addAttribute("ProductDetails", cart);
+        model.addAttribute("NewAddress", addressDto);
         model.addAttribute("AddressList", addressDtoList);
         model.addAttribute("TotalAmount",cartService.totalAmount(cartDtoList));
         return "User/shop-checkout";
@@ -89,11 +95,18 @@ public class OrderController {
         orderSubService.save(orderMainDto.getId(),cart);
         paymentService.save(paymentOption,orderMainDto);
 
+        System.out.println("From order placing "+orderMainDto);
         if (paymentOption == 2)
             return "redirect:/online-payment?orderId="+orderMainDto.getId();
 
         else if (paymentOption == 3)
             return "redirect:/wallet-payment?orderId="+orderMainDto.getId();
+
+        OrderHistoryDto historyDto = new OrderHistoryDto();
+        historyDto.setOrderId(orderMainDto.getId());
+        historyDto.setOrderStatus(orderMainDto.getStatus());
+        historyDto.setDate(Date.valueOf(LocalDate.now()));
+        orderHistoryService.save(historyDto);
 
         return "User/shop-place_order-success";
     }
@@ -103,12 +116,24 @@ public class OrderController {
                                @RequestParam(name = "pageSize", defaultValue = "1", required = false ) Integer pageSize,
                                Model model, Principal principal) {
         UserDto userDto = userService.findByUsername(principal.getName());
-        PaginationInfo orderMainDtoPage= orderMainService.findOrderByUser(userDto, pageNo, pageSize);
-        OrderMainDto orderMainDto = (OrderMainDto) orderMainDtoPage.getContents().get(0);
-        model.addAttribute("PaymentInfo",paymentService.findByOrderMain(orderMainDto));
-        model.addAttribute("OrderSubDetails", getOrderSubList(orderMainDto));
+        List<OrderSub> orderSubList = new ArrayList<>();
+        PaginationInfo orderMainDtoPage = null;
+        PaymentDto paymentDto = null;
+        AddressDto addressDto = null;
+        OrderMainDto orderMainDto;
+
+        if (orderMainService.isExistsByUser(userDto)) {
+            orderMainDtoPage = orderMainService.findOrderByUser(userDto, pageNo, pageSize);
+            orderMainDto = (OrderMainDto) orderMainDtoPage.getContents().get(0);
+            paymentDto = paymentService.findByOrderMain(orderMainDto);
+            orderSubList = getOrderSubList(orderMainDto);
+            addressDto = addressService.findById(orderMainDto.getAddressId());
+        }
+
+        model.addAttribute("OrderSubDetails",orderSubList);
         model.addAttribute("OrderDetails",orderMainDtoPage);
-        model.addAttribute("Address",addressService.findById(orderMainDto.getAddressId()));
+        model.addAttribute("PaymentInfo",paymentDto);
+        model.addAttribute("Address",addressDto);
         return "User/page-my-orders";
     }
 
@@ -119,8 +144,10 @@ public class OrderController {
 
     @PutMapping("/cancel-order/{orderID}")
     private String cancelOrder(@PathVariable("orderID") Integer orderId) {
-        if (orderMainService.isExistsByID(orderId))
-            orderMainService.requestCancelOrder(orderId);
+        if (orderMainService.isExistsByID(orderId)) {
+            OrderMainDto orderMainDto = orderMainService.requestCancelOrder(orderId);
+            orderHistoryService.save(orderMainDto);
+        }
         return "redirect:/my-orders";
     }
 

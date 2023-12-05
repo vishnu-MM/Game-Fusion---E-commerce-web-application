@@ -41,9 +41,9 @@ rzp1.on('payment.failed', function (response){
 document.getElementById('rzp-button1').onclick = function(e){
     $.ajax({
         type: 'GET',
-        url: '/payment-status-confirmation/'+$('#orderId').val(),
+        url: '/payment-status-confirmation/'+orderMainId,
         success:function (response){
-            if (response){
+            if (!response){
                 rzp1.open();
                 e.preventDefault();
             } else {

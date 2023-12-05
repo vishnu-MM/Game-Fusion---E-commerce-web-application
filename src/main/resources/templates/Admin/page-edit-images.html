@@ -86,6 +86,7 @@
     </nav>
 </aside>
 <main class="main-wrap">
+    <!-- IMAGE CROPPING MODAL -->
     <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -115,7 +116,7 @@
             </div>
         </div>
     </div>
-
+    <!-- IMAGE CROPPING MODAL -->
     <th:block th:replace="~{Fragments/AdminFragments.html::main-header}"></th:block>
     <section class="content-main">
         <div class="row">
@@ -147,7 +148,7 @@
                                                 <!-- ADD NEW IMAGE-->
                                                     <input type="hidden" id="productId" th:value="${Product.id}">
                                                     <img th:src="@{/assets/admin-assets/imgs/theme/upload.svg}" alt="">
-                                                    <input class="form-control" type="file" id="imageFiles" name="imageFiles" multiple="multiple" required="required">
+                                                    <input class="form-control" type="file" id="imageFiles" name="imageFiles"required="required" accept="image/*">
                                                 </div>
                                             </div>
                                         </div>
@@ -199,5 +200,21 @@
 <script th:src="@{/assets/js/AjaxFile.js}"></script>
 <script th:src="@{/assets/admin-assets/js/ImageCroper.js}"></script>
 <script th:src="@{/assets/admin-assets/js/OrderCancelNotification.js}"></script>
+<script>
+    function confirmDelete(form) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you want to Delete this image?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Delete',
+            cancelButtonText: 'No, cancel',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+</script>
 </body>
 </html>

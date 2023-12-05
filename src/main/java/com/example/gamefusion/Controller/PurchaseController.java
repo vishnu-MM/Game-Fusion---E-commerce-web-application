@@ -1,23 +1,24 @@
 package com.example.gamefusion.Controller;
 
-import com.example.gamefusion.Dto.*;
-import com.example.gamefusion.Services.*;
-import com.razorpay.Order;
-import com.razorpay.RazorpayClient;
-import com.razorpay.RazorpayException;
-import org.json.JSONObject;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import com.example.gamefusion.Services.*;
+import com.razorpay.RazorpayException;
+import com.example.gamefusion.Dto.*;
+import org.springframework.ui.Model;
+import com.razorpay.RazorpayClient;
 import java.security.Principal;
-import java.sql.Date;
+import org.json.JSONObject;
 import java.time.LocalDate;
+import com.razorpay.Order;
 import java.util.HashMap;
 import java.util.List;
+import java.sql.Date;
 import java.util.Map;
 
 @Controller
@@ -37,30 +38,33 @@ public class PurchaseController {
     private final CategoryService categoryService;
     private final OrderMainService orderMainService;
     private final UserCouponsService userCouponsService;
+    private final OrderHistoryService orderHistoryService;
     private final CategoryOfferService categoryOfferService;
     @Autowired
-    public PurchaseController(UserService userService, WalletService walletService, CouponService couponService,
+    public PurchaseController(WalletService walletService, CouponService couponService,
                               ProductService productService, PaymentService paymentService,
+                              UserService userService,CategoryOfferService categoryOfferService,
                               OrderSubService orderSubService, OrderMainService orderMainService,
                               UserCouponsService userCouponsService, AddressService addressService,
-                              CategoryService categoryService, CategoryOfferService categoryOfferService) {
+                              CategoryService categoryService, OrderHistoryService orderHistoryService) {
         this.userService = userService;
-        this.walletService = walletService;
         this.couponService = couponService;
+        this.walletService = walletService;
         this.addressService = addressService;
-        this.productService = productService;
-        this.orderMainService = orderMainService;
-        this.orderSubService = orderSubService;
         this.paymentService = paymentService;
-        this.userCouponsService = userCouponsService;
+        this.productService = productService;
         this.categoryService = categoryService;
+        this.orderSubService = orderSubService;
+        this.orderMainService = orderMainService;
+        this.userCouponsService = userCouponsService;
+        this.orderHistoryService = orderHistoryService;
         this.categoryOfferService = categoryOfferService;
     }
 
     @GetMapping("/online-payment")
-    public String getPaymentPage(@RequestParam("orderId") Integer orderId, Model model) throws RazorpayException {
-
-
+    public String getPaymentPage(@RequestParam("orderId") Integer orderId, Model model)
+                                                            throws RazorpayException
+    {
         OrderMainDto orderMainDto = orderMainService.findOrderById(orderId);
 
         if (paymentService.isPaymentSuccess(orderMainDto))
@@ -98,6 +102,7 @@ public class PurchaseController {
     public String walletPayment(@RequestParam("orderId") Integer orderId, Principal principal) {
         OrderMainDto orderMainDto = orderMainService.findOrderById(orderId);
         UserDto userDto = userService.findByUsername(principal.getName());
+
         WalletDto walletDto = new WalletDto();
         walletDto.setUserId(userDto.getId());
         walletDto.setTransactionType("Debit");
@@ -106,28 +111,30 @@ public class PurchaseController {
         walletDto.setDescription("Payment on Purchase - Order "+orderMainDto.getOrderId());
         walletService.save(walletDto);
 
-        orderMainService.decrementQuantity(orderMainDto);
-
-        PaymentDto paymentDto = paymentService.findByOrderMain(orderMainDto);
-        paymentDto.setPaymentStatus(true);
-        paymentService.save(paymentDto);
-        return "User/shop-place_order-success";
+        return paymentSuccessHandler(orderMainDto);
     }
 
     @GetMapping("/payment-status-confirmation/{orderId}")
     @ResponseBody
     public Boolean getPaymentStatus(@PathVariable Integer orderId) {
+        System.out.println("Order ID"+orderId);
         OrderMainDto orderMainDto = orderMainService.findOrderById(orderId);
         return paymentService.isPaymentSuccess(orderMainDto);
     }
 
     @GetMapping("/verify-payment")
-    public String verifyPayment(@RequestParam("orderId") Integer orderMainId) {
-        OrderMainDto orderMainDto = orderMainService.findOrderById(orderMainId);
+    public String verifyPayment(@RequestParam("orderId") Integer orderId) {
+        OrderMainDto orderMainDto = orderMainService.findOrderById(orderId);
+        return paymentSuccessHandler(orderMainDto);
+    }
+
+    @NotNull
+    private String paymentSuccessHandler(OrderMainDto orderMainDto) {
         orderMainService.decrementQuantity(orderMainDto);
         PaymentDto paymentDto = paymentService.findByOrderMain(orderMainDto);
         paymentDto.setPaymentStatus(true);
         paymentService.save(paymentDto);
+        orderHistoryService.save(orderMainDto);
         return "User/shop-place_order-success";
     }
 

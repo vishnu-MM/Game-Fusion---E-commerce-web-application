@@ -10,8 +10,11 @@
     <meta property="og:type" content="">
     <meta property="og:url" content="">
     <meta property="og:image" content="">
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/admin-assets/imgs/theme/favicon.svg}">
     <link th:href="@{/assets/admin-assets/css/main.css}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css"  />
 </head>
 <body>
 <div class="screen-overlay"></div>
@@ -70,46 +73,96 @@
     </nav>
 </aside>
 <main class="main-wrap">
-<th:block th:replace="~{Fragments/AdminFragments.html::main-header}"></th:block>
-     <section class="content-main">
-         <div class="row">
-             <div class="col-9">
-                 <div class="content-header">
-                     <h2 class="content-title">Add Images</h2>
-                 </div>
-             </div>
-             <div class="col-9">
-                 <div class="card">
-                     <div class="card-body">
-                         <div class="row gx-5">
-                             <aside class="col-lg-3 border-end">
-                                 <nav class="nav nav-pills flex-column mb-4">
-                                     <div class="nav-link ">General</div>
-                                     <div class="nav-link active" aria-current="page">Images</div>
-                                 </nav>
-                             </aside>
-                             <div class="col-lg-9">
-                                 <section class="content-body p-xl-4">
-                                     <!-- Form  -->
+    <!-- IMAGE CROPPING MODAL -->
+    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Crop image</h5>
+                    <button type="button" class="close-modal" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="img-container">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <!--  default image where we will set the src via jquery-->
+                                <img id="image">
+                            </div>
+                            <div class="col-md-4">
+                                <div class="preview"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="close-modal btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="crop">Crop & Upload</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- IMAGE CROPPING MODAL -->
+    <th:block th:replace="~{Fragments/AdminFragments.html::main-header}"></th:block>
+    <section class="content-main">
+        <div class="row">
+            <div class="col-9">
+                <div class="content-header">
+                    <h2 class="content-title">Edit Images</h2>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row gx-5">
+                            <aside class="col-lg-3 border-end">
+                                <nav class="nav nav-pills flex-column mb-4">
+                                    <div class="nav-link ">General</div>
+                                    <div class="nav-link active" aria-current="page">Images</div>
+                                </nav>
+                            </aside>
+                            <div class="col-lg-9">
+                                <section class="content-body p-xl-4">
+                                    <!-- Form  -->
                                     <div class="col-lg-12">
                                         <div class="card mb-12">
                                             <div class="card-header">
-                                                <h4>Media</h4>
+                                                <h4>Upload New Images</h4>
                                             </div>
                                             <div class="card-body">
-                                                <div class="input-upload">
+                                                <div class="d-flex flex-column align-items-center input-upload">
+                                                    <!-- ADD NEW IMAGE-->
+                                                    <input type="hidden" id="productId" th:value="${Product.id}">
                                                     <img th:src="@{/assets/admin-assets/imgs/theme/upload.svg}" alt="">
-                                                    <form th:action="@{/dashboard/upload-images/save}" method="post" enctype="multipart/form-data">
-                                                        <input type="hidden" name="productId" th:value="${productId}">
-                                                        <input class="form-control" type="file" id="imageFiles" name="imageFiles" multiple="multiple" required="required">
-                                                        <div style="height: 50px"></div>
-                                                        <button class="btn btn-primary" type="submit">Upload Images</button>
-                                                    </form>
+                                                    <input class="form-control" type="file" id="imageFiles" name="imageFiles" required="required" accept="image/*">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </section>
+                                <div th:if="${Product.imageIds}!=null" class="col"
+                                     th:each="imageId : ${Product.imageIds}">
+                                    <div class="card card-product-grid">
+                                        <div class="info-wrap">
+                                            <div class="row">
+                                                <div class="col-10"> <!-- Each image takes 4 columns -->
+                                                    <img th:src="@{/images/{imgId}(imgId=${imageId})}" />
+                                                </div>
+                                                <div class="col-2">
+                                                    <form th:method="delete"
+                                                          th:action="@{/dashboard/delete-image}" onsubmit="return false;">
+                                                        <input type="hidden" name="imageId" th:value="${imageId}" />
+                                                        <input type="hidden" name="productId" th:value="${Product.id}" />
+                                                        <button class="btn btn-lg font-lg btn-outline-danger" onclick="confirmDelete(this.form)">
+                                                            Delete
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -118,7 +171,8 @@
         </div>
     </section>
 </main>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script th:src="@{/assets/admin-assets/js/vendors/jquery-3.6.0.min.js}"></script>
 <script th:src="@{/assets/admin-assets/js/vendors/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/assets/admin-assets/js/vendors/select2.min.js}"></script>
@@ -126,8 +180,23 @@
 <script th:src="@{/assets/admin-assets/js/vendors/jquery.fullscreen.min.js}"></script>
 <script th:src="@{/assets/admin-assets/js/main.js}" type="text/javascript"></script>
 <script th:src="@{/assets/js/AjaxFile.js}"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script th:src="@{/assets/admin-assets/js/ImageCroper.js}"></script>
 <script th:src="@{/assets/admin-assets/js/OrderCancelNotification.js}"></script>
+<script>
+    function confirmDelete(form) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you want to Delete this image?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Delete',
+            cancelButtonText: 'No, cancel',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+</script>
 </body>
 </html>

@@ -118,12 +118,13 @@
                     <div class="col-md-6">
                         <div class="order_review">
                             <div class="mb-20">
-                                <h4>Select Your address</h4>
+                                <h4 th:unless="${AddressList} == null">Select Your address</h4>
+                                <h4 th:if="${AddressList} == null">Oops!! No address Found, Add a new address</h4>
                             </div>
                             <!-- LOOP -->
                                 <div class="border border-dark rounded pt-15 pb-20 mb-15
                                             table-responsive order_table text-center row"
-                                     th:each="address :${AddressList}" >
+                                     th:unless="${AddressList} == null" th:each="address :${AddressList}" >
                                     <div class="col-lg-11">
                                         <div>
                                             <span class="mr-5 bold font-lg"

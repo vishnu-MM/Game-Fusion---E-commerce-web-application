@@ -13,8 +13,9 @@
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/admin-assets/imgs/theme/favicon.svg}">
     <link th:href="@{/assets/admin-assets/css/main.css}" rel="stylesheet" type="text/css" />
     <script th:src="@{/assets/admin-assets/js/vendors/jquery-3.6.0.min.js}"></script>
+    <style>#brand-edit{ position: absolute; right: 0; }</style>
 </head>
-<body onload="timedRefresh();">
+<body>
 <div class="screen-overlay"></div>
     <aside class="navbar-aside" id="offcanvas_aside">
         <div class="aside-top">
@@ -90,37 +91,25 @@
                         <div class="col-lg-4 mb-lg-0 mb-15 me-auto">
                             <input type="text" placeholder="Search..." class="form-control">
                         </div>
-                        <div class="col-lg-2 col-6">
-                            <div class="custom_select">
-                                <select class="form-select select-nice">
-                                    <option selected>Categories</option>
-                                    <option>Technology</option>
-                                    <option>Fashion</option>
-                                    <option>Home Decor</option>
-                                    <option>Healthy</option>
-                                    <option>Travel</option>
-                                    <option>Auto-car</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-6">
-                            <input type="date" class="form-control" name="">
-                        </div>
+                        <div class="col-lg-2 col-6"></div>
+                        <div class="col-lg-2 col-6"></div>
                     </div>
                 </header>
                 <!-- BRAND MAIN DIV -->
                 <div class="card-body">
                     <div class="row gx-3">
                         <!-- BRAND MAIN LOOP -->
-                        <div class="col-xl-2 col-lg-3 col-md-4 col-6"
-                             th:each="brand : ${BrandPage.contents}">
+                        <div class="col-xl-2 col-lg-3 col-md-4 col-6" th:each="brand : ${BrandPage.contents}">
                             <figure class="card border-1">
+                                <a class="p-2" id="brand-edit" th:href="@{/dashboard/edit-brand/{brandId}(brandId=${brand.id})}">
+                                    <i class="material-icons md-change_circle"></i>
+                                </a>
                                 <div class="card-header bg-white text-center">
                                     <span th:if="${brand.logo} == null">
                                         <img th:src="@{/assets/admin-assets/imgs/items/No-Image.png}" alt="No Image">
                                     </span> 
                                     <span th:unless="${brand.logo} == null">
-                                        <img th:src="@{/logo-images/{imgId}(imgId=${brand.logo})}" alt="Product Image" />
+                                        <img th:src="@{/logo-images/{imgId}(imgId=${brand.logo})}" alt="Product Image"/>
                                     </span>
                                 </div>
                                 <figcaption class="card-body text-center">
@@ -134,8 +123,7 @@
                                                     th:if="${!brand.status}" onclick="confirmActivate(this.form)">InActive</button>
                                         </form>
                                     </div>
-                                    <span class="product-count" th:data-id="${brand.id}"
-                                          th:text="${BrandCount.get(brand.id)}+' Products'"></span>
+                                    <span class="product-count" th:data-id="${brand.id}" th:text="${BrandCount.get(brand.id)}+' Products'"></span>
                                 </figcaption>
                             </figure>
                         </div>
@@ -213,6 +201,25 @@
                 }
             });
         }
+        $("#brand-edit").on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            let url = $(this).attr('href');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you want to Edit this Seller details?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No, cancel',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
+            });
+        });
     </script>
 <script th:src="@{/assets/admin-assets/js/PeriodicRefresh.js}" type="text/javascript"></script>
 <script th:src="@{/assets/admin-assets/js/OrderCancelNotification.js}"></script>

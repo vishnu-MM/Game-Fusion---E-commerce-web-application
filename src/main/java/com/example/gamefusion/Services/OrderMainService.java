@@ -14,12 +14,13 @@ public interface OrderMainService {
     List<OrderMain> findAll();
     Integer countCancelRequest();
     Boolean isExistsByID(Integer orderId);
-    void requestCancelOrder(Integer orderId);
-    void approveCancelRequest(Integer orderId);
+    Boolean isExistsByUser(UserDto userDto);
     OrderMainDto findOrderById(Integer orderId);
     OrderMainDto save(OrderMainDto orderMainDto);
+    OrderMainDto requestCancelOrder(Integer orderId);
     void decrementQuantity(OrderMainDto orderMainDto);
     void incrementQuantity(OrderMainDto orderMainDto);
+    OrderMainDto approveCancelRequest(Integer orderId);
     PaginationInfo findAll(Integer pageNo, Integer pageSize);
     PaginationInfo findAllFilterByDay(Integer pageNo, Integer pageSize, Date date);
     Map<String, Integer> getOrderCountByWeek(LocalDate startDate, LocalDate endDate);

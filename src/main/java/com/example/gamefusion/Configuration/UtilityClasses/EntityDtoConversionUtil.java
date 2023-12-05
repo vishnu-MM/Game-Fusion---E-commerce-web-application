@@ -111,6 +111,14 @@ public class EntityDtoConversionUtil {
     public WalletDto entityToDto(Wallet wallet) {
       return mapper.map(wallet,WalletDto.class);
     }
+    public OrderHistoryDto entityToDto(OrderHistory orderHistory) {
+        return new OrderHistoryDto(
+            orderHistory.getId(),
+            orderHistory.getOrder().getId(),
+            orderHistory.getOrderStatus(),
+            orderHistory.getDate()
+        );
+    }
 
     //? DTO TO ENTITY
 
@@ -218,6 +226,13 @@ public class EntityDtoConversionUtil {
             userRepository.findById(walletDto.getUserId()).orElse(null)
         );
         return wallet;
+    }
+    public OrderHistory dtoToEntity(OrderHistoryDto orderHistoryDto) {
+        OrderHistory orderHistory = mapper.map(orderHistoryDto,OrderHistory.class);
+        orderHistory.setOrder(
+            orderMainRepository.findById(orderHistoryDto.getOrderId()).orElse(null)
+        );
+        return orderHistory;
     }
 
 }

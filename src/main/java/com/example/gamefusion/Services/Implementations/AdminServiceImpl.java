@@ -35,17 +35,18 @@ public class AdminServiceImpl implements AdminService {
     private final OrderSubService orderSubService;
     private final OrderMainService orderMainService;
     private final EntityDtoConversionUtil conversionUtil;
+    private final OrderHistoryService orderHistoryService;
     private final CategoryOfferService categoryOfferService;
 
     @Autowired
-    public AdminServiceImpl(
-            CategoryOfferService categoryOfferService,
-            ImagesService imagesService, BrandService brandService,
-            UserService userService, @Lazy ProductService productService,
-            CategoryService categoryService, StorageService storageService,
-            CouponService couponService, OrderMainService orderMainService,
-            OrderSubService orderSubService, AddressService addressService,
-            PaymentService paymentService, EntityDtoConversionUtil conversionUtil) {
+    public AdminServiceImpl(OrderHistoryService orderHistoryService,
+                            CategoryOfferService categoryOfferService,
+                            ImagesService imagesService, BrandService brandService,
+                            UserService userService, @Lazy ProductService productService,
+                            CategoryService categoryService, StorageService storageService,
+                            CouponService couponService, OrderMainService orderMainService,
+                            OrderSubService orderSubService, AddressService addressService,
+                            PaymentService paymentService, EntityDtoConversionUtil conversionUtil) {
         this.userService = userService;
         this.brandService = brandService;
         this.imagesService = imagesService;
@@ -58,6 +59,7 @@ public class AdminServiceImpl implements AdminService {
         this.categoryService = categoryService;
         this.orderSubService = orderSubService;
         this.orderMainService = orderMainService;
+        this.orderHistoryService = orderHistoryService;
         this.categoryOfferService = categoryOfferService;
     }
 
@@ -234,6 +236,11 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public List<OrderHistoryDto> findOrderHistory(Integer orderId) {
+        return orderHistoryService.findByOrderId(orderId);
+    }
+
+    @Override
     public Map<String, Integer> filterGraphBasedOnDate(String filterBy) {
         LocalDate endDate = LocalDate.now();
         switch (filterBy) {
@@ -261,8 +268,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void updateOrderMain(OrderMainDto orderMainDto) {
-        orderMainService.save(orderMainDto);
+    public OrderMainDto updateOrderMain(OrderMainDto orderMainDto) {
+        return orderMainService.save(orderMainDto);
     }
 
     //* BRAND OPS
@@ -371,6 +378,16 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public OrderHistoryDto saveOrderHistory(OrderMainDto orderMainDto) {
+        return orderHistoryService.save(orderMainDto);
+    }
+
+    @Override
+    public PaymentDto getPaymentInfoByOrder(OrderMainDto orderMain) {
+        return paymentService.findByOrderMain(orderMain);
+    }
+
+    @Override
     public Integer getCancelOrderRequestCount() {
         Integer count =  orderMainService.countCancelRequest();
         return (count == null) ? 0 : count;
@@ -466,10 +483,32 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void approveCancelRequest(Integer orderId) {
+    public OrderMainDto approveCancelRequest(Integer orderId) {
        String status = orderMainService.findOrderById(orderId).getStatus();
        if (Objects.equals(status, String.valueOf(OrderStatusUtil.REQUEST_CANCEL)) ||
-           Objects.equals(status, String.valueOf(OrderStatusUtil.REQUEST_REPLACE)) )
-           orderMainService.approveCancelRequest(orderId);
+           Objects.equals(status, String.valueOf(OrderStatusUtil.REQUEST_REPLACE)) ) {
+           return orderMainService.approveCancelRequest(orderId);
+       }
+       throw new RuntimeException("Invalid  Status to approve");
+    }
+
+    @Override
+    public List<UserDto> searchUser(String search) {
+        return null;
+    }
+
+    @Override
+    public List<CategoryDto> searchCategory(String search) {
+        return categoryService.search(search);
+    }
+
+    @Override
+    public List<BrandDto> searchBrand(String search) {
+        return null;
+    }
+
+    @Override
+    public List<ProductDto> searchProduct(String search) {
+        return productService.search(search);
     }
 }

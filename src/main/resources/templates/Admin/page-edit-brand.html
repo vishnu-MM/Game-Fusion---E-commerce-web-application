@@ -15,68 +15,17 @@
 </head>
 <body>
 <div class="screen-overlay"></div>
-<aside class="navbar-aside" id="offcanvas_aside">
-    <div class="aside-top">
-        <a href="#" class="brand-wrap">
-            <img th:src="@{/assets/admin-assets/imgs/theme/New-logo.svg}" class="logo" alt="Evara Dashboard">
-        </a>
-        <div>
-            <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button>
-        </div>
-    </div>
-    <nav>
-        <ul class="menu-aside">
-            <li class="menu-item ">
-                <a class="menu-link" th:href="@{/dashboard}">
-                    <i class="icon material-icons md-home"></i><span class="text">Dashboard</span>
-                </a>
-            </li>
-            <li class="menu-item ">
-                <a class="menu-link" th:href="@{/dashboard/view-products}">
-                    <i class="icon material-icons md-shopping_bag"></i><span class="text">Products</span>
-                </a>
-            </li>
-            <li class="menu-item ">
-                <a class="menu-link" th:href="@{/dashboard/view-users}">
-                    <i class="icon material-icons md-person"></i><span class="text">Users</span>
-                </a>
-            </li>
-            <li class="menu-item active">
-                <a class="menu-link" href="#">
-                    <i class="icon material-icons md-store"></i><span class="text">Sellers</span>
-                </a>
-            </li>
-            <li class="menu-item ">
-                <a class="menu-link" th:href="@{/dashboard/view-categories}">
-                    <i class="icon material-icons md-add_box"></i><span class="text">Categories</span>
-                </a>
-            </li>
-            <li class="menu-item ">
-                <a class="menu-link" th:href="@{/dashboard/view-orders}">
-                    <i class="icon material-icons md-shopping_cart md-monetization_on"></i><span class="text">Orders</span>
-                </a>
-            </li>
-            <li class="menu-item ">
-                <a class="menu-link" th:href="@{/dashboard/view-sales-report}">
-                    <i class="icon material-icons md-pie_chart"></i><span class="text">Sales Report</span>
-                </a>
-            </li>
-            <li class="menu-item">
-                <a class="menu-link" th:href="@{/dashboard/view-coupons}">
-                    <i class="icon material-icons md-local_offer"></i><span class="text">Coupons</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-</aside>
+<th:block th:replace="~{Fragments/AdminFragments.html::navbar-aside}"></th:block>
 <main class="main-wrap">
  <th:block th:replace="~{Fragments/AdminFragments.html::main-header}"></th:block>
     <section class="content-main">
         <div class="row">
             <div class="col-9">
                 <div class="content-header">
-                    <h2 class="content-title">Add New Brand</h2>
-                    <div><a th:href="@{/dashboard/brands}" class="btn btn-md rounded font-sm hover-up">View Brands</a></div>
+                    <h2 class="content-title">Add New Product</h2>
+                    <div>
+                        <a th:href="@{/dashboard/brands}" class="btn btn-md rounded font-sm hover-up">View Brands</a>
+                    </div>
                 </div>
             </div>
             <div class="col-9">
@@ -86,7 +35,8 @@
                             <div class="col-lg-9">
                                 <section class="content-body p-xl-4">
                                     <!-- Form  -->
-                                    <form th:action="@{/dashboard/add-new-brand/save}" method="post" th:object="${NewBrand}" enctype="multipart/form-data">
+                                    <form th:action="@{/dashboard/edit-brand/update}" th:method="put"
+                                          th:object="${BrandDetails}" enctype="multipart/form-data">
                                         <section class="content-body p-xl-4">
                                             <!-- Form  -->
                                             <div class="col-lg-12">
@@ -97,7 +47,7 @@
                                                     <div class="card-body">
                                                         <div class="input-upload">
                                                             <img th:src="@{/assets/admin-assets/imgs/theme/upload.svg}" alt="">
-                                                            <input class="form-control" type="file" id="file" name="file" accept="image/*" required="required">
+                                                            <input class="form-control" type="file" id="file" name="file" required="required" accept="image/*">
                                                         </div>
                                                     </div>
                                                 </div>

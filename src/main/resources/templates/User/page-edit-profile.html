@@ -15,6 +15,7 @@
                         <div class="padding_eight_all p-30">
                             <div class="heading_s1"><h3 class="mb-30">Edit Profile</h3></div>
                             <form th:method="put" th:action="@{/user/edit-profile/update}" th:object="${UserDetails}">
+                                <label><input hidden="hidden" th:field="*{referralCode}"></label>
                                 <label for="id-form"></label>
                                 <label for="password-form"></label>
                                 <label for="active-form"></label>

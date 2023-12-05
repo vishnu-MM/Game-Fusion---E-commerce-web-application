@@ -10,10 +10,11 @@ import java.util.List;
 
 @Repository
 public interface AddressRepository extends JpaRepository<Address,Integer> {
-    List<Address> findByUserId(Integer userId);
-    List<Address> findByUserIdAndStatus(Integer user_id, Boolean status);
     boolean existsById(Integer id);
     boolean existsByUserId(Integer userId);
+    List<Address> findByUserId(Integer userId);
+    List<Address> findByUserIdAndStatus(Integer user_id, Boolean status);
+
     @Modifying
     @Query("update Address a set a.status = false where a.id = ?1")
     void blockAddress(Integer id);

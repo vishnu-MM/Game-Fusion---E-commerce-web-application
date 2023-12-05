@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -177,8 +178,9 @@ public class UserHomeController {
     public String getMyWallet(Model model, Principal principal) {
         double balance = 0;
         UserDto userDto = userService.findByUsername(principal.getName());
-        List<WalletDto> walletDtoList = walletService.findByUser(userDto);
+        List<WalletDto> walletDtoList = new ArrayList<>();
         if(walletService.existByUser(userDto.getId())) {
+            walletDtoList =  walletService.findByUser(userDto);
             balance = walletService.getWalletBalance(userDto);
         }
         model.addAttribute("Balance",balance);

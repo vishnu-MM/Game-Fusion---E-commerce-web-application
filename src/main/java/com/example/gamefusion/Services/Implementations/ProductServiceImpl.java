@@ -23,20 +23,20 @@ import java.util.Optional;
 @Service
 public class ProductServiceImpl implements ProductService {
 
-    private final ProductRepository productRepository;
+    private final ProductRepository repository;
     private final EntityDtoConversionUtil conversionUtil;
     @Autowired
     public ProductServiceImpl(
-            ProductRepository productRepository, EntityDtoConversionUtil conversionUtil) {
+            ProductRepository repository, EntityDtoConversionUtil conversionUtil) {
 
-        this.productRepository = productRepository;
+        this.repository = repository;
         this.conversionUtil = conversionUtil;
     }
 
     @Override
     public PaginationInfo getAllProducts(Integer pageNo, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id"));
-        Page<Product> products = productRepository.findAll(pageable);
+        Page<Product> products = repository.findAll(pageable);
         List<Product> listOfProducts = products.getContent();
         List<ProductDto> contents = listOfProducts.stream().map(conversionUtil::entityToDto).toList();
         return new PaginationInfo(
@@ -49,7 +49,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public PaginationInfo getAllActiveProducts(Integer pageNo, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNo,pageSize);
-        Page<Product> products = productRepository.findByStatusAndCategoryStatus(true,true,pageable);
+        Page<Product> products = repository.findByStatusAndCategoryStatus(true,true,pageable);
         List<Product> listOfProducts = products.getContent();
         List<ProductDto> contents = listOfProducts.stream().map(conversionUtil::entityToDto).toList();
 
@@ -64,7 +64,7 @@ public class ProductServiceImpl implements ProductService {
     public PaginationInfo getAllActiveProductsFromCategory(CategoryDto categoryDto, Integer pageNo, Integer pageSize) {
 
         Pageable pageable = PageRequest.of(pageNo,pageSize);
-        Page<Product> page = productRepository.findByCategoryAndStatusAndCategoryStatus(
+        Page<Product> page = repository.findByCategoryAndStatusAndCategoryStatus(
                             conversionUtil.dtoToEntity(categoryDto),
                             true, true, pageable
         );
@@ -80,12 +80,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Long save(ProductDto dto) {
         Product newProduct = conversionUtil.dtoToEntity(dto);
-        return productRepository.save(newProduct).getId();
+        return repository.save(newProduct).getId();
     }
 
     @Override
     public ProductDto getProductById(Long id) {
-        Optional<Product> product = productRepository.findById(id);
+        Optional<Product> product = repository.findById(id);
         if (product.isPresent()){
             return conversionUtil.entityToDto(product.get());
         }
@@ -96,27 +96,27 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Boolean isProductActive(Long id) {
-        return productRepository.findStatusById(id);
+        return repository.findStatusById(id);
     }
 
     @Override
     public Boolean isProductExists(Long id) {
-        return productRepository.existsById(id);
+        return repository.existsById(id);
     }
 
     @Override
     @Transactional
     public void activateProduct(Long id) {
-        if (productRepository.existsById(id) && !isProductActive(id) ){
-            productRepository.unBlockProduct(id);
+        if (repository.existsById(id) && !isProductActive(id) ){
+            repository.unBlockProduct(id);
         }
     }
 
     @Override
     @Transactional
     public void deActivateProduct(Long id) {
-        if (productRepository.existsById(id) && isProductActive(id) ){
-            productRepository.blockProduct(id);
+        if (repository.existsById(id) && isProductActive(id) ){
+            repository.blockProduct(id);
         }
     }
 
@@ -124,11 +124,17 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public void updateQuantity(Long productID, Integer qty) {
         if (productID == null || qty == null) return;
-        productRepository.updateQty(productID,qty);
+        repository.updateQty(productID,qty);
     }
 
     @Override
     public Integer getCountByBrand(Brand brand) {
-        return productRepository.countAllByBrand(brand);
+        return repository.countAllByBrand(brand);
+    }
+
+    @Override
+    public List<ProductDto> search(String search) {
+        return repository.searchAllByNameContainsIgnoreCase(search)
+                .stream().map(conversionUtil::entityToDto).toList();
     }
 }

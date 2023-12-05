@@ -7,15 +7,15 @@ import com.example.gamefusion.Entity.Category;
 import java.util.List;
 
 public interface CategoryService {
-
-    CategoryDto save(CategoryDto dto);
-    void activateCategory(Long id);
-    void deActivateCategory(Long id);
-    CategoryDto findById(Long id);
-    PaginationInfo findAll(Integer pageNo, Integer pageSize);
-    Boolean isExistsByName(String name);
     List<CategoryDto> getAll();
     List<String> getAllNames();
+    CategoryDto findById(Long id);
+    void activateCategory(Long id);
     Boolean isCategoryExist(Long id);
+    void deActivateCategory(Long id);
+    CategoryDto save(CategoryDto dto);
     Boolean isCategoryActive(Long id);
+    Boolean isExistsByName(String name);
+    List<CategoryDto> search(String search);
+    PaginationInfo findAll(Integer pageNo, Integer pageSize);
 }

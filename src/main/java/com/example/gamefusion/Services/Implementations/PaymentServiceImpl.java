@@ -66,4 +66,10 @@ public class PaymentServiceImpl implements PaymentService {
     public Boolean isPaymentSuccess(OrderMainDto orderMainDto) {
         return repository.findPaymentStatusByOrderMain(conversionUtil.dtoToEntity(orderMainDto));
     }
+
+    @Override
+    public void updatePaymentStatus(OrderMainDto orderMainDto) {
+        if (existsByOrderMain(orderMainDto))
+            repository.updatePaymentStatus(conversionUtil.dtoToEntity(orderMainDto));
+    }
 }

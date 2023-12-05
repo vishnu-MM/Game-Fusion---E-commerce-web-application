@@ -45,7 +45,7 @@
         }
     </script>
 </head>
-<body onload="timedRefresh();">
+<body>
 <div class="screen-overlay"></div>
 <!-- Side Nav -->
 <aside class="navbar-aside" id="offcanvas_aside">
@@ -121,28 +121,17 @@
             <header class="card-header">
                 <div class="row gx-3">
                     <div class="col-lg-4 col-md-6 me-auto">
-                        <input type="text" placeholder="Search..." class="form-control">
+                        <label for="search"></label>
+                        <input type="text" placeholder="Search..." class="form-control" id="search">
                     </div>
-                    <div class="col-lg-2 col-6 col-md-3">
-                        <select class="form-select">
-                            <option>All category</option>
-                            <option>Electronics</option>
-                            <option>Clothings</option>
-                            <option>Something else</option>
-                        </select>
-                    </div>
-                    <div class="col-lg-2 col-6 col-md-3">
-                        <select class="form-select">
-                            <option>Latest added</option>
-                            <option>Cheap first</option>
-                        </select>
-                    </div>
+                    <div class="col-lg-2 col-6 col-md-3"></div>
+                    <div class="col-lg-2 col-6 col-md-3"></div>
                 </div>
             </header>
             <div class="card-body">
-                <div class="row gx-3 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 row-cols-xxl-5">
+                <div class="row gx-3 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 row-cols-xxl-5" id="product-list">
                     <!-- LOOP STARTS HERE -->
-                    <div class="col" th:each="product : ${ProductPage.contents}">
+                    <div class="col" th:each="product : ${ProductPage.contents}" >
                         <div class="card card-product-grid">
                             <a href="#" class="img-wrap">
                                 <span th:if="${#lists.isEmpty(product.imageIds)}">
@@ -228,7 +217,43 @@
 <script th:src="@{/assets/admin-assets/js/vendors/jquery.fullscreen.min.js}"></script>
 <script th:src="@{/assets/admin-assets/js/main.js}" type="text/javascript"></script>
 <script th:src="@{/assets/js/AjaxFile.js}"></script>
-<script th:src="@{/assets/admin-assets/js/PeriodicRefresh.js}" type="text/javascript"></script>
 <script th:src="@{/assets/admin-assets/js/OrderCancelNotification.js}"></script>
+<script>
+    let search = $('#search');
+    search.on('focus',function () { $('#product-list').hide() })
+    search.on('blur', function() { $('#product-list').show() })
+    search.on('input',function (){
+        $.ajax({
+            type:'GET',
+            url:'/dashboard/search-product',
+            data:{search:search.val()},
+            success: function (response) {
+                let detailsHTML = '';
+                response.forEach((detail, index) => {
+                    detailsHTML += `
+                        <div class="row border border">
+                            <div class="col-3 d-flex justify-content-center align-items-center"><span>IMAGE</span></div>
+                            <div class="col-6 d-flex justify-content-center align-items-center"><span>${detail.name}</span>                            </div>
+                            <div class="col-3 d-flex flex-column justify-content-around align-items-center">
+                                <span>${detail.status}</span><span>${detail.discountPrice}</span>
+                            </div>
+                        </div>
+                    `;});
+                let productList = document.getElementById('product-list');
+                let existingDetailsContainer = document.getElementById('details-container');
+                if (existingDetailsContainer) {
+                    productList.parentNode.removeChild(existingDetailsContainer);
+                }
+                if (search.val().trim() !== '') {
+                    let detailsContainer = document.createElement('div');
+                    detailsContainer.id = 'details-container';
+                    detailsContainer.innerHTML = detailsHTML;
+                    productList.parentNode.insertBefore(detailsContainer, productList);
+                }
+            },
+            error:function (error){alert("Something went wrong")}
+        })
+    })
+</script>
 </body>
 </html>

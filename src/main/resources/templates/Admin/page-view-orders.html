@@ -186,9 +186,17 @@
                                             <span class="mx-3" th:if="${#strings.equals(order.status, 'RETURNED')}" style="color: rosybrown">
                                                 Returned
                                             </span>
+                                            <span class="mx-3" th:if="${#strings.equals(order.status, 'REQUEST_CANCEL')}" style="color: red">
+                                                Cancel Request
+                                            </span>
+                                            <span class="mx-3" th:if="${#strings.equals(order.status, 'REQUEST_REPLACE')}" style="color: rosybrown">
+                                                Replacement Request
+                                            </span>
                                         </span>
                                         <span class="badge rounded-pill alert-dark border border-dark"
-                                              th:unless="${#strings.equals(order.status, 'RETURNED')} or ${#strings.equals(order.status, 'CANCELED')}">
+                                              th:unless="${#strings.equals(order.status, 'RETURNED')} or
+                                                         ${#strings.equals(order.status, 'CANCELED')} or
+                                                         ${#strings.equals(order.status, 'DELIVERED')}">
                                             <a th:data-id="${order.id}" th:data-status="${order.status}"
                                                onclick="showModal(this.getAttribute('data-id'),this.getAttribute('data-status'))">
                                                 <i class="material-icons md-edit"></i>
@@ -197,9 +205,9 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="fw-bolder"  style=""
+                                    <span class="fw-bolder"
                                           th:style="${paymentInfo.get(order.id).paymentStatus} == true ? 'color: yellowgreen;' : 'color: red;' "
-                                        th:text="${paymentInfo.get(order.id).paymentStatus} == true ? 'Payment Success' :'Payment Failed' ">
+                                            th:text="${paymentInfo.get(order.id).paymentStatus} == true ? 'Payment Success' :'Payment Failed' ">
                                     </span>
                                 </td><td>
                                     <span class="fw-bolder"  style=""
@@ -207,9 +215,7 @@
                                     </span>
                                 </td>
                                 <td class="text-end">
-                                    <a th:data-id="${order.id}" th:with="order = ${order}"
-                                       onclick="toggleHiddenRow(this,this.getAttribute('data-id'))"
-                                       class=" toggle-detail">
+                                    <a th:href="@{/dashboard/order-details/{orderId}(orderId=${order.id})}">
                                         <i class="material-icons md-more_vert"></i>
                                     </a>
                                 </td>
@@ -244,14 +250,14 @@
             <!-- End of pagination -->
         </section>
     </main>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script th:src="@{/assets/admin-assets/js/vendors/jquery-3.6.0.min.js}"></script>
     <script th:src="@{/assets/admin-assets/js/vendors/bootstrap.bundle.min.js}"></script>
     <script th:src="@{/assets/admin-assets/js/vendors/select2.min.js}"></script>
     <script th:src="@{/assets/admin-assets/js/vendors/perfect-scrollbar.js}"></script>
     <script th:src="@{/assets/admin-assets/js/vendors/jquery.fullscreen.min.js}"></script>
     <script th:src="@{/assets/admin-assets/js/main.js}" type="text/javascript"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script th:src="@{/assets/js/AjaxFile.js}"></script>
     <script>
         function showModal(id,status) {
@@ -281,7 +287,7 @@
             $('#exampleModalLong').modal('hide')
         }
 
-        function toggleHiddenRow(button, id) {
+        /* function toggleHiddenRow(button, id) {
             let val = $('#myForm'+id).value
             console.log(val)
             let parentRow = button.closest('tr');
@@ -377,7 +383,7 @@
                     hiddenRow.style.display = 'none';
                 }
             }
-        }
+        }*/
     </script>
 <script th:src="@{/assets/admin-assets/js/PeriodicRefresh.js}" type="text/javascript"></script>
 <script th:src="@{/assets/admin-assets/js/OrderCancelNotification.js}"></script>

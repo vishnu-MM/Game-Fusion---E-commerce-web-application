@@ -7,6 +7,7 @@ import com.example.gamefusion.Entity.OrderMain;
 public interface PaymentService {
     PaymentDto save(PaymentDto paymentDto);
     Boolean isPaymentSuccess(OrderMainDto orderMainDto);
+    void updatePaymentStatus(OrderMainDto orderMainDto);
     Boolean existsByOrderMain(OrderMainDto orderMainDto);
     PaymentDto findByOrderMain(OrderMainDto orderMainDto);
     PaymentDto save(Integer paymentOption, OrderMainDto orderMainDto);

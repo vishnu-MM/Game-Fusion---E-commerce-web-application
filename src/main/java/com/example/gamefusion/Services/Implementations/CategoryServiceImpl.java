@@ -20,23 +20,23 @@ import java.util.Optional;
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
-    private final CategoryRepository categoryRepository;
+    private final CategoryRepository repository;
     private final EntityDtoConversionUtil conversionUtil;
     @Autowired
-    public CategoryServiceImpl(CategoryRepository categoryRepository, EntityDtoConversionUtil conversionUtil) {
-        this.categoryRepository = categoryRepository;
+    public CategoryServiceImpl(CategoryRepository repository, EntityDtoConversionUtil conversionUtil) {
+        this.repository = repository;
         this.conversionUtil = conversionUtil;
     }
 
     @Override
     public CategoryDto save(CategoryDto dto) {
         Category category = conversionUtil.dtoToEntity(dto);
-        return conversionUtil.entityToDto(categoryRepository.save(category));
+        return conversionUtil.entityToDto(repository.save(category));
     }
 
     @Override
     public CategoryDto findById(Long id) throws EntityNotFoundException{
-        Optional<Category> category = categoryRepository.findById(id);
+        Optional<Category> category = repository.findById(id);
         if (category.isPresent()) return conversionUtil.entityToDto(category.get());
         else throw new EntityNotFoundException("Category not found");
     }
@@ -44,7 +44,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public PaginationInfo findAll(Integer pageNo, Integer pageSize) {
         Pageable page = PageRequest.of(pageNo, pageSize, Sort.by("id"));
-        Page<Category> categories = categoryRepository.findAll(page);
+        Page<Category> categories = repository.findAll(page);
         List<Category> listOfCategories = categories.getContent();
         List<CategoryDto> contents = listOfCategories.stream().map(conversionUtil::entityToDto).toList();
 
@@ -57,25 +57,31 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Boolean isExistsByName(String name) {
-        return categoryRepository.existsByName(name);
+        return repository.existsByName(name);
+    }
+
+    @Override
+    public List<CategoryDto> search(String search) {
+        return repository.searchAllByNameContainingIgnoreCase(search)
+                .stream().map(conversionUtil::entityToDto).toList();
     }
 
     @Override
     public List<CategoryDto> getAll() {
-        return categoryRepository.findAll(Sort.by("id"))
+        return repository.findAll(Sort.by("id"))
                 .stream().map(conversionUtil::entityToDto).toList();
     }
 
     @Override
     public List<String> getAllNames() {
-        return categoryRepository.findAllCategoryNames();
+        return repository.findAllCategoryNames();
     }
 
     @Override
     @Transactional
     public void activateCategory(Long id) {
         if (isCategoryExist(id) && !isCategoryActive(id)) {
-            categoryRepository.setCategoryActive(id);
+            repository.setCategoryActive(id);
         }
     }
 
@@ -83,19 +89,19 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public void deActivateCategory(Long id) {
         if (isCategoryExist(id) && isCategoryActive(id)) {
-            categoryRepository.setCategoryInactive(id);
+            repository.setCategoryInactive(id);
         }
     }
 
     @Override
     public Boolean isCategoryExist(Long id) {
-        return categoryRepository.existsById(id);
+        return repository.existsById(id);
     }
 
     @Override
     public Boolean isCategoryActive(Long id) {
         if (isCategoryExist(id))
-            return categoryRepository.findStatusById(id);
+            return repository.findStatusById(id);
         else
             throw new EntityNotFoundException("Category not found");
     }
