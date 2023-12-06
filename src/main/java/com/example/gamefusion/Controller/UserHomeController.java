@@ -2,63 +2,64 @@ package com.example.gamefusion.Controller;
 
 import com.example.gamefusion.Dto.*;
 import com.example.gamefusion.Services.*;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.sql.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/user")
 public class UserHomeController {
+    private final OTPService otpService;
     private final UserService userService;
     private final BrandService brandService;
     private final WalletService walletService;
     private final AddressService addressService;
     private final ProductService productService;
     private final CategoryService categoryService;
+    private final ProductReviewService productReviewService;
     @Value("${referral_url}")
     private String REFERRAL_URL;
     @Autowired
-    public UserHomeController(ProductService productService, UserService userService,
+    public UserHomeController(OTPService otpService, ProductService productService, UserService userService,
                               CategoryService categoryService, BrandService brandService,
-                              AddressService addressService, WalletService walletService) {
+                              AddressService addressService, WalletService walletService,
+                              ProductReviewService productReviewService) {
+        this.otpService = otpService;
         this.userService = userService;
         this.brandService = brandService;
         this.walletService = walletService;
         this.addressService = addressService;
         this.productService = productService;
         this.categoryService = categoryService;
+        this.productReviewService = productReviewService;
     }
 
 
     @GetMapping("/home")
     public String home(Model model,
                        @RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
-                       @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize) {
+                       @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize,
+                       Principal principal) {
+        System.out.println(principal.getName());
         PaginationInfo info = productService.getAllActiveProducts(pageNo,pageSize);
         model.addAttribute("ProductPage",info);
         model.addAttribute("CategoryList",categoryService.getAll());
         return "User/index-home";
-    }
-
-    @GetMapping("/view-product/{id}")
-    public String getSingleProduct(@PathVariable("id") Long id, Model model) {
-
-        ProductDto productDto = productService.getProductById(id);
-        CategoryDto categoryDto = categoryService.findById(productDto.getCategoryId());
-        BrandDto brandDto = brandService.findById(productDto.getBrandId());
-        model.addAttribute("CategoryDetails", categoryDto);
-        model.addAttribute("BrandDetails", brandDto);
-        model.addAttribute("ProductDetails",productDto);
-        return "User/page-shop-product";
     }
 
     @GetMapping("/category-filter/{id}")
@@ -78,7 +79,10 @@ public class UserHomeController {
 
     @GetMapping("/my-profile")
     public ResponseEntity<UserDto> showUserProfile(Principal principal) {
-        UserDto user = userService.findByUsername(principal.getName());
+        String username = principal.getName();
+        System.out.println(username);
+        UserDto user = userService.findByUsername(username);
+        System.out.println(user);
         if (user != null) {
             return ResponseEntity.ok(user);
         } else {
@@ -97,7 +101,7 @@ public class UserHomeController {
 
     @PutMapping("/edit-profile/update")
     public String updateProfile(@Valid @ModelAttribute("UserDetails") UserDto userDto,
-                                BindingResult result, Model model) {
+                                BindingResult result, Model model,Authentication authentication) {
         String oldUsername = userService.findById(userDto.getId()).getUsername();
         String newUsername = userDto.getUsername();
         if (userService.isExistsByUsername(newUsername) && !(oldUsername.equals(newUsername))) {
@@ -107,8 +111,33 @@ public class UserHomeController {
             model.addAttribute("UserDetails",userDto);
             return "User/page-edit-profile";
         }
-        userService.update(userDto);
+        System.out.println(userDto);
+//        User user = userService.update(userDto);
+//
+//        authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), authentication.getAuthorities());
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
         return "redirect:/user/home";
+    }
+
+    @GetMapping("/username-exists")
+    @ResponseBody
+    public Boolean isUsernameExists( @RequestParam("Email") String email,Principal principal ) {
+        return userService.isExistsByUsername(email) && (!Objects.equals(principal.getName(), email));
+    }
+
+    @GetMapping("/sent-otp")
+    @ResponseBody
+    public ResponseEntity<Void> sentOTPtoUser(@RequestParam("Email") String email, @RequestParam("Name") String name) {
+        otpService.sendOTP(email, name);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/otp-validation/verify")
+    public ResponseEntity<String> validateOTP(@RequestParam("OTP") String otp,
+                                              @RequestParam("Email") String email) {
+        String msg = otpService.verifyOTP(email, otp);
+        if (msg.equals("SUCCESS")) return new ResponseEntity<>(msg,HttpStatus.OK);
+        return new ResponseEntity<>(msg,HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/my-address")
@@ -195,8 +224,40 @@ public class UserHomeController {
         System.out.println(REFERRAL_URL+"?referralID="+userDto.getReferralCode());
         return REFERRAL_URL+"?referralID="+userDto.getReferralCode();
     }
+
+    // Products & Reviews
+
+    @GetMapping("/view-product/{id}")
+    public String getSingleProduct(@PathVariable("id") Long id, Model model) {
+
+        ProductDto productDto = productService.getProductById(id);
+        CategoryDto categoryDto = categoryService.findById(productDto.getCategoryId());
+        BrandDto brandDto = brandService.findById(productDto.getBrandId());
+
+        model.addAttribute("BrandDetails", brandDto);
+        model.addAttribute("ProductDetails",productDto);
+        model.addAttribute("CategoryDetails", categoryDto);
+        model.addAttribute("Review",productReviewService.findByProduct(productDto));
+        return "User/page-shop-product";
+    }
+
+    @PostMapping("/add-product-review")
+    @ResponseBody
+    public ResponseEntity<ProductReviewDto> addProductReview(Principal principal, @RequestParam("ProductId") Long productId,
+                                                             @RequestParam("Review") String review, @RequestParam("Rating") Double rating ) {
+        UserDto userDto = userService.findByUsername(principal.getName());
+
+        if (!productService.isProductExists(productId) || !productService.isProductActive(productId))
+            return ResponseEntity.badRequest().build();
+
+        DecimalFormat format = new DecimalFormat("0.0");
+        ProductReviewDto productReview = new ProductReviewDto();
+        productReview.setReview(review);
+        productReview.setProductId(productId);
+        productReview.setUserId(userDto.getId());
+        productReview.setDate(Date.valueOf(LocalDate.now()));
+        productReview.setRating(Double.valueOf(format.format(rating)));
+        productReview = productReviewService.save(productReview);
+        return new ResponseEntity<>(productReview, HttpStatus.OK);
+    }
 }
-
-
-
-

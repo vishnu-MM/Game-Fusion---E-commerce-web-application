@@ -1,6 +1,52 @@
 ﻿<!DOCTYPE html>
 <html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
 <th:block th:replace="~{Fragments/UserFragments.html::head-tag}"></th:block>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" />
+<style>
+    .rating-box {
+        position: relative;
+        background: #fff;
+        padding: 25px 50px 35px;
+        border-radius: 25px;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+    }
+    .rating-box header {
+        font-size: 22px;
+        color: #dadada;
+        font-weight: 500;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    .rating-box .stars {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+    }
+    .stars i {
+        color: #e6e6e6;
+        font-size: 35px;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+    .stars i.active { color: #ff9c1a; }
+    #button-buy-now{
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        background-color: #ff9c1a;
+        color: #000;
+    }
+    #button-buy-now:hover {
+        background-color: #45a049; !important;
+        color: #fff;
+    }
+</style>
 <body>
 <th:block th:replace="~{Fragments/UserFragments.html::header}"></th:block>
 <th:block th:replace="~{Fragments/UserFragments.html::mobile-view}"></th:block>
@@ -93,7 +139,12 @@
                                             <button type="submit" th:data-id="${ProductDetails.id}"
                                                     th:onclick="addToCart(this.getAttribute('data-id'))"
                                                     id="button-add-to-cart" class="button button-add-to-cart">
-                                                Add to cart
+                                                    Add to cart
+                                            </button>
+                                            <button type="submit" th:data-id="${ProductDetails.id}"
+                                                    th:onclick="buyNow(this.getAttribute('data-id'))"
+                                                    id="button-buy-now" >
+                                                    Buy Now
                                             </button>
                                             <a aria-label="Add To Wishlist" class="action-btn hover-up"  th:data-id="${ProductDetails.id}"
                                                th:onclick="addToWishList(this.getAttribute('data-id'))"><i class="fi-rs-heart"></i></a>
@@ -130,20 +181,26 @@
                                         <div class="col-lg-8">
                                             <div class="comment-list">
                                                 <!-- REVIEW LOOP STARTS HERE -->
-                                                <div class="single-comment justify-content-between d-flex">
+                                                <div th:unless="${Review} == null"
+                                                     class="single-comment justify-content-between d-flex"
+                                                     th:each="review : ${Review}">
                                                     <div class="user justify-content-between d-flex">
                                                         <div class="thumb text-center">
-                                                            <h6><a href="#">Jacky Chan</a></h6>
+                                                            <h6>
+                                                                <span th:text="${review.user.lastName} !=null ?${review.user.firstName}+' '+${review.user.lastName} : ${review.user.firstName}">
+                                                                </span>
+                                                            </h6>
                                                         </div>
                                                         <div class="desc">
                                                             <div class="product-rate d-inline-block">
                                                                 <div class="product-rating" style="width:90%">
                                                                 </div>
                                                             </div>
-                                                            <p>Thank you very fast shipping from Poland only 3days.</p>
+                                                            <p th:text="${review.review}"></p>
                                                             <div class="d-flex justify-content-between">
                                                                 <div class="d-flex align-items-center">
-                                                                    <p class="font-xs mr-30">December 4, 2020 at 3:12 pm </p>
+                                                                    <p class="font-xs mr-30"
+                                                                       th:text="${review.date}"> </p>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -187,39 +244,29 @@
                                 </div>
                                 <!--comment form-->
                                 <div class="comment-form">
-                                    <h4 class="mb-15">Add a review</h4>
-                                    <div class="product-rate d-inline-block mb-30">
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-8 col-md-12">
-                                            <form class="form-contact comment_form" action="#" id="commentForm">
+                                    <div class="rating-box">
+                                        <header>How was your experience?</header>
+                                        <div class="stars">
+                                            <i class="fa-solid fa-star"></i>
+                                            <i class="fa-solid fa-star"></i>
+                                            <i class="fa-solid fa-star"></i>
+                                            <i class="fa-solid fa-star"></i>
+                                            <i class="fa-solid fa-star"></i>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-8 col-md-12">
                                                 <div class="row">
                                                     <div class="col-12">
                                                         <div class="form-group">
-                                                            <textarea class="form-control w-100" name="comment" id="comment" cols="30" rows="9" placeholder="Write Comment"></textarea>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-6">
-                                                        <div class="form-group">
-                                                            <input class="form-control" name="name" id="name" type="text" placeholder="Name">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-6">
-                                                        <div class="form-group">
-                                                            <input class="form-control" name="email" id="email" type="email" placeholder="Email">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12">
-                                                        <div class="form-group">
-                                                            <input class="form-control" name="website" id="website" type="text" placeholder="Website">
+                                                            <label for="review"></label>
+                                                            <textarea class="form-control w-100" name="review" id="review" rows="1" placeholder="Write a review"></textarea>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
-                                                    <button type="submit" class="button button-contactForm">Submit
-                                                        Review</button>
+                                                    <button type="submit" id="review-rating" class="btn btn-twitter rounded rounded-pill">Submit Review</button>
                                                 </div>
-                                            </form>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -233,8 +280,8 @@
 </main>
 <th:block th:replace="~{Fragments/UserFragments.html::footer}"></th:block>
 <!-- js -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
 <script th:src="@{/assets/js/AjaxFile.js}"></script>
 <script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
 <script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
@@ -258,19 +305,21 @@
 <script th:src="@{/assets/js/plugins/jquery.elevatezoom.js}"></script>
 <script th:src="@{/assets/js/main.js}"></script>
 <script th:src="@{/assets/js/shop.js}"></script>
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
+    alertify.set('notifier', 'position', 'top-center');
+    let rating = 0, originalPrice, offerPrice, discountPercentage, category, product, offerTag;
+    const stars = document.querySelectorAll(".stars i")
+
     $(document).ready(function () {
-        let originalPrice = [[${ProductDetails.price}]]
-        let offerPrice = [[${ProductDetails.discountPrice}]]
+        originalPrice = [[${ProductDetails.price}]]
+        offerPrice = [[${ProductDetails.discountPrice}]]
         if(!(originalPrice===offerPrice)){
-            let discountPercentage = ((originalPrice-offerPrice)/originalPrice)*100
+            discountPercentage = ((originalPrice-offerPrice)/originalPrice)*100
             $('#save-price').text(discountPercentage+'% Off')
         }
-
-        let category = [[${ProductDetails.categoryId}]]
-        let product = [[${ProductDetails.id}]]
-        let offerTag = $('#category-offer');
+        category = [[${ProductDetails.categoryId}]]
+        product = [[${ProductDetails.id}]]
+        offerTag = $('#category-offer');
         $.ajax({
             type:'GET',
             url:'/get-category-offer',
@@ -284,6 +333,7 @@
             error:function (error){console.log(error)}
         })
     })
+
     function addToWishList(productId) {
         alertify.set('notifier', 'position', 'top-center');
         $.ajax({
@@ -299,6 +349,49 @@
             error: function(error) { alertify.error("Something went wrong!!!")}
         });
     }
+
+    $('#review-rating').on('click',function () {
+        let review = $('#review').val()
+        if (review.trim() !== '' && rating !== 0) {
+            ajax(review,rating)
+            alertify.success("Thank You for Sharing your experience")
+        } else {
+            if (rating === 0) alertify.warning("Adding a rating would be Nice :)")
+            if (review.trim() === '') alertify.warning("Adding a review would be Nice :)")
+        }
+    })
+
+    function ajax(review,rating) {
+        const csrfHeader = $("meta[name='_csrf_header']").attr("content")
+        const csrfToken =  $("meta[name='_csrf']").attr("content")
+        let productId =
+            $.ajax({
+                type:'POST',
+                url : '/user/add-product-review',
+                data : { ProductId: product , Review: review, Rating: rating},
+                beforeSend: function(xhr) { xhr.setRequestHeader(csrfHeader, csrfToken) },
+                success: function (response) {
+                    alertify.success("Success");
+                    console.log(response)
+                    $('#review').val('')
+                    stars.forEach((star) => {star.classList.remove("active")})
+                },
+                error: function (error) {alertify.error("Something went wrong, we couldn't add your review")}
+            })
+    }
+
+    stars.forEach((star,index1)=>{
+        star.addEventListener("click",() => {
+            stars.forEach((star,index2) => {
+                index1 >= index2 ? star.classList.add("active") : star.classList.remove("active")
+            })
+            rating = index1 +1;
+        })
+    })
+
+    $('#review').on('input', function () {
+        if (this.value.length > 150) this.value = this.value.substring(0, 150);
+    })
 </script>
 </body>
 </html>

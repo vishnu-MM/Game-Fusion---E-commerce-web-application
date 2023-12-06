@@ -191,11 +191,7 @@
             showCancelButton: true,
             confirmButtonText: 'Yes, Delete',
             cancelButtonText: 'No, cancel',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.submit();
-            }
-        });
+        }).then((result) => { if (result.isConfirmed) form.submit(); });
     }
 </script>
 </body>

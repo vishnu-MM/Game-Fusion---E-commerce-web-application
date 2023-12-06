@@ -60,6 +60,21 @@ public class OTPServiceImpl implements OTPService {
     }
 
     @Override
+    public void sendOTP(String email, String name) {
+        String otp = generateOTP();
+        Long timeOfCreation = System.currentTimeMillis();
+        otpUtil = new OtpUtil(email,otp,timeOfCreation);
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(from);
+        message.setSubject("OTP Verification - Game Fusion");
+        message.setText( generateEmailBody(name,otp ) );
+        message.setTo(email);
+
+        javaMailSender.send(message);
+    }
+
+    @Override
     public String verifyOTP(String recipient, String enteredOtp) {
         if (!recipient.equals(otpUtil.username()))
             return "USER-NOT-FOUNT";

@@ -65,7 +65,9 @@
                                     <div class="d-flex justify-content-center ">
                                         <div class="form-group">
                                             <label for="submit"></label>
-                                            <button type="submit" id="submit" class="btn btn-success-light">Submit</button>
+                                            <button type="submit" id="submit" onclick="validateAndSubmit(this.form)" class="btn btn-success-light">
+                                                Submit
+                                            </button>
                                         </div>
                                     </div>
                                 </form>
@@ -86,6 +88,7 @@
     <div th:replace="~{Fragments/UserFragments.html::footer}"></div>
     <!-- JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
     <script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
     <script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
     <script th:src="@{/assets/js/vendor/jquery-migrate-3.3.0.min.js}"></script>
@@ -109,5 +112,6 @@
     <script th:src="@{/assets/js/main.js}"></script>
     <script th:src="@{/assets/js/shop.js}"></script>
     <script th:src="@{/assets/js/AjaxFile.js}"></script>
+
 </body>
 </html>

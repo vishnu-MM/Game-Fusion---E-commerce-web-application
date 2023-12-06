@@ -5,6 +5,32 @@
     
     <div th:replace="~{Fragments/UserFragments.html::header}"> </div>
     <div th:replace="~{Fragments/UserFragments.html::mobile-view}"></div>
+    <!-- OTP MODAL -->
+    <div class="modal fade" id="otpModal" tabindex="-1" aria-labelledby="otpModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-content">
+                    <div class="p-5">
+                        <div class="heading_s1">
+                            <h3 class="mb-30">OTP Verification</h3>
+                        </div>
+                        <div class="form-group"><p>OTP has been sent via Email to<span>User Email</span></p></div>
+                        <div class="form-group" ></div>
+                        <div class="form-group">
+                            <input type="text" name="otp" id="otpField" placeholder="Enter Verification Code"/>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-fill-out btn-block hover-up" onclick="validateForm()" name="submit">
+                                Verify
+                            </button>
+                            <button onclick="sentOTP()" class="btn btn-fill-out btn-block hover-up">Resent OTP</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- OTP MODAL -->
     <main class="main">
         <section class="mt-10 mb-10">
             <div class="container-fluid">
@@ -14,7 +40,7 @@
                     <div class="col-lg-6 login_wrap widget-taber-content bg-white  background-white border-radius-5">
                         <div class="padding_eight_all p-30">
                             <div class="heading_s1"><h3 class="mb-30">Edit Profile</h3></div>
-                            <form th:method="put" th:action="@{/user/edit-profile/update}" th:object="${UserDetails}">
+                            <form th:method="put" th:action="@{/user/edit-profile/update}" th:object="${UserDetails}" onsubmit="return false">
                                 <label><input hidden="hidden" th:field="*{referralCode}"></label>
                                 <label for="id-form"></label>
                                 <label for="password-form"></label>
@@ -34,24 +60,29 @@
                                            class="text-box"
                                            placeholder="Last name">
                                 </div>
+                                <span class="error-msg" id="error-msg-fn"></span>
                                 <div class="error-msg" th:if="${#fields.hasErrors('firstName')}"
-                                     th:errors="*{firstName}"></div>
+                                     th:errors="*{firstName}">
+                                </div>
                                 <div class="form-group">
                                     <label for="phone-form"></label>
-                                    <input type="tel" name="phone" th:value="*{phone}" id="phone-form"
+                                    <input type="number" name="phone" th:value="*{phone}" id="phone-form"
                                            placeholder="Phone number">
                                     <div class="error-msg" th:if="${#fields.hasErrors('phone')}"
                                          th:errors="*{phone}"></div>
+                                    <span class="error-msg"></span>
                                 </div>
                                 <div class="form-group">
                                     <label for="email-form"></label>
                                     <input type="email" name="username" th:value="*{username}" id="email-form"
                                            placeholder="Email ID">
+                                    <span class="error-msg"></span>
                                     <div class="error-msg" th:if="${#fields.hasErrors('username')}"
                                          th:errors="*{username}"></div>
                                 </div>
                                 <div class="form-group">
-                                    <button type="submit" class="btn btn-fill-out btn-block hover-up" name="edit">
+                                    <button type="submit" class="btn btn-fill-out btn-block hover-up" name="edit"
+                                            onclick="evaluateAndSubmit(this.form)">
                                         Update
                                     </button>
                                 </div>
@@ -69,6 +100,7 @@
     </main>
     <div th:replace="~{Fragments/UserFragments.html::footer}"></div>
     <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
     <script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
@@ -93,5 +125,105 @@
     <script th:src="@{/assets/js/main.js}"></script>
     <script th:src="@{/assets/js/shop.js}"></script>
     <script th:src="@{/assets/js/AjaxFile.js}"></script>
+    <script>
+        let form
+        let lastName, firstName, phone, email
+        alertify.set('notifier', 'position', 'top-center');
+
+        function evaluateAndSubmit(form) {
+            this.form = form
+            firstName = $('#first-name-form')
+            lastName = $('#last-name-form')
+            phone = $('#phone-form')
+            email = $('#email-form')
+            let isValid = true
+            let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+            if (firstName.val().trim() === '') {
+                $('#error-msg-fn').text("First Name Cannot be Empty")
+                isValid = false;
+            }
+
+            if (phone.val().trim() === '') {
+                phone.next().text("Phone number is required")
+                isValid = false;
+            }
+            else if (phone.val().length < 10) {
+                phone.next().text("Please provide a valid Phone Number")
+                isValid = false;
+            }
+
+            if (email.val().trim() === '') {
+                email.next().text("Email is required, Please provide an email ID")
+                isValid = false;
+            }
+            else if (!emailRegex.test(email.val().trim())) {
+                email.next().text("Please provide a valid Email ID")
+                isValid = false;
+            }
+
+            if (isValid) {
+                $.ajax({
+                    type: 'GET',
+                    url: '/user/username-exists',
+                    data: { Email: email.val().trim() },
+                    success: function (response) {
+                        if (response) {
+                            email.next().text("User with this email is already exist");
+                        } else {
+                            sentOTP();
+                        }
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            }
+        }
+
+        function sentOTP() {
+            let name = firstName.val().trim()
+            let emailId = email.val().trim()
+            if (lastName.val().trim() !== '' && lastName.val().trim() !== null)
+                name = name+' '+lastName.val().trim()
+
+            $('#otpModal').modal('show');
+
+            $.ajax({
+                type: 'GET',
+                url: '/user/sent-otp',
+                data: { Email: emailId, Name: name},
+                success: function (response) { alertify.success("OTP is sent to "+email) },
+                error: function (error) { alertify.error("Something went wrong") }
+            });
+        }
+
+        function validateForm() {
+            let otpValue = $('#otpField').val().trim();
+            if (otpValue === "") alertify.error("OTP field cannot be empty")
+            let emailId = email.val().trim()
+
+            $.ajax({
+                type: 'POST',
+                url: '/user/otp-validation/verify',
+                data: { Email: emailId, OTP: otpValue},
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader($("meta[name='_csrf_header']").attr("content"), $("meta[name='_csrf']").attr("content"));
+                },
+                success: function (response) {
+                    if (response==='SUCCESS') {
+                        alertify.success("Success")
+                        $('#otpModal').modal('hide')
+                        form.submit()
+                    }
+                    else if (response==='INVALID') {alertify.error("Invalid OTP")}
+                    else if (response==='EMPTY') {alertify.error("OTP is Empty")}
+                    else if (response==='TIMEOUT') {alertify.error("Time out")}
+                    else if (response==='USER-NOT-FOUNT') {alertify.error("User not found")}
+                },
+                error: function (error) { alertify.error("Something went wrong") }
+            });
+        }
+    </script>
 </body>
 </html>

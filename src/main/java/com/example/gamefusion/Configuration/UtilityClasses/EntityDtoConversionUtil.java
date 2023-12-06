@@ -111,6 +111,9 @@ public class EntityDtoConversionUtil {
     public WalletDto entityToDto(Wallet wallet) {
       return mapper.map(wallet,WalletDto.class);
     }
+    public ProductReviewDto entityToDto(ProductReview productReview) {
+      return mapper.map(productReview,ProductReviewDto.class);
+    }
     public OrderHistoryDto entityToDto(OrderHistory orderHistory) {
         return new OrderHistoryDto(
             orderHistory.getId(),
@@ -234,5 +237,10 @@ public class EntityDtoConversionUtil {
         );
         return orderHistory;
     }
-
+    public ProductReview dtoToEntity(ProductReviewDto productReviewDto) {
+        ProductReview productReview = mapper.map(productReviewDto,ProductReview.class);
+        productReview.setUser( userRepository.findById(productReview.getUser().getId()).orElse(null) );
+        productReview.setProduct( productRepository.findById(productReview.getProduct().getId()).orElse(null) );
+        return productReview;
+    }
 }

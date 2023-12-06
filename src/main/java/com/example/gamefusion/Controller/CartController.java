@@ -54,7 +54,7 @@ public class CartController {
     @ResponseBody
     public  Boolean addToCartWithQty(@RequestParam("ProductId") Long productId,
                                      @RequestParam(value = "Quantity",defaultValue = "1", required = false) Integer qty,
-                                     Principal principal, HttpServletRequest request) {
+                                     Principal principal) {
         UserDto userDto = userService.findByUsername(principal.getName());
         ProductDto productDto = productService.getProductById(productId);
         if (qty > productDto.getQty() )

@@ -121,4 +121,6 @@ function addToCart(productId) {
         }
     });
 }
-
+function buyNow(productId) {
+    window.location.href='/buy-now?ProductId='+ productId +'&Qty='+ qtyVal
+}

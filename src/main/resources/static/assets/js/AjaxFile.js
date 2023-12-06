@@ -15,9 +15,7 @@ $(document).ready(function() {
                 $('#phone').text(data.phone);
                 toggleDropdown();
             },
-            error: function() {
-                console.log('Error fetching user data');
-            }
+            error: function() { console.log('Error fetching user data'); }
         });
     });
 
@@ -28,9 +26,7 @@ $(document).ready(function() {
             success: function (response){
                 $('#referral-link').attr('value',response)
             },
-            error:function (error){
-                alert("Something went wrong")
-            }
+            error:function (error){ alert("Something went wrong") }
         })
     })
 

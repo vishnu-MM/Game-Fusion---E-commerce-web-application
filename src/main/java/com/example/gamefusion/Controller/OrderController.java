@@ -26,6 +26,7 @@ public class OrderController {
     private final UserService userService;
     private final CartService cartService;
     private final CouponService couponService;
+    private final ProductService productService;
     private final AddressService addressService;
     private final PaymentService paymentService;
     private final OrderSubService orderSubService;
@@ -36,13 +37,14 @@ public class OrderController {
 
     @Autowired
     public OrderController(CartService cartService, CouponService couponService,
-                           UserService userService, AddressService addressService,
+                           UserService userService, ProductService productService, AddressService addressService,
                            PaymentService paymentService, OrderSubService orderSubService,
                            OrderMainService orderMainService, OrderHistoryService orderHistoryService,
                            UserCouponsService userCouponsService, EntityDtoConversionUtil conversionUtil) {
         this.userService = userService;
         this.cartService = cartService;
         this.couponService = couponService;
+        this.productService = productService;
         this.conversionUtil = conversionUtil;
         this.paymentService = paymentService;
         this.addressService = addressService;
@@ -79,6 +81,10 @@ public class OrderController {
         Double discount = 0.0;
         UserDto userDto = userService.findByUsername(principal.getName());
         List<CartDto> cart = cartService.findAvailableProductsByUser(userDto);
+
+        if (cart == null) return "redirect:/cart-products";
+        if (addressId == null || paymentOption==null) return "redirect:/checkout-page";
+
         Integer totalAmount = cartService.totalAmount(cart);
 
         if (couponCode != null) {
@@ -107,7 +113,7 @@ public class OrderController {
         historyDto.setOrderStatus(orderMainDto.getStatus());
         historyDto.setDate(Date.valueOf(LocalDate.now()));
         orderHistoryService.save(historyDto);
-
+        orderMainService.decrementQuantity(orderMainDto);
         return "User/shop-place_order-success";
     }
 
@@ -176,5 +182,34 @@ public class OrderController {
         List<OrderSub> orderSubList = orderSubService.findOrderByOrder(orderMainDto)
                 .stream().map(conversionUtil::dtoToEntity).toList();
         PDFGenerator.generate(response,orderSubList,conversionUtil.dtoToEntity(orderMainDto));
+    }
+
+    @GetMapping("/buy-now")
+    public String buyNow(@RequestParam("ProductId") Long productId, @RequestParam("Qty") Integer qty,
+                         Principal principal, Model model) {
+
+        if (productId == null) return "redirect:/user/home";
+        if (qty == null) qty = 1;
+
+        AddressDto addressDto = new AddressDto();
+        List<AddressDto> addressDtoList = new ArrayList<>();
+        UserDto user = userService.findByUsername(principal.getName());
+        ProductDto product = productService.getProductById(productId);
+        List<Cart> cartDtoList = new ArrayList<>();
+        Cart cart = new Cart();
+        cart.setQty(qty);
+        cart.setUser(conversionUtil.dtoToEntity(user));
+        cart.setProduct(conversionUtil.dtoToEntity(product));
+        cartDtoList.add(cart);
+
+        if ( addressService.isExistsByUser(user.getId()))
+            addressDtoList = addressService.findByUser(user.getId(),true);
+
+        model.addAttribute("User", user);
+        model.addAttribute("ProductDetails", cartDtoList);
+        model.addAttribute("NewAddress", addressDto);
+        model.addAttribute("AddressList", addressDtoList);
+        model.addAttribute("TotalAmount",(product.getDiscountPrice()*qty));
+        return "User/shop-checkout";
     }
 }

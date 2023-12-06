@@ -2,6 +2,7 @@ package com.example.gamefusion.Services;
 
 import com.example.gamefusion.Dto.PaginationInfo;
 import com.example.gamefusion.Dto.UserDto;
+import com.example.gamefusion.Entity.User;
 
 import java.util.UUID;
 
@@ -9,7 +10,7 @@ public interface UserService {
     UserDto save(UserDto newUser );
     PaginationInfo findAllUsers(Integer pageNo, Integer pageSize);
 
-    void update(UserDto userDto);
+    User update(UserDto userDto);
 
     UserDto findByUsername(String receiver);
     UserDto findById(Integer id);

@@ -49,15 +49,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void update(UserDto userDto) {
+    public User update(UserDto userDto) {
         User user = conversionUtil.dtoToEntity(userDto);
-        repository.save(user);
+        return repository.save(user);
     }
 
     @Override
     public UserDto findByUsername(String receiver) {
-        User user = repository.findByUsername(receiver);
-        return conversionUtil.entityToDto(user);
+        if (isExistsByUsername(receiver)) {
+            User user = repository.findByUsername(receiver);
+            return conversionUtil.entityToDto(user);
+        }
+        throw new EntityNotFoundException("User with this username is not fount"+receiver);
     }
 
     @Override

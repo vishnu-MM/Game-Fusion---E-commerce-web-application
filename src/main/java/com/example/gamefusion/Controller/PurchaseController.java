@@ -170,6 +170,9 @@ public class PurchaseController {
 
         CategoryDto categoryDto = categoryService.findById(categoryId);
         ProductDto productDto = productService.getProductById(productId);
+        if (!categoryOfferService.isExistsByCategory(categoryDto))
+            return ResponseEntity.notFound().build();
+
         CategoryOfferDto categoryOfferDto = categoryOfferService.findByCategory(categoryDto);
 
         if (LocalDate.now().isAfter(categoryOfferDto.getExpiryDate().toLocalDate()))
