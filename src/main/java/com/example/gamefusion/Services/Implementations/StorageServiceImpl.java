@@ -11,6 +11,8 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
@@ -39,13 +41,16 @@ public class StorageServiceImpl implements StorageService {
     @Override
     @Transactional
     public List<String> uploadImagesToFileSystem(List<MultipartFile> files, Product product) {
-        String FOLDER_PATH = "C:/Users/vishn/Projects/Game Fusion/src/main/resources/static/Images/";
+        String FOLDER_PATH = "static/Images/";
+        Resource resource = new ClassPathResource(FOLDER_PATH);
+
         List<String> filePaths = new ArrayList<>();
 
-        for (MultipartFile file : files) {
-            String filePath = FOLDER_PATH + file.getOriginalFilename();
+        try {
+            String absolutePath = resource.getFile().getAbsolutePath();
+            for (MultipartFile file : files) {
+                String filePath = absolutePath + File.separator + file.getOriginalFilename();
 
-            try {
                 Images img = Images.builder()
                         .name(file.getOriginalFilename())
                         .type(file.getContentType())
@@ -55,12 +60,15 @@ public class StorageServiceImpl implements StorageService {
                 imagesRepository.save(img);
                 file.transferTo(new File(filePath));
                 filePaths.add("File uploaded successfully: " + filePath);
-            } catch ( Exception ex) {
-                filePaths.add("Error uploading the file: " + ex.getMessage());
-                log.error(ex.getMessage());
             }
-
+        } catch (IOException e) {
+            filePaths.add("Error uploading the file: " + e.getMessage());
+            log.error(e.getMessage());
+        } catch (Exception ex) {
+            filePaths.add("An error occurred: " + ex.getMessage());
+            log.error(ex.getMessage());
         }
+
         return filePaths;
     }
 

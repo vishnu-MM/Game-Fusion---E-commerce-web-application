@@ -188,15 +188,12 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public void deleteImage(Long imageId) {
+        if (!imagesService.isImageExists(imageId))
+            throw new EntityNotFoundException("Image not found");
         try {
-            if (!imagesService.isImageExists(imageId))
-                throw new EntityNotFoundException("Image not found");
-            if (storageService.deleteImage(imageId)) {
-                imagesService.deleteImageById(imageId);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+            storageService.deleteImage(imageId);
+            imagesService.deleteImageById(imageId);
+        } catch (IOException e) { throw new RuntimeException(e); }
     }
 
     //* ORDER OPS
