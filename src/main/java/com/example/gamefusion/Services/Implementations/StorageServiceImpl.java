@@ -1,36 +1,36 @@
 package com.example.gamefusion.Services.Implementations;
 
-import com.example.gamefusion.Entity.BrandLogo;
+import com.example.gamefusion.Configuration.ExceptionHandlerConfig.EntityNotFound;
+import com.example.gamefusion.Configuration.UtilityClasses.ImageUtils;
 import com.example.gamefusion.Repository.BrandLogoRepository;
-import jakarta.persistence.EntityNotFoundException;
-import com.example.gamefusion.Entity.Images;
-import com.example.gamefusion.Entity.Product;
-import com.example.gamefusion.Repository.ImagesRepository;
-import com.example.gamefusion.Services.StorageService;
-import jakarta.transaction.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Service;
+import com.example.gamefusion.Repository.ImagesRepository;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.File;
+import com.example.gamefusion.Services.StorageService;
+import org.springframework.core.io.ClassPathResource;
+import com.example.gamefusion.Entity.BrandLogo;
+import org.springframework.stereotype.Service;
+import com.example.gamefusion.Entity.Product;
+import org.springframework.core.io.Resource;
+import com.example.gamefusion.Entity.Images;
+import jakarta.transaction.Transactional;
+import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import com.example.gamefusion.Configuration.UtilityClasses.ImageUtils;
+import org.slf4j.Logger;
+import java.util.List;
+import java.io.File;
 
 import static com.example.gamefusion.Configuration.UtilityClasses.ImageUtils.*;
 
 @Service
 public class StorageServiceImpl implements StorageService {
 
-    Logger log = LoggerFactory.getLogger(StorageService.class);
     private final ImagesRepository imagesRepository;
     private final BrandLogoRepository brandLogoRepository;
+    Logger log = LoggerFactory.getLogger(StorageService.class);
     @Autowired
     public StorageServiceImpl(ImagesRepository imagesRepository,
                               BrandLogoRepository brandLogoRepository) {
@@ -80,9 +80,8 @@ public class StorageServiceImpl implements StorageService {
             String filePath = imageData.get().getFilePath();
             return Files.readAllBytes(new File(filePath).toPath());
         }
-        else {
-            throw new EntityNotFoundException("Image Not Fount");
-        }
+        else
+            throw new EntityNotFound("Image Not Fount");
     }
 
     @Override
@@ -92,9 +91,9 @@ public class StorageServiceImpl implements StorageService {
             String filePath = imageData.get().getFilePath();
             File file = new File(filePath);
             return file.delete();
-        } else {
-            throw new EntityNotFoundException("Image Not Found");
         }
+        else
+            throw new EntityNotFound("Image Not Found");
     }
 
     @Override

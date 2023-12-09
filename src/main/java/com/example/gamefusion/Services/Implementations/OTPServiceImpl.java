@@ -1,17 +1,16 @@
 package com.example.gamefusion.Services.Implementations;
 
 import com.example.gamefusion.Configuration.UtilityClasses.OtpUtil;
-import com.example.gamefusion.Dto.UserDto;
-import com.example.gamefusion.Services.OTPService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import com.example.gamefusion.Services.OTPService;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
-
+import com.example.gamefusion.Dto.UserDto;
+import org.slf4j.LoggerFactory;
 import java.util.Random;
+import org.slf4j.Logger;
 
 @Service
 public class OTPServiceImpl implements OTPService {

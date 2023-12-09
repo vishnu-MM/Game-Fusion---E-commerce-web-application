@@ -117,7 +117,6 @@ public class PurchaseController {
     @GetMapping("/payment-status-confirmation/{orderId}")
     @ResponseBody
     public Boolean getPaymentStatus(@PathVariable Integer orderId) {
-        System.out.println("Order ID"+orderId);
         OrderMainDto orderMainDto = orderMainService.findOrderById(orderId);
         return paymentService.isPaymentSuccess(orderMainDto);
     }

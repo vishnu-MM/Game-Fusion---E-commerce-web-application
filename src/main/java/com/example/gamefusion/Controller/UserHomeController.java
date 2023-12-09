@@ -55,7 +55,6 @@ public class UserHomeController {
                        @RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
                        @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize,
                        Principal principal) {
-        System.out.println(principal.getName());
         PaginationInfo info = productService.getAllActiveProducts(pageNo,pageSize);
         model.addAttribute("ProductPage",info);
         model.addAttribute("CategoryList",categoryService.getAll());
@@ -80,9 +79,7 @@ public class UserHomeController {
     @GetMapping("/my-profile")
     public ResponseEntity<UserDto> showUserProfile(Principal principal) {
         String username = principal.getName();
-        System.out.println(username);
         UserDto user = userService.findByUsername(username);
-        System.out.println(user);
         if (user != null) {
             return ResponseEntity.ok(user);
         } else {
@@ -111,7 +108,6 @@ public class UserHomeController {
             model.addAttribute("UserDetails",userDto);
             return "User/page-edit-profile";
         }
-        System.out.println(userDto);
 //        User user = userService.update(userDto);
 //
 //        authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), authentication.getAuthorities());
@@ -221,7 +217,6 @@ public class UserHomeController {
     @ResponseBody
     public String getReferralLink(Principal principal) {
         UserDto userDto = userService.findByUsername(principal.getName());
-        System.out.println(REFERRAL_URL+"?referralID="+userDto.getReferralCode());
         return REFERRAL_URL+"?referralID="+userDto.getReferralCode();
     }
 

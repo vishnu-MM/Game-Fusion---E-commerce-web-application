@@ -1,25 +1,22 @@
 package com.example.gamefusion.Services.Implementations;
 
 
+import com.example.gamefusion.Configuration.ExceptionHandlerConfig.EntityNotFound;
 import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
-import com.example.gamefusion.Dto.BrandDto;
-import com.example.gamefusion.Dto.PaginationInfo;
-import com.example.gamefusion.Entity.Brand;
-import com.example.gamefusion.Entity.BrandLogo;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.example.gamefusion.Repository.BrandRepository;
 import com.example.gamefusion.Services.BrandService;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import com.example.gamefusion.Dto.PaginationInfo;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import com.example.gamefusion.Dto.BrandDto;
+import com.example.gamefusion.Entity.Brand;
+import jakarta.transaction.Transactional;
 import java.util.Optional;
+import java.util.List;
 
 @Service
 public class BrandServiceImpl implements BrandService {
@@ -37,18 +34,15 @@ public class BrandServiceImpl implements BrandService {
         Optional<Brand> brand = brandRepository.findById(id);
         if (brand.isPresent())
             return conversionUtil.entityToDto(brand.get());
-        else
-            throw new EntityNotFoundException("Brand Not Found");
+        throw new EntityNotFound("Brand Not Found");
     }
 
     @Override
     public BrandDto saveOrUpdate(BrandDto brandDto) {
         return (brandDto == null) ? null :
             conversionUtil.entityToDto(
-                brandRepository.save(
-                    conversionUtil.dtoToEntity(brandDto)
-                )
-            );
+                brandRepository.save( conversionUtil.dtoToEntity(brandDto) )
+        );
     }
 
     @Override
@@ -70,14 +64,14 @@ public class BrandServiceImpl implements BrandService {
     @Transactional
     public void updateStatusActive(Long brandId) {
         if (existsById(brandId)) brandRepository.inActivate(brandId);
-        else throw new EntityNotFoundException("Brand not found");
+        else throw new EntityNotFound("Brand not found");
     }
 
     @Override
     @Transactional
     public void updateStatusInActive(Long brandId) {
         if (existsById(brandId)) brandRepository.activate(brandId);
-        else throw new EntityNotFoundException("Brand not found");
+        else throw new EntityNotFound("Brand not found");
     }
 
     @Override
@@ -90,9 +84,7 @@ public class BrandServiceImpl implements BrandService {
     public PaginationInfo getAll(Integer pageNo, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNo,pageSize,Sort.by("id"));
         Page<Brand> brandPage = brandRepository.findAll(pageable);
-        List<BrandDto> brandList = brandPage.getContent()
-                                    .stream().map(conversionUtil::entityToDto).toList();
-
+        List<BrandDto> brandList = brandPage.getContent().stream().map(conversionUtil::entityToDto).toList();
         return new PaginationInfo(
                 brandList,brandPage.getNumber(),brandPage.getSize(),
                 brandPage.getTotalElements(),brandPage.getTotalPages(),

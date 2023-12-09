@@ -1,22 +1,22 @@
 package com.example.gamefusion.Services.Implementations;
 
+import com.example.gamefusion.Configuration.ExceptionHandlerConfig.EntityNotFound;
 import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
-import com.example.gamefusion.Dto.PaginationInfo;
-import com.example.gamefusion.Dto.UserDto;
-import com.example.gamefusion.Entity.User;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.example.gamefusion.Repository.UserRepository;
 import com.example.gamefusion.Services.UserService;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import com.example.gamefusion.Dto.PaginationInfo;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import com.example.gamefusion.Dto.UserDto;
+import com.example.gamefusion.Entity.User;
+import jakarta.transaction.Transactional;
 import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -26,41 +26,38 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final EntityDtoConversionUtil conversionUtil;
     @Autowired
-    public UserServiceImpl(UserRepository repository, PasswordEncoder passwordEncoder, EntityDtoConversionUtil conversionUtil) {
+    public UserServiceImpl(UserRepository repository, 
+                           PasswordEncoder passwordEncoder,
+                           EntityDtoConversionUtil conversionUtil) {
         this.repository = repository;
-        this.passwordEncoder = passwordEncoder;
         this.conversionUtil = conversionUtil;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public UserDto save(UserDto newUser) {
         User user = new User();
-        user.setFirstName(newUser.getFirstName());
-        user.setLastName(newUser.getLastName());
-        user.setPhone(newUser.getPhone());
-        user.setUsername(newUser.getUsername());
         user.setRole("USER");
         user.setIsActive(true);
+        user.setPhone(newUser.getPhone());
+        user.setLastName(newUser.getLastName());
+        user.setUsername(newUser.getUsername());
         user.setReferralCode(UUID.randomUUID());
-        user.setPassword(
-                passwordEncoder.encode(newUser.getPassword())
-        );
+        user.setFirstName(newUser.getFirstName());
+        user.setPassword( passwordEncoder.encode(newUser.getPassword()) );
         return conversionUtil.entityToDto(repository.save(user));
     }
 
     @Override
     public User update(UserDto userDto) {
-        User user = conversionUtil.dtoToEntity(userDto);
-        return repository.save(user);
+        return repository.save(conversionUtil.dtoToEntity(userDto));
     }
 
     @Override
     public UserDto findByUsername(String receiver) {
-        if (isExistsByUsername(receiver)) {
-            User user = repository.findByUsername(receiver);
-            return conversionUtil.entityToDto(user);
-        }
-        throw new EntityNotFoundException("User with this username is not fount"+receiver);
+        if (isExistsByUsername(receiver))
+            return conversionUtil.entityToDto(repository.findByUsername(receiver));
+        throw new EntityNotFound("User with this username is not fount"+receiver);
     }
 
     @Override
@@ -68,8 +65,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> user = repository.findById(id);
         if (user.isPresent())
             return conversionUtil.entityToDto(user.get());
-        else
-            throw new EntityNotFoundException("User not found");
+        throw new EntityNotFound("User not found");
     }
 
     @Override
@@ -91,38 +87,31 @@ public class UserServiceImpl implements UserService {
     public PaginationInfo findAllUsers(Integer pageNo, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id"));
         Page<User> users = repository.findUsersByRole("USER",pageable);
-        List<User> listOfUser = users.getContent();
-        List<UserDto> contents = listOfUser.stream().map(conversionUtil::entityToDto).toList();
-
+        List<UserDto> contents = users.getContent().stream().map(conversionUtil::entityToDto).toList();
         return new PaginationInfo(
-                contents,users.getNumber(),users.getSize(),
-                users.getTotalElements(),users.getTotalPages(),
-                users.isLast(),users.hasNext()
+            contents,users.getNumber(),users.getSize(),
+            users.getTotalElements(),users.getTotalPages(),
+            users.isLast(),users.hasNext()
         );
     }
 
     @Override
     public void block(Integer id) {
-        if (isExistsById(id) && isBlocked(id)) {
+        if (isExistsById(id) && isBlocked(id))
             repository.blockUser(id);
-        }
     }
 
     @Override
     public void unBlock(Integer id) {
-        if (isExistsById(id) && !isBlocked(id)) {
+        if (isExistsById(id) && !isBlocked(id))
             repository.unBlockUser(id);
-        }
     }
 
     @Override
     @Transactional
     public void resetPassword(Integer id, String password) {
-        if (isExistsById(id)) {
-            repository.updatePasswordById( id,
-                    passwordEncoder.encode(password)
-            );
-        }
+        if (isExistsById(id))
+            repository.updatePasswordById( id, passwordEncoder.encode(password));
     }
 
     @Override

@@ -1,24 +1,23 @@
 package com.example.gamefusion.Services.Implementations;
 
+import com.example.gamefusion.Configuration.ExceptionHandlerConfig.EntityNotFound;
 import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
-import com.example.gamefusion.Dto.CategoryDto;
-import com.example.gamefusion.Dto.PaginationInfo;
-import com.example.gamefusion.Dto.ProductDto;
-import com.example.gamefusion.Entity.Brand;
-import com.example.gamefusion.Entity.Product;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.example.gamefusion.Repository.ProductRepository;
 import com.example.gamefusion.Services.ProductService;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import com.example.gamefusion.Dto.PaginationInfo;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import com.example.gamefusion.Dto.CategoryDto;
+import com.example.gamefusion.Entity.Product;
+import com.example.gamefusion.Dto.ProductDto;
+import com.example.gamefusion.Entity.Brand;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import jakarta.transaction.Transactional;
 import java.util.Optional;
+import java.util.List;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -26,8 +25,8 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository repository;
     private final EntityDtoConversionUtil conversionUtil;
     @Autowired
-    public ProductServiceImpl(
-            ProductRepository repository, EntityDtoConversionUtil conversionUtil) {
+    public ProductServiceImpl(ProductRepository repository,
+                              EntityDtoConversionUtil conversionUtil) {
 
         this.repository = repository;
         this.conversionUtil = conversionUtil;
@@ -37,8 +36,7 @@ public class ProductServiceImpl implements ProductService {
     public PaginationInfo getAllProducts(Integer pageNo, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id"));
         Page<Product> products = repository.findAll(pageable);
-        List<Product> listOfProducts = products.getContent();
-        List<ProductDto> contents = listOfProducts.stream().map(conversionUtil::entityToDto).toList();
+        List<ProductDto> contents = products.getContent().stream().map(conversionUtil::entityToDto).toList();
         return new PaginationInfo(
                 contents,products.getNumber(),products.getSize(),
                 products.getTotalElements(),products.getTotalPages(),
@@ -52,7 +50,6 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> products = repository.findByStatusAndCategoryStatus(true,true,pageable);
         List<Product> listOfProducts = products.getContent();
         List<ProductDto> contents = listOfProducts.stream().map(conversionUtil::entityToDto).toList();
-
         return new PaginationInfo(
                 contents,products.getNumber(),products.getSize(),
                 products.getTotalElements(),products.getTotalPages(),
@@ -68,12 +65,10 @@ public class ProductServiceImpl implements ProductService {
                             conversionUtil.dtoToEntity(categoryDto),
                             true, true, pageable
         );
-        List<Product> listProduct = page.getContent();
-        List<ProductDto> listOfProductDto = listProduct.stream().map(conversionUtil::entityToDto).toList();
-
+        List<ProductDto> listOfProductDto = page.getContent().stream().map(conversionUtil::entityToDto).toList();
         return new PaginationInfo(
-                listOfProductDto,pageNo,pageSize,
-                page.getTotalElements(),page.getTotalPages(),page.isLast(),page.hasNext()
+            listOfProductDto, pageNo, pageSize, page.getTotalElements(),
+            page.getTotalPages(),page.isLast(),page.hasNext()
         );
     }
 
@@ -86,12 +81,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto getProductById(Long id) {
         Optional<Product> product = repository.findById(id);
-        if (product.isPresent()){
+        if (product.isPresent())
             return conversionUtil.entityToDto(product.get());
-        }
-        else {
-            throw new EntityNotFoundException("Product not fount");
-        }
+        throw new EntityNotFound("Product not fount");
     }
 
     @Override
@@ -107,24 +99,22 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public void activateProduct(Long id) {
-        if (repository.existsById(id) && !isProductActive(id) ){
+        if (repository.existsById(id) && !isProductActive(id) )
             repository.unBlockProduct(id);
-        }
     }
 
     @Override
     @Transactional
     public void deActivateProduct(Long id) {
-        if (repository.existsById(id) && isProductActive(id) ){
+        if (repository.existsById(id) && isProductActive(id) )
             repository.blockProduct(id);
-        }
     }
 
     @Override
     @Transactional
     public void updateQuantity(Long productID, Integer qty) {
-        if (productID == null || qty == null) return;
-        repository.updateQty(productID,qty);
+        if (productID != null && qty != null)
+            repository.updateQty(productID,qty);
     }
 
     @Override

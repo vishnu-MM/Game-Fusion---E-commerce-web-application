@@ -101,7 +101,6 @@ public class OrderController {
         orderSubService.save(orderMainDto.getId(),cart);
         paymentService.save(paymentOption,orderMainDto);
 
-        System.out.println("From order placing "+orderMainDto);
         if (paymentOption == 2)
             return "redirect:/online-payment?orderId="+orderMainDto.getId();
 

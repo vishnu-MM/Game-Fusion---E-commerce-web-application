@@ -1,23 +1,22 @@
 package com.example.gamefusion.Services.Implementations;
 
 import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
-import com.example.gamefusion.Dto.PaginationInfo;
-import com.example.gamefusion.Dto.ProductDto;
-import com.example.gamefusion.Dto.ProductReviewDto;
-import com.example.gamefusion.Dto.UserDto;
-import com.example.gamefusion.Entity.ProductReview;
+import com.example.gamefusion.Configuration.ExceptionHandlerConfig.EntityNotFound;
 import com.example.gamefusion.Repository.ProductReviewRepository;
-import com.example.gamefusion.Services.ProductReviewService;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+import com.example.gamefusion.Services.ProductReviewService;
 import org.springframework.data.domain.PageRequest;
+import com.example.gamefusion.Dto.ProductReviewDto;
+import com.example.gamefusion.Entity.ProductReview;
+import com.example.gamefusion.Dto.PaginationInfo;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import com.example.gamefusion.Dto.ProductDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import com.example.gamefusion.Dto.UserDto;
 import java.util.Optional;
+import java.util.List;
 
 @Service
 public class ProductReviewServiceImpl implements ProductReviewService {
@@ -48,8 +47,9 @@ public class ProductReviewServiceImpl implements ProductReviewService {
     @Override
     public ProductReviewDto findById(Long id) {
         Optional<ProductReview> review = repository.findById(id);
-        if (review.isPresent()) return conversionUtil.entityToDto(review.get());
-        throw new EntityNotFoundException("Product review with this id, is not present");
+        if (review.isPresent())
+            return conversionUtil.entityToDto(review.get());
+        throw new EntityNotFound("Product review with this id, is not present");
     }
 
     @Override
@@ -57,8 +57,7 @@ public class ProductReviewServiceImpl implements ProductReviewService {
         if(isExistsByUser(userDto)) return null;
         Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by("date").descending());
         Page<ProductReview> reviewsPage = repository.findByUser(conversionUtil.dtoToEntity(userDto),pageable);
-        List<ProductReviewDto> contents = reviewsPage.getContent()
-                                                   .stream().map(conversionUtil::entityToDto).toList();
+        List<ProductReviewDto> contents = reviewsPage.getContent().stream().map(conversionUtil::entityToDto).toList();
         return new PaginationInfo(
                 contents,reviewsPage.getNumber(),reviewsPage.getSize(),
                 reviewsPage.getTotalElements(),reviewsPage.getTotalPages(),
@@ -71,8 +70,7 @@ public class ProductReviewServiceImpl implements ProductReviewService {
         if(isExistsByProduct(productDto)) return null;
         Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by("date").descending());
         Page<ProductReview> reviewsPage = repository.findByProduct(conversionUtil.dtoToEntity(productDto),pageable);
-        List<ProductReviewDto> contents = reviewsPage.getContent()
-                .stream().map(conversionUtil::entityToDto).toList();
+        List<ProductReviewDto> contents = reviewsPage.getContent().stream().map(conversionUtil::entityToDto).toList();
         return new PaginationInfo(
                 contents,reviewsPage.getNumber(),reviewsPage.getSize(),
                 reviewsPage.getTotalElements(),reviewsPage.getTotalPages(),
@@ -94,9 +92,7 @@ public class ProductReviewServiceImpl implements ProductReviewService {
     @Override
     public ProductReviewDto save(ProductReviewDto productReviewDto) {
         return conversionUtil.entityToDto(
-            repository.save(
-                conversionUtil.dtoToEntity(productReviewDto)
-            )
+            repository.save( conversionUtil.dtoToEntity(productReviewDto) )
         );
     }
 }

@@ -1,16 +1,16 @@
 package com.example.gamefusion.Services.Implementations;
 
+import com.example.gamefusion.Configuration.ExceptionHandlerConfig.EntityNotFound;
 import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
-import com.example.gamefusion.Dto.ProductDto;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.example.gamefusion.Repository.WishListRepository;
 import com.example.gamefusion.Services.WishListService;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.gamefusion.Dto.ProductDto;
 import org.springframework.stereotype.Service;
 import com.example.gamefusion.Dto.WishListDto;
 import com.example.gamefusion.Entity.WishList;
 import com.example.gamefusion.Dto.UserDto;
+import jakarta.transaction.Transactional;
 import java.util.Optional;
 import java.util.List;
 
@@ -40,7 +40,7 @@ public class WishListServiceImpl implements WishListService {
         Optional<WishList> wishList = repository.findById(id);
         if (wishList.isPresent())
             return conversionUtil.entityToDto(wishList.get());
-        throw new EntityNotFoundException("WishList with this id, Does not exists");
+        throw new EntityNotFound("WishList with this id, Does not exists");
     }
 
     @Override
@@ -52,8 +52,7 @@ public class WishListServiceImpl implements WishListService {
     @Override
     public Boolean isExistsByProduct(UserDto userDto, ProductDto productDto) {
         return repository.existsByUserAndProduct(
-            conversionUtil.dtoToEntity(userDto),
-            conversionUtil.dtoToEntity(productDto)
+            conversionUtil.dtoToEntity(userDto), conversionUtil.dtoToEntity(productDto)
         );
     }
 
@@ -72,7 +71,6 @@ public class WishListServiceImpl implements WishListService {
     @Override
     @Transactional
     public void deleteById(Integer wishlistId) {
-        System.out.println(wishlistId);
         repository.deleteById(wishlistId);
     }
 

@@ -1,6 +1,6 @@
 package com.example.gamefusion.Configuration.UtilityClasses;
 
-import jakarta.persistence.EntityNotFoundException;
+import com.example.gamefusion.Configuration.ExceptionHandlerConfig.EntityNotFound;
 import lombok.Getter;
 
 @Getter
@@ -19,6 +19,6 @@ public enum PaymentMethodUtil {
                 return method.toString();
             }
         }
-        throw new EntityNotFoundException("Valid Payment Method is Not found");
+        throw new EntityNotFound("Valid Payment Method is Not found");
     }
 }

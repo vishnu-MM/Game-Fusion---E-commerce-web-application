@@ -1,28 +1,27 @@
 package com.example.gamefusion.Services.Implementations;
 
 import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
-import com.example.gamefusion.Dto.CartDto;
-import com.example.gamefusion.Dto.PaginationInfo;
-import com.example.gamefusion.Dto.ProductDto;
-import com.example.gamefusion.Dto.UserDto;
-import com.example.gamefusion.Entity.*;
-import com.example.gamefusion.Repository.CartRepository;
+import com.example.gamefusion.Configuration.ExceptionHandlerConfig.EntityNotFound;
 import com.example.gamefusion.Repository.CategoryOfferRepository;
-import com.example.gamefusion.Services.CartService;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+import com.example.gamefusion.Repository.CartRepository;
+import com.example.gamefusion.Services.CartService;
 import org.springframework.data.domain.PageRequest;
+import com.example.gamefusion.Dto.PaginationInfo;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
+import com.example.gamefusion.Dto.ProductDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import com.example.gamefusion.Dto.CartDto;
+import com.example.gamefusion.Dto.UserDto;
+import jakarta.transaction.Transactional;
+import com.example.gamefusion.Entity.*;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -31,28 +30,29 @@ public class CartServiceImpl implements CartService {
     private final EntityDtoConversionUtil conversionUtil;
     @Autowired
     public CartServiceImpl(CartRepository cartRepository,
-                           CategoryOfferRepository categoryOfferRepository,
-                           EntityDtoConversionUtil conversionUtil) {
+                           EntityDtoConversionUtil conversionUtil,
+                           CategoryOfferRepository categoryOfferRepository) {
         this.cartRepository = cartRepository;
-        this.categoryOfferRepository = categoryOfferRepository;
         this.conversionUtil = conversionUtil;
+        this.categoryOfferRepository = categoryOfferRepository;
     }
 
-
     @Override
-    public void addToCart(CartDto cart) {
-        cartRepository.save(conversionUtil.dtoToEntity(cart));
+    public CartDto findById(Integer cartId) {
+        Optional<Cart> cart = cartRepository.findById(cartId);
+        if (cart.isPresent())
+            return conversionUtil.entityToDto(cart.get());
+        else
+            throw new EntityNotFound("Not Found");
     }
 
     @Override
     public PaginationInfo findByUser(UserDto user, Integer pageNo, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by("id"));
         Page<Cart> cartPage = cartRepository.findByUser(conversionUtil.dtoToEntity(user),pageable);
-        List<Cart> cartList = cartPage.getContent();
-        List<CartDto> cartDtoList = cartList.stream().map(conversionUtil::entityToDto).toList();
-
+        List<CartDto> cartList = cartPage.getContent().stream().map(conversionUtil::entityToDto).toList();
         return new PaginationInfo(
-                cartDtoList,cartPage.getNumber(),cartPage.getSize(),
+                cartList,cartPage.getNumber(),cartPage.getSize(),
                 cartPage.getTotalElements(),cartPage.getTotalPages(),
                 cartPage.isLast(),cartPage.hasNext()
         );
@@ -158,11 +158,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartDto findById(Integer cartId) {
-        Optional<Cart> cart = cartRepository.findById(cartId);
-        if (cart.isPresent())
-            return conversionUtil.entityToDto(cart.get());
-        else
-            throw new EntityNotFoundException("Not Found");
+    public void addToCart(CartDto cart) {
+        cartRepository.save(conversionUtil.dtoToEntity(cart));
     }
 }

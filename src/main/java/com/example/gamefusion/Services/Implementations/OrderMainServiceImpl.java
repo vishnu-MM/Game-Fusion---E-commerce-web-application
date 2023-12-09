@@ -3,24 +3,23 @@ package com.example.gamefusion.Services.Implementations;
 import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
 import com.example.gamefusion.Configuration.UtilityClasses.OrderStatusUtil;
 import com.example.gamefusion.Configuration.UtilityClasses.PaymentMethodUtil;
-import com.example.gamefusion.Dto.*;
-import com.example.gamefusion.Entity.OrderMain;
-import com.example.gamefusion.Entity.User;
-import com.example.gamefusion.Repository.OrderMainRepository;
-import com.example.gamefusion.Services.*;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+import com.example.gamefusion.Repository.OrderMainRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import com.example.gamefusion.Entity.OrderMain;
 import org.springframework.stereotype.Service;
-import java.sql.Date;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
+import com.example.gamefusion.Entity.User;
+import com.example.gamefusion.Services.*;
+import com.example.gamefusion.Dto.*;
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.sql.Date;
 
 @Service
 public class OrderMainServiceImpl implements OrderMainService {
@@ -32,27 +31,24 @@ public class OrderMainServiceImpl implements OrderMainService {
     private final EntityDtoConversionUtil conversionUtil;
     @Autowired
     public OrderMainServiceImpl(UserService userService, OrderMainRepository repository,
-                                ProductService productService, EntityDtoConversionUtil conversionUtil,
-                                WalletService walletService, OrderSubService orderSubService) {
+                                WalletService walletService, OrderSubService orderSubService,
+                                ProductService productService, EntityDtoConversionUtil conversionUtil ) {
         this.repository = repository;
         this.userService = userService;
         this.walletService = walletService;
-        this.conversionUtil = conversionUtil;
         this.productService = productService;
+        this.conversionUtil = conversionUtil;
         this.orderSubService = orderSubService;
     }
 
     @Override
     public PaginationInfo findOrderByUser(UserDto userDto, Integer pageNo, Integer pageSize) {
         User user = conversionUtil.dtoToEntity(userDto);
-
         Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by("date").descending());
         Page<OrderMain> orderMainPage = repository.findByUser( pageable, user);
-        List<OrderMain> orderMainList = orderMainPage.getContent();
-        List<OrderMainDto> orderMainDtoList = orderMainList.stream().map(conversionUtil::entityToDto).toList();
-
+        List<OrderMainDto> orderMainList = orderMainPage.getContent().stream().map(conversionUtil::entityToDto).toList();
         return new PaginationInfo(
-                orderMainDtoList, orderMainPage.getNumber(), orderMainPage.getSize(),
+                orderMainList, orderMainPage.getNumber(), orderMainPage.getSize(),
                 orderMainPage.getTotalElements(), orderMainPage.getTotalPages(),
                 orderMainPage.isLast(), orderMainPage.hasNext()
         );
@@ -63,8 +59,6 @@ public class OrderMainServiceImpl implements OrderMainService {
         Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by("date").descending());
         Page<OrderMain> orderMainPage = repository.findByStatus(status,pageable);
         List<OrderMain> orderMainList = orderMainPage.getContent();
-//        List<OrderMainDto> orderMainDtoList = orderMainList.stream().map(conversionUtil::entityToDto).toList();
-
         return new PaginationInfo(
                 orderMainList, orderMainPage.getNumber(), orderMainPage.getSize(),
                 orderMainPage.getTotalElements(), orderMainPage.getTotalPages(),
@@ -77,8 +71,6 @@ public class OrderMainServiceImpl implements OrderMainService {
         Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by("date").descending());
         Page<OrderMain> orderMainPage = repository.findAll( pageable);
         List<OrderMain> orderMainList = orderMainPage.getContent();
-//        List<OrderMainDto> orderMainDtoList = orderMainList.stream().map(conversionUtil::entityToDto).toList();
-
         return new PaginationInfo(
                 orderMainList, orderMainPage.getNumber(), orderMainPage.getSize(),
                 orderMainPage.getTotalElements(), orderMainPage.getTotalPages(),
@@ -91,8 +83,6 @@ public class OrderMainServiceImpl implements OrderMainService {
         Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by("date").descending());
         Page<OrderMain> orderMainPage = repository.findByDate( pageable, date);
         List<OrderMain> orderMainList = orderMainPage.getContent();
-//        List<OrderMainDto> orderMainDtoList = orderMainList.stream().map(conversionUtil::entityToDto).toList();
-
         return new PaginationInfo(
                 orderMainList, orderMainPage.getNumber(), orderMainPage.getSize(),
                 orderMainPage.getTotalElements(), orderMainPage.getTotalPages(),
@@ -105,8 +95,6 @@ public class OrderMainServiceImpl implements OrderMainService {
         Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by("date").descending());
         Page<OrderMain> orderMainPage = repository.findByDateBetween(startDate, endDate, pageable);
         List<OrderMain> orderMainList = orderMainPage.getContent();
-//        List<OrderMainDto> orderMainDtoList = orderMainList.stream().map(conversionUtil::entityToDto).toList();
-
         return new PaginationInfo(
                 orderMainList, orderMainPage.getNumber(), orderMainPage.getSize(),
                 orderMainPage.getTotalElements(), orderMainPage.getTotalPages(),
@@ -119,8 +107,6 @@ public class OrderMainServiceImpl implements OrderMainService {
         Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by("date").descending());
         Page<OrderMain> orderMainPage = repository.findByDateAndStatus(date,status,pageable);
         List<OrderMain> orderMainList = orderMainPage.getContent();
-//        List<OrderMainDto> orderMainDtoList = orderMainList.stream().map(conversionUtil::entityToDto).toList();
-
         return new PaginationInfo(
                 orderMainList, orderMainPage.getNumber(), orderMainPage.getSize(),
                 orderMainPage.getTotalElements(), orderMainPage.getTotalPages(),
@@ -133,8 +119,6 @@ public class OrderMainServiceImpl implements OrderMainService {
         Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by("date").descending());
         Page<OrderMain> orderMainPage = repository.findByDateBetweenAndStatus(startDate,endDate,status,pageable);
         List<OrderMain> orderMainList = orderMainPage.getContent();
-//        List<OrderMainDto> orderMainDtoList = orderMainList.stream().map(conversionUtil::entityToDto).toList();
-
         return new PaginationInfo(
                 orderMainList, orderMainPage.getNumber(), orderMainPage.getSize(),
                 orderMainPage.getTotalElements(), orderMainPage.getTotalPages(),
@@ -144,9 +128,7 @@ public class OrderMainServiceImpl implements OrderMainService {
 
     @Override
     public OrderMainDto save(OrderMainDto orderMainDto) {
-
-        OrderMain orderMain = repository.save(
-                conversionUtil.dtoToEntity(orderMainDto));
+        OrderMain orderMain = repository.save( conversionUtil.dtoToEntity(orderMainDto) );
         return conversionUtil.entityToDto(orderMain);
     }
 
@@ -173,8 +155,8 @@ public class OrderMainServiceImpl implements OrderMainService {
     @Override
     public OrderMainDto findOrderById(Integer orderId) {
         return conversionUtil.entityToDto(
-                repository.findById(orderId)
-                .orElseThrow(EntityNotFoundException::new));
+            repository.findById(orderId).orElseThrow()
+        );
     }
 
     @Override
@@ -221,8 +203,7 @@ public class OrderMainServiceImpl implements OrderMainService {
         LocalDate current = startDate;
         while (!current.isAfter(endDate)) {
             dateCountMap.put(
-                String.valueOf(current.getDayOfMonth()),
-                repository.countAllByDate(Date.valueOf(current))
+                String.valueOf(current.getDayOfMonth()), repository.countAllByDate(Date.valueOf(current))
             );
             current = current.plusDays(1);
         }
@@ -236,8 +217,7 @@ public class OrderMainServiceImpl implements OrderMainService {
         LocalDate current = startDate;
         while (!current.isAfter(endDate)) {
             dateCountMap.put(
-                String.valueOf(current.getDayOfWeek()),
-                repository.countAllByDate(Date.valueOf(current))
+                String.valueOf(current.getDayOfWeek()), repository.countAllByDate(Date.valueOf(current))
             );
             current = current.plusDays(1);
         }
@@ -252,8 +232,7 @@ public class OrderMainServiceImpl implements OrderMainService {
         int year = current.getYear();
         while (current.isBefore(endDate) || current.isEqual(endDate)) {
             dateCountMap.put(
-                String.valueOf(current.getMonth()),
-                repository.countAllByDateYearAndDateMonth(year,current.getMonthValue())
+                String.valueOf(current.getMonth()), repository.countAllByDateYearAndDateMonth(year,current.getMonthValue())
             );
             current = current.plusMonths(1);
         }

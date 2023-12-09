@@ -52,7 +52,6 @@ public class PDFGenerator {
 
             String str  ="OrderId Number: "+orderMainDto.getOrderId()+"\nInvoice Date: "+LocalDate.now()+"\nOrder Date: "+orderMainDto.getDate();
             Address addressE = orderMainDto.getAddress();
-            System.out.println(addressE);
             String address = addressE.getStreetAddress()+"\n"+addressE.getDistrict()+", "+addressE.getState()+"\n"+
                              addressE.getCountry()+"\nPin Code : "+addressE.getPinCode()+"\nPhone : "+addressE.getPhone();
 

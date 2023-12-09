@@ -1,19 +1,18 @@
 package com.example.gamefusion.Services.Implementations;
 
 import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
+import com.example.gamefusion.Configuration.ExceptionHandlerConfig.EntityNotFound;
 import com.example.gamefusion.Configuration.UtilityClasses.PaymentMethodUtil;
-import com.example.gamefusion.Dto.OrderMainDto;
-import com.example.gamefusion.Dto.PaymentDto;
-import com.example.gamefusion.Entity.OrderMain;
-import com.example.gamefusion.Entity.Payment;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.example.gamefusion.Repository.PaymentRepository;
 import com.example.gamefusion.Services.PaymentService;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.sql.Date;
+import com.example.gamefusion.Entity.OrderMain;
+import com.example.gamefusion.Dto.OrderMainDto;
+import com.example.gamefusion.Dto.PaymentDto;
+import com.example.gamefusion.Entity.Payment;
 import java.time.LocalDate;
+import java.sql.Date;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -28,13 +27,11 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentDto findByOrderMain(OrderMainDto orderMainDto) {
-        if (existsByOrderMain(orderMainDto))
-            return conversionUtil.entityToDto(
-                repository.findByOrderMain(
-                    conversionUtil.dtoToEntity(orderMainDto)
-                )
-            );
-        else throw new EntityNotFoundException("OrderMain Not Found");
+        if (!existsByOrderMain(orderMainDto))
+            throw new EntityNotFound("OrderMain Not Found");
+        return conversionUtil.entityToDto(
+            repository.findByOrderMain( conversionUtil.dtoToEntity(orderMainDto) )
+        );
     }
 
     @Override

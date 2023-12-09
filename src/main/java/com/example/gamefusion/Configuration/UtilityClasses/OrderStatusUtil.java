@@ -1,6 +1,6 @@
 package com.example.gamefusion.Configuration.UtilityClasses;
 
-import jakarta.persistence.EntityNotFoundException;
+import com.example.gamefusion.Configuration.ExceptionHandlerConfig.EntityNotFound;
 
 public enum OrderStatusUtil {
     PENDING(1),
@@ -21,6 +21,6 @@ public enum OrderStatusUtil {
                 return method.toString();
             }
         }
-        throw new EntityNotFoundException("Valid Payment Method is Not found");
+        throw new EntityNotFound("Valid Payment Method is Not found");
     }
 }

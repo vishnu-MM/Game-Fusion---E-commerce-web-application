@@ -1,25 +1,25 @@
 package com.example.gamefusion.Services.Implementations;
 
+import com.example.gamefusion.Configuration.ExceptionHandlerConfig.EntityNotFound;
 import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
 import com.example.gamefusion.Configuration.UtilityClasses.OrderStatusUtil;
-import com.example.gamefusion.Dto.*;
-import com.example.gamefusion.Entity.*;
-import com.example.gamefusion.Services.*;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
-import java.sql.Date;
-import java.time.DateTimeException;
-import java.time.LocalDate;
+import org.springframework.context.annotation.Lazy;
 import java.time.format.DateTimeParseException;
+import org.springframework.stereotype.Service;
+import com.example.gamefusion.Services.*;
+import jakarta.transaction.Transactional;
+import com.example.gamefusion.Entity.*;
+import com.example.gamefusion.Dto.*;
+import java.time.DateTimeException;
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.List;
+import java.sql.Date;
+import java.util.Map;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -154,7 +154,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void toggleStatus(Long id) {
         if (!productService.isProductExists(id)){
-            throw new EntityNotFoundException("Product not found");
+            throw new EntityNotFound("Product not found");
         }
         if (productService.isProductActive(id)) {
             productService.deActivateProduct(id);
@@ -189,7 +189,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void deleteImage(Long imageId) {
         if (!imagesService.isImageExists(imageId))
-            throw new EntityNotFoundException("Image not found");
+            throw new EntityNotFound("Image not found");
         try {
             storageService.deleteImage(imageId);
             imagesService.deleteImageById(imageId);
@@ -223,7 +223,7 @@ public class AdminServiceImpl implements AdminService {
         OrderMainDto orderMain = orderMainService.findOrderById(orderId);
         if ( orderMain!=null )
             return orderSubService.findOrderByOrder(orderMain);
-        throw new EntityNotFoundException("Order not found");
+        throw new EntityNotFound("Order not found");
     }
 
     @Override
@@ -307,7 +307,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     public void toggleBrandStatus(Long brandId) {
-        if (!isBrandExistsById(brandId)) throw new EntityNotFoundException("Brand Not Found");
+        if (!isBrandExistsById(brandId)) throw new EntityNotFound("Brand Not Found");
         if (isBrandActive(brandId)) brandService.updateStatusInActive(brandId);
         else brandService.updateStatusActive(brandId);
     }
@@ -392,7 +392,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public Integer getProductCountByBrand(Long brandID) {
-        if (brandService.existsById(brandID)) throw new EntityNotFoundException("Brand Not found");
+        if (brandService.existsById(brandID)) throw new EntityNotFound("Brand Not found");
         Brand brand = conversionUtil.dtoToEntity(brandService.findById(brandID));
         return productService.getCountByBrand(brand);
     }
