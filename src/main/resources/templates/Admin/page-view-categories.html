@@ -140,18 +140,20 @@
                                         <script th:inline="javascript">
                                             /* JavaScript to make an AJAX request and update the parentName */
                                             $(document).ready(function() {
-                                                var categoryId = [[${category.id}]];
-                                                var parentId = [[${category.parentId}]];
-                                                $.ajax({
-                                                    url: '/dashboard/get-category/' + parentId,
-                                                    type: 'GET',
-                                                    success: function(response) {
-                                                        $('#parentName_' + categoryId).text(response);
-                                                    },
-                                                    error: function(xhr, status, error) {
-                                                        console.log("Error: " + status + " - " + error);
-                                                    }
-                                                });
+                                                let categoryId = [[${category.id}]];
+                                                let parentId = [[${category.parentId}]];
+                                                if (parentId !== null) {
+                                                    $.ajax({
+                                                        url: '/dashboard/get-category/' + parentId,
+                                                        type: 'GET',
+                                                        success: function (response) {
+                                                            $('#parentName_' + categoryId).text(response);
+                                                        },
+                                                        error: function (xhr, status, error) {
+                                                            console.log("Error: " + status + " - " + error);
+                                                        }
+                                                    });
+                                                }
                                             });
                                         </script>
                                     </td>

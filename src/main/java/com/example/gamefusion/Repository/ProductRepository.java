@@ -32,6 +32,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Integer countAllByBrand(Brand brand);
     Page<Product> findByStatus(boolean status, Pageable pageable);
     List<Product> searchAllByNameContainsIgnoreCase(String name);
+    Page<Product> searchAllByNameContainsIgnoreCaseAndStatus(String name, Boolean status,Pageable pageable);
+    Page<Product> searchAllByCategory_NameContainsIgnoreCaseAndStatus(String name, Boolean status,Pageable pageable);
+    Page<Product> searchAllByPriceAndStatus(Integer name, Boolean status,Pageable pageable);
     Page<Product> findByStatusAndCategoryStatus(boolean product_status,boolean Category_status, Pageable pageable);
     Page<Product> findByBrandAndStatusAndCategoryStatus(Brand brand, Boolean status, Boolean brandStatus,Pageable pageable);
     Page<Product> findByCategoryAndStatusAndCategoryStatus(Category category, Boolean status, Boolean categoryStatus,Pageable pageable);

@@ -18,5 +18,7 @@ public interface ProductService {
     void updateQuantity(Long productID, Integer qty);
     PaginationInfo getAllProducts(Integer pageNo, Integer pageSize);
     PaginationInfo getAllActiveProducts(Integer pageNo, Integer pageSize);
+    PaginationInfo search(Integer pageNo, Integer pageSize,String search);
     PaginationInfo getAllActiveProductsFromCategory(CategoryDto category, Integer pageNo, Integer pageSize);
+
 }

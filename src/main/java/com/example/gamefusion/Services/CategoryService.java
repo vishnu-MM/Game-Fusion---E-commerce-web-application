@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface CategoryService {
     List<CategoryDto> getAll();
+    List<CategoryDto> getAllAvailable();
     List<String> getAllNames();
     CategoryDto findById(Long id);
     void activateCategory(Long id);
@@ -17,5 +18,6 @@ public interface CategoryService {
     Boolean isCategoryActive(Long id);
     Boolean isExistsByName(String name);
     List<CategoryDto> search(String search);
+    List<CategoryDto> searchAvailable(String search);
     PaginationInfo findAll(Integer pageNo, Integer pageSize);
 }

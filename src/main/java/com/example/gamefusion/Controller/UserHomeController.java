@@ -1,5 +1,6 @@
 package com.example.gamefusion.Controller;
 
+import com.example.gamefusion.Configuration.UtilityClasses.PageToListUtil;
 import com.example.gamefusion.Dto.*;
 import com.example.gamefusion.Services.*;
 import jakarta.servlet.http.HttpSession;
@@ -190,9 +191,8 @@ public class UserHomeController {
     public String updateAddress( @Valid @ModelAttribute("Address") AddressDto newAddress,
                                 BindingResult result, Principal principal, Model model ) {
         if (result.hasErrors()) {
-            UserDto user = userService.findByUsername(principal.getName());
             model.addAttribute("Address",newAddress);
-            model.addAttribute("User",user);
+            model.addAttribute("User",userService.findByUsername(principal.getName()));
             return "User/page-edit-address";
         }
         addressService.save(newAddress);
@@ -254,5 +254,15 @@ public class UserHomeController {
         productReview.setRating(Double.valueOf(format.format(rating)));
         productReview = productReviewService.save(productReview);
         return new ResponseEntity<>(productReview, HttpStatus.OK);
+    }
+
+    @GetMapping("/category-list")
+    @ResponseBody
+    public ResponseEntity<List<CategoryDto>> getAllCategories(@RequestParam(name = "search", required = false) String search) {
+        List<CategoryDto> categoryDtoList;
+        if (search == null) categoryDtoList = categoryService.getAllAvailable();
+        else categoryDtoList = categoryService.searchAvailable(search);
+        return new ResponseEntity<>(categoryDtoList,HttpStatus.OK);
+
     }
 }

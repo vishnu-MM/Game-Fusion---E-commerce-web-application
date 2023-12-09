@@ -12,6 +12,8 @@ import java.util.List;
 public interface CategoryRepository extends JpaRepository<Category, Long> {
     Boolean existsByName(String name);
     List<Category> searchAllByNameContainingIgnoreCase(String name);
+    List<Category> searchAllByNameContainingIgnoreCaseAndStatus(String name, Boolean status);
+    List<Category> findByStatus(Boolean status);
 
     @Query("SELECT c.name FROM Category c")
     List<String> findAllCategoryNames();

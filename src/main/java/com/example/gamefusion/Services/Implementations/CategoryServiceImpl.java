@@ -67,9 +67,20 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public List<CategoryDto> searchAvailable(String search) {
+        return repository.searchAllByNameContainingIgnoreCaseAndStatus(search,true)
+                .stream().map(conversionUtil::entityToDto).toList();
+    }
+
+    @Override
     public List<CategoryDto> getAll() {
         return repository.findAll(Sort.by("id"))
                 .stream().map(conversionUtil::entityToDto).toList();
+    }
+
+    @Override
+    public List<CategoryDto> getAllAvailable() {
+        return repository.findByStatus(true).stream().map(conversionUtil::entityToDto).toList();
     }
 
     @Override

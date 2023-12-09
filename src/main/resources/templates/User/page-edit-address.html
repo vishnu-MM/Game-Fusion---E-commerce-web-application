@@ -2,7 +2,6 @@
 <html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
 <th:block th:replace="~{Fragments/UserFragments.html::head-tag}"></th:block>
 <body>
-    
     <div th:replace="~{Fragments/UserFragments.html::header}"> </div>
     <div th:replace="~{Fragments/UserFragments.html::mobile-view}"></div>
     <main class="main">
@@ -19,6 +18,7 @@
                             <!-- LOOP -->
                             <div class="login_wrap widget-taber-content bg-white background-white border-radius-5 p-4 mb-5 row">
                                 <form th:method="put" th:action="@{/user/edit-address/update}" th:object="${Address}">
+                                    <input type="hidden" th:field="*{status}">
                                     <label for="userId"></label>
                                     <label for="id"></label>
                                     <input type="number" name="userId" id="userId" th:value="${User.id}"
@@ -28,7 +28,7 @@
                                     <div class="form-group">
                                         <label for="address">Address (Area and Street)</label>
                                         <textarea class="form-control" id="address" name="streetAddress"
-                                                  th:value="${Address.streetAddress}"
+                                                  th:field="${Address.streetAddress}"
                                                   placeholder="Enter your address">
                                         </textarea>
                                         <span style="color : red" th:if="${#fields.hasErrors('streetAddress')}" th:errors="*{streetAddress}"></span>
@@ -77,7 +77,6 @@
                                         </div>
                                     </div>
                                 </form>
-
                             </div>
                              <!-- LOOP ENDS-->
                         </div>

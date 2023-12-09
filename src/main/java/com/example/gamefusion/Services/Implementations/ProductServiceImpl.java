@@ -16,6 +16,8 @@ import com.example.gamefusion.Entity.Brand;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import jakarta.transaction.Transactional;
+
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.List;
 
@@ -126,5 +128,21 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductDto> search(String search) {
         return repository.searchAllByNameContainsIgnoreCase(search)
                 .stream().map(conversionUtil::entityToDto).toList();
+    }
+
+    @Override
+    public PaginationInfo search(Integer pageNo, Integer pageSize,String search) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id"));
+
+        Page<Product> products = repository.searchAllByNameContainsIgnoreCaseAndStatus(search,true,pageable);
+        List<Product> productList = products.getContent();
+        products = repository.searchAllByCategory_NameContainsIgnoreCaseAndStatus(search,true,pageable);
+        productList.addAll(products.getContent());
+        List<ProductDto> contents = productList.stream().map(conversionUtil::entityToDto).toList();
+        return new PaginationInfo(
+                contents,products.getNumber(),products.getSize(),
+                products.getTotalElements(),products.getTotalPages(),
+                products.isLast(),products.hasNext()
+        );
     }
 }

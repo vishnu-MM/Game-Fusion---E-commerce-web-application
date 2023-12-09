@@ -42,24 +42,19 @@
                 <div class="row">
                     <div class="col-lg-3">
                         <div class="widget-category mb-30">
-                            <h5 class="section-title style-1 mb-30 wow fadeIn animated">Category</h5>
-                            <ul class="categories"><li><a th:href="@{User/shop-grid-right.html}">CATEGORY LIST</a></li></ul>
-                        </div>
-                        <div class="widget-category mb-30">
-                            <h5 class="section-title style-1 mb-30 wow fadeIn animated">Sort by</h5>
-                            <ul class="categories">
-                                <li><a th:href="@{User/shop-grid-right.html}">Price: Low to High</a></li>
-                                <li><a th:href="@{User/shop-grid-right.html}">Price: High to Low</a></li>
-                            </ul>
-                        </div>
-                        <div class="widget-category mb-30">
                             <h5 class="section-title style-1 mb-30 wow fadeIn animated">Price Range</h5>
                             <ul class="categories">
-                                <li><a th:href="@{User/shop-grid-right.html}">$0-$200</a></li>
-                                <li><a th:href="@{User/shop-grid-right.html}">$200-$400</a></li>
-                                <li><a th:href="@{User/shop-grid-right.html}">$400-$600</a></li>
-                                <li><a th:href="@{User/shop-grid-right.html}">$600-$800</a></li>
-                                <li><a th:href="@{User/shop-grid-right.html}">800$+</a></li>
+                                <li>
+                                    <label for="min-price">Minimum Price</label>
+                                    <input type="number" name="min-price" id="min-price">
+                                </li>
+                                <li>
+                                    <label for="max-price">Maximum Price</label>
+                                    <input type="number" name="max-price" id="max-price">
+                                </li>
+                                <li>
+                                    <button class="form-control"><span>Filter</span><i class="material-icons md-sort"></i></button>
+                                </li>
                             </ul>
                         </div>
                     </div>
