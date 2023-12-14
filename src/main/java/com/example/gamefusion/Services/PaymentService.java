@@ -2,7 +2,9 @@ package com.example.gamefusion.Services;
 
 import com.example.gamefusion.Dto.OrderMainDto;
 import com.example.gamefusion.Dto.PaymentDto;
-import com.example.gamefusion.Entity.OrderMain;
+
+import java.util.List;
+import java.util.Map;
 
 public interface PaymentService {
     PaymentDto save(PaymentDto paymentDto);
@@ -11,4 +13,5 @@ public interface PaymentService {
     Boolean existsByOrderMain(OrderMainDto orderMainDto);
     PaymentDto findByOrderMain(OrderMainDto orderMainDto);
     PaymentDto save(Integer paymentOption, OrderMainDto orderMainDto);
+    Map<Integer,PaymentDto> findByOrder(List<OrderMainDto> orderMainList);
 }

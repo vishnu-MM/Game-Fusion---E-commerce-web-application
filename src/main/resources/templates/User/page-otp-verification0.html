@@ -3,11 +3,13 @@
 <th:block th:replace="~{Fragments/UserFragments.html::head-tag}"></th:block>
   <body>
   <th:block th:replace="~{Fragments/UserFragments.html::header}"></th:block>
-    <main class="main">
+  <th:block th:replace="~{Fragments/UserFragments.html::referral-modal}"></th:block>
+
+  <main class="main">
       <div class="page-header breadcrumb-wrap">
         <div class="container">
           <div class="breadcrumb">
-            <a th:href="@{User/index.html}" rel="nofollow">Home</a>
+            <a th:href="@{/user/home}" rel="nofollow">Home</a>
             <span></span> Pages <span></span> OTP Verification
           </div>
         </div>
@@ -23,9 +25,7 @@
                     <h3 class="mb-30">OTP Verification</h3>
                   </div>
                   <form th:action="@{/verify-otp}" method="post" onsubmit="return validateForm()">
-                    <div class="form-group">
-                      <p>OTP has been sent via Email to</p>
-                    </div>
+                    <div class="form-group"><p>OTP has been sent via Email to <span th:text="${username}"></span></p></div>
                     <div class="form-group"></div>
                     <div class="form-group">
                       <label for="username"></label>
@@ -47,32 +47,10 @@
         </div>
       </section>
     </main>
+    <th:block th:replace="~{Fragments/UserFragments.html::footer}"></th:block>
 
-    <div id="preloader-active">
-      <div class="preloader d-flex align-items-center justify-content-center">
-        <div class="preloader-inner position-relative">
-          <div class="text-center">
-            <h5 class="mb-5">Now Loading</h5>
-            <div class="loader">
-              <div class="bar bar1"></div>
-              <div class="bar bar2"></div>
-              <div class="bar bar3"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <script>
-        function validateForm() {
-          let otpValue = document.getElementById("otpField").value;
-          if (otpValue.trim() === "") {
-            alert("OTP field cannot be empty");
-            return false;
-          }
-          return true;
-        }
-    </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
     <script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
     <script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
     <script th:src="@{/assets/js/vendor/jquery-migrate-3.3.0.min.js}"></script>
@@ -93,6 +71,30 @@
     <script th:src="@{/assets/js/plugins/jquery.vticker-min.js}"></script>
     <script th:src="@{/assets/js/plugins/jquery.theia.sticky.js}"></script>
     <script th:src="@{/assets/js/main.js}"></script>
-      <script th:src="@{/assets/js/AjaxFile.js}"></script>
+    <script th:src="@{/assets/js/AjaxFile.js}"></script>
+    <script>
+      alertify.set('notifier', 'position', 'top-center')
+      function validateForm() {
+        let otpValue = document.getElementById("otpField").value;
+        if (otpValue.trim() !== "") return true;
+        alertify.error("OTP field cannot be empty");
+        return false;
+      }
+
+      $('#resent-otp').on('click', function () {
+        let button = $(this)
+        button.prop('disabled', true)
+        fetch('/resent-otp?username='+$('#username').val())
+                .then(response => {
+                  if (response.ok) alertify.success("New OTP sent to your email")
+                  else alertify.error("Unable to send New OTP")
+                  button.prop('disabled', false)
+                })
+                .catch(error => {
+                  alertify.error("Unable to send New OTP")
+                  button.prop('disabled', false)
+                })
+      })
+    </script>
   </body>
 </html>

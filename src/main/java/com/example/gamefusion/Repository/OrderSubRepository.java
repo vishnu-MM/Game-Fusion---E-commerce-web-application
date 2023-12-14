@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface OrderSubRepository extends JpaRepository<OrderSub, Integer> {
     List<OrderSub> findByOrderMain(OrderMain orderMain);
+    Boolean existsByOrderMain(OrderMain orderMain);
 }

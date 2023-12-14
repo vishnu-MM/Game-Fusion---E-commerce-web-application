@@ -2,9 +2,6 @@ package com.example.gamefusion.Services;
 
 import com.example.gamefusion.Dto.BrandDto;
 import com.example.gamefusion.Dto.PaginationInfo;
-import com.example.gamefusion.Entity.Brand;
-import org.springframework.data.jpa.repository.Query;
-
 import java.util.List;
 
 public interface BrandService {

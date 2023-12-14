@@ -26,7 +26,6 @@
                                 <li>
                                     <label for="min-price">Minimum Price</label>
                                     <input type="number" name="min-price" id="min-price">
-                                    <input type="hidden" id="brandId" th:value="${ID}">
                                 </li>
                                 <li>
                                     <label for="max-price">Maximum Price</label>
@@ -45,7 +44,7 @@
                             <div class="tab-pane fade show active" id="tab-one" role="tabpanel"
                                  aria-labelledby="tab-one" >
                                 <!-- PRODUCT LOOP -->
-                                <div class="row product-grid-4" th:if="${ProductDetails != null}">
+                                <div class="row product-grid-4" >
                                     <div class="col-lg-4 col-md-4 col-12 col-sm-6" th:each="product : ${ProductDetails.contents}">
                                         <div class="product-cart-wrap">
                                             <div class="product-img-action-wrap">
@@ -56,7 +55,7 @@
                                                         </span>
                                                         <span th:unless="${#lists.isEmpty(product.imageIds)}">
                                                             <img class="default-img" th:src="@{/images/{imgId}(imgId=${product.imageIds[0]})}" alt="">
-                                                            </span>
+                                                        </span>
                                                     </a>
                                                 </div>
                                                 <div class="product-action-1">
@@ -73,7 +72,6 @@
                                                 <a th:href="@{/user/view-product/{id}(id=${product.id})}">
                                                     <h2 th:text="${product.name}" class="two-line-ellipsis"></h2>
                                                 </a>
-
                                                 <!--RATING -->
                                                 <div class="rating-result" title="90%">
                                                     <span>
@@ -83,8 +81,7 @@
                                                 <!--RATING END-->
                                                 <div class="product-price">
                                                     <span th:text="'&#8377' +${product.discountPrice}"></span>
-                                                    <span th:if="${product.price != product.discountPrice}" class="old-price"
-                                                           th:text="'&#8377' +${product.price}"></span>
+                                                    <span th:if="${product.price != product.discountPrice}" class="old-price" th:text="'&#8377' +${product.price}"></span>
                                                 </div>
                                                 <div class="product-action-1 show">
                                                     <!-- ADD TO CART -->
@@ -107,9 +104,9 @@
         <!--PRODUCTS ENDS HERE -->
         <!-- PAGINATION STARTS HERE -->
 
-         <!-- PAGINATION ENDS HERE -->
+        <!-- PAGINATION ENDS HERE -->
         <!-- CATEGORY LIST SECTION-->
-        <section class="popular-categories section-padding mt-15" >
+        <section class="popular-categories section-padding mt-15">
             <div class="container wow fadeIn animated">
                 <h3 class="section-title mb-20"><span>Popular</span> Categories</h3>
                 <div class="carausel-6-columns-cover position-relative">
@@ -206,9 +203,9 @@
                 }
             });
         }
+
         $("#price-filter").on("click",function (){
             alertify.set('notifier', 'position', 'top-center');
-            const brandId = $("#brandId").val()
             let minPrice = $("#min-price").val()
             let maxPrice = $("#max-price").val()
 
@@ -222,16 +219,17 @@
             if (minPrice !== "" && maxPrice !== "" && minPrice > 0 && maxPrice > 0 && minPrice <= maxPrice) {
                 $.ajax({
                     type: 'GET',
-                    url: '/user/check/product-filer-category?categoryId=' + (brandId) + '&minPrice=' + (minPrice) + '&maxPrice=' + (maxPrice),
+                    url: '/user/check/product-filer?minPrice=' + (minPrice) + '&maxPrice=' + (maxPrice),
                     success: function (response) {
                         if (response)
-                            window.location.href = "/user/product-filer-category?categoryId=" + (brandId) + "&minPrice=" + (minPrice) + "&maxPrice=" + (maxPrice)
+                            window.location.href = "/user/product-filer?minPrice=" + (minPrice) + "&maxPrice=" + (maxPrice)
                         else alertify.success("Sorry, No product found on this filter")
                     },
                     error: function (error) { console.error("Something went wrong!!") }
                 })
             }
         })
+
     </script>
 </body>
 </html>

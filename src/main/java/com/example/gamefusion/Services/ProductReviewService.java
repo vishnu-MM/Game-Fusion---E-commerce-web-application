@@ -5,7 +5,6 @@ import com.example.gamefusion.Dto.ProductDto;
 import com.example.gamefusion.Dto.ProductReviewDto;
 import com.example.gamefusion.Dto.UserDto;
 import com.example.gamefusion.Entity.ProductReview;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 

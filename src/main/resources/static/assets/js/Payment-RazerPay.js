@@ -43,13 +43,12 @@ document.getElementById('rzp-button1').onclick = function(e){
         type: 'GET',
         url: '/payment-status-confirmation/'+orderMainId,
         success:function (response){
-            if (!response){
+            if (response){
+                alertify.success('Payment is already completed');
+                window.location.href='/order-details?orderId='+orderMainId
+            } else {
                 rzp1.open();
                 e.preventDefault();
-            } else {
-                alertify.set('notifier', 'position', 'top-center');
-                alertify.success('Payment is already completed');
-                window.location.href='/my-orders'
             }
         },
         error : function (error){console.log(error)}

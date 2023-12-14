@@ -1,6 +1,5 @@
 package com.example.gamefusion.Repository;
 
-import com.example.gamefusion.Dto.UserCouponsDto;
 import com.example.gamefusion.Entity.Coupon;
 import com.example.gamefusion.Entity.User;
 import com.example.gamefusion.Entity.UserCoupons;

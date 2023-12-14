@@ -5,35 +5,7 @@
 <body>
     <div th:replace="~{Fragments/UserFragments.html::header}"> </div>
     <div th:replace="~{Fragments/UserFragments.html::mobile-view}"></div>
-
-    <!-- REFERRAL MODAL -->
-    <div class="modal fade" id="referralModal" tabindex="-1" aria-labelledby="referralModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-content">
-                    <div class="p-5">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="h3 bold">Share</span>
-                            <div class="dot d-flex justify-content-center align-items-center">
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                        </div>
-                        <div class="py-2">Invite friends to get 201<br>Invite friends to Game Fusion and get ₹201. They get *21!</div>
-                        <div>
-                            <span class="h6 bold">Invite Link</span>
-                            <div class="border rounded d-flex flex-row align-items-center mt-2">
-                                <label for="referral-link"></label>
-                                <input id="referral-link" type="text" class="form-control border border-0"
-                                       placeholder="Get Referral link from here" disabled>
-                                <button class="btn" onclick="copyToClipBoard()"><i></i>copy</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- REFERRAL MODAL -->
+    <th:block th:replace="~{Fragments/UserFragments.html::referral-modal}"></th:block>
 
     <main class="main">
         <div th:replace="~{Fragments/UserFragments.html::banner-slider}"></div>
@@ -53,7 +25,9 @@
                                     <input type="number" name="max-price" id="max-price">
                                 </li>
                                 <li>
-                                    <button class="form-control"><span>Filter</span><i class="material-icons md-sort"></i></button>
+                                    <button class="form-control" id="price-filter">
+                                        <span>Filter</span><i class="material-icons md-sort"></i>
+                                    </button>
                                 </li>
                             </ul>
                         </div>
@@ -150,8 +124,10 @@
                 <div class="carausel-6-columns-cover position-relative wow fadeIn animated">
                     <div class="slider-arrow slider-arrow-2 carausel-6-columns-arrow" id="carausel-6-columns-3-arrows"></div>
                     <div class="carausel-6-columns text-center" id="carausel-6-columns-3">
-                        <div class="brand-logo">
-                            <img class="img-grey-hover" th:src="@{/assets/imgs/banner/offer-banner.png}" alt="">
+                        <div class="brand-logo" th:each="brand : ${BrandList}">
+                            <a th:href="@{/user/brand-filter/{brandId}(brandId = ${brand.id})}">
+                            <img class="img-grey-hover" th:src="@{/logo-images/{imgId}(imgId=${brand.logo})}" alt="">
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -222,6 +198,31 @@
                 }
             });
         }
+        $("#price-filter").on("click",function (){
+            alertify.set('notifier', 'position', 'top-center');
+            let minPrice = $("#min-price").val()
+            let maxPrice = $("#max-price").val()
+
+            if (minPrice === "") alertify.error("Please include a minimum price");
+            else if(minPrice <= 0 ) alertify.warning("Please provide a valid minimum price");
+            if (maxPrice === "") alertify.error("Please include a maximum price");
+            else if(maxPrice <= 0 ) alertify.warning("Please provide a valid maximum price");
+            if (parseInt(minPrice) > parseInt(maxPrice)) alertify.warning("Please provide a valid minimum and maximum price");
+
+
+            if (minPrice !== "" && maxPrice !== "" && minPrice > 0 && maxPrice > 0 && minPrice <= maxPrice) {
+                $.ajax({
+                    type: 'GET',
+                    url: '/user/check/product-filer?minPrice=' + (minPrice) + '&maxPrice=' + (maxPrice),
+                    success: function (response) {
+                        if (response)
+                            window.location.href = "/user/product-filer?minPrice=" + (minPrice) + "&maxPrice=" + (maxPrice)
+                        else alertify.success("Sorry, No product found on this filter")
+                    },
+                    error: function (error) { console.error("Something went wrong!!") }
+                })
+            }
+        })
     </script>
 </body>
 </html>

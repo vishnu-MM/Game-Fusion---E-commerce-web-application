@@ -48,10 +48,7 @@ function showModal(id,qty) {
     $('#availableQty').attr('value',qty)
     $('#exampleModalLong').modal('show')
 }
-function hideModal() {
-    $('#exampleModalLong').modal('hide')
-}
-
+function hideModal() { $('#exampleModalLong').modal('hide') }
 function isValid() {
     const qty = parseInt(document.getElementById("qty").value);
     const availableQty = parseInt(document.getElementById("availableQty").value);
@@ -59,7 +56,7 @@ function isValid() {
         alert("Please enter a quantity greater than 0.");
         return false;
     }
-        if (availableQty < qty) {
+    if (availableQty < qty) {
         alert("Oops!! We dont have that much item in stock."+availableQty+" < "+qty);
         return false;
     }
@@ -85,5 +82,7 @@ function copyToClipBoard() {
             alert("Something went wrong")
         }
     })
-
 }
+$('#some-2').on('input',function () {
+
+})

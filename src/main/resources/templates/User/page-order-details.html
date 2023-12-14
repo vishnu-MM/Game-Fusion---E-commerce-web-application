@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{Fragments/UserFragments.html::head-tag}"></th:block>
+<body>
+<th:block th:replace="~{Fragments/UserFragments.html::header}"></th:block>
+<th:block th:replace="~{Fragments/UserFragments.html::referral-modal}"></th:block>
+
+    <main class="section-padding footer-mid">
+        <div class="container pt-15 pb-20">
+            <div th:if="${#strings.equals(OrderMain.status, 'DELIVERED')} and ${Payment.paymentStatus}"
+                 class="p-1 d-flex flex-row justify-content-start align-items-center">
+                <form method="get" th:action="@{/download-invoice/{orderID}(orderID = ${OrderMain.id})}">
+                    <button class="btn btn-success d-flex center_icon">
+                        <i class="material-icons md-cloud_download pe-2"></i><span>Download Invoice</span>
+                    </button>
+                </form>
+                <form class="px-1">
+                    <button id="return-replace" class="btn btn-warning d-flex center_icon">
+                        <i class="material-icons md-update pe-2"></i><span>Return / Replace</span>
+                    </button>
+                </form>
+            </div>
+            <div th:unless="${Payment.paymentStatus}" class="p-2 m-2 border border-radius-5 border-brand bg-warning-light
+                                                            d-flex flex-column justify-content-center align-items-center">
+            <span class="pb-2 fw-bolder">Payment is Pending...</span>
+            <label><input type="number" id="order-id" th:value="${OrderMain.id}" hidden="hidden"></label>
+            <button id="pay-now-btn" class="btn btn-outline-success d-flex center_icon">
+                <i class="material-icons md-payment pe-2"></i><span>Pay Now</span>
+            </button>
+
+            </div>
+            <div th:if="${#strings.equals(OrderMain.status, 'SHIPPED') or #strings.equals(OrderMain.status, 'PENDING')} and ${Payment.paymentStatus}">
+                <form th:method="put" th:action="@{/cancel-order/{orderID}(orderID = ${OrderMain.id})}">
+                    <button class="btn btn-outline-warning mb-2">
+                        <i class="material-icons md-close "></i>
+                        <span>Cancel Order</span>
+                    </button>
+                </form>
+            </div>
+            <div class="row">
+                <div class="col-xl-8 col-lg-12">
+                    <div class="card mb-4">
+                        <article class="card-body">
+                            <div class="table-responsive order_table text-center">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Product</th>
+                                        <th>Total x Quantity</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <!--PRODUCT LOOP-->
+                                    <tr th:each="cart : ${Products}" >
+                                        <td class="image product-thumbnail">
+                                            <img th:src="@{/images/{imgId}(imgId=${cart.product.images[0].id})}"
+                                                 style="width:
+                                            100px" alt="#">
+                                        </td>
+                                        <td>
+                                            <h5><a href="#">
+                                                <span th:text="${#strings.abbreviate(cart.product.name,40)}"></span>
+                                            </a></h5>
+                                        </td>
+                                        <td><span class="h6" th:text="'&#8377;'+${cart.product.price}+' x '+${cart.qty}"></span></td>
+                                    </tr>
+                                    <!--PRODUCT LOOP ENDS HERE-->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-5">
+                         <!-- <div class="card mb-4">
+                                <article class="card-body">
+                                     <h5 class="card-title">New Members</h5>
+                                     <div class="new-member-list">
+                                         <div class="d-flex align-items-center justify-content-between mb-4">
+                                             <div class="d-flex align-items-center">
+                                                 <img src="assets/imgs/people/avatar4.jpg" alt="" class="avatar">
+                                                 <div>
+                                                     <h6>Patric Adams</h6>
+                                                     <p class="text-muted font-xs">
+                                                         Sanfrancisco
+                                                     </p>
+                                                 </div>
+                                             </div>
+                                             <a href="#" class="btn btn-xs"><i class="material-icons md-add"></i> Add</a>
+                                         </div>
+                                         <div class="d-flex align-items-center justify-content-between mb-4">
+                                             <div class="d-flex align-items-center">
+                                                 <img src="assets/imgs/people/avatar2.jpg" alt="" class="avatar">
+                                                 <div>
+                                                     <h6>Dilan Specter</h6>
+                                                     <p class="text-muted font-xs">
+                                                         Sanfrancisco
+                                                     </p>
+                                                 </div>
+                                             </div>
+                                             <a href="#" class="btn btn-xs"><i class="material-icons md-add"></i> Add</a>
+                                         </div>
+                                         <div class="d-flex align-items-center justify-content-between mb-4">
+                                             <div class="d-flex align-items-center">
+                                                 <img src="assets/imgs/people/avatar3.jpg" alt="" class="avatar">
+                                                 <div>
+                                                     <h6>Tomas Baker</h6>
+                                                     <p class="text-muted font-xs">
+                                                         Sanfrancisco
+                                                     </p>
+                                                 </div>
+                                             </div>
+                                             <a href="#" class="btn btn-xs"><i class="material-icons md-add"></i> Add</a>
+                                         </div>
+                                     </div>
+                                 </article>
+                            </div>-->
+                        </div>
+                        <div class="col-lg-7" th:if="${OrderHistory}!=null">
+                            <div class="card mb-4">
+                                <article class="card-body">
+                                    <h5 class="card-title">Order Status</h5>
+                                    <ul class="verti-timeline list-unstyled font-sm">
+                                        <li class="event-list" th:each="history : ${OrderHistory}">
+                                            <div class="event-timeline-dot">
+                                                <i th:class="${OrderMain.status==history.orderStatus ?
+                                                            'material-icons md-play_circle_outline font-xxl animation-fade-right' :
+                                                            'material-icons md-play_circle_outline font-xxl'}"></i>
+                                            </div>
+                                            <div class="media">
+                                                <div class="me-3">
+                                                    <h6>
+                                                        <span th:if="${history.orderStatus}=='DELIVERED'">Delivered</span>
+                                                        <span th:if="${history.orderStatus}=='PENDING'">Order Placed</span>
+                                                        <span th:if="${history.orderStatus}=='SHIPPED'">Items Shipped</span>
+                                                        <span th:if="${history.orderStatus}=='RETURNED'">Order Returned</span>
+                                                        <span th:if="${history.orderStatus}=='CANCELED'">Order Cancelled</span>
+                                                        <span th:if="${history.orderStatus}=='REQUEST_CANCEL'">Requested for Cancellation</span>
+                                                        <span th:if="${history.orderStatus}=='REQUEST_REPLACE'">Requested for Replacement</span>
+                                                        <i class="material-icons md-trending_flat text-brand ml-15 d-inline-block"></i>
+                                                    </h6>
+                                                </div>
+                                                <div class="media-body"><div><span th:text="'On '+${history.date}"></span></div></div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </article>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-4 col-lg-12">
+                    <div class="card mb-4">
+                        <article class="card-body">
+                            <h5 class="card-title d-flex center_icon">
+                                <i class="material-icons md-location_on"></i>Delivery Address
+                            </h5>
+                            <hr>
+                            <p class="h5"><span th:text="${Address.streetAddress}"></span></p>
+                            <p class="h6">
+                                <span th:text="${Address.district}"></span>,
+                                <span th:text="${Address.state}"></span>,
+                                <span th:text="${Address.country}"></span>
+                            </p>
+                            <p class="h6"><span th:text="'Pin code: '+${Address.pinCode}"></span> </p>
+                            <p class="h6"><span th:text="'Phone: '+${Address.phone}"></span> </p>
+                        </article>
+                    </div>
+                 <div class="card mb-4">
+                        <article class="card-body">
+                            <h5 class="card-title">Payment Details</h5>
+                            <table class="table">
+                                <tr>
+                                    <th class="h6">Payment ID</th>
+                                    <td colspan="2" class="product-subtotal">
+                                        <span class="font-xl text-brand fw-bolder" th:text="${Payment.paymentId}"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="h6">Total Amount</th>
+                                    <td colspan="2" class="product-subtotal">
+                                        <span class="font-xl text-brand fw-bolder" th:text="'&#8377;'+${OrderMain.amount}"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="h6">Payment Status</th>
+                                    <td colspan="2" class="product-subtotal">
+                                        <span class="fw-bolder"
+                                              th:style="${Payment.paymentStatus} == true ? 'color: yellowgreen;' : 'color: red;' "
+                                              th:text="${Payment.paymentStatus} == true ? 'Payment Success' :'Payment Failed' ">
+                                    </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="h6">Payment Method</th>
+                                    <td colspan="2">
+                                        <span class="font-xl text-brand fw-bolder" th:if="${OrderMain.paymentMethod}=='CASH_ON_DELIVERY'">
+                                              Cash On Delivery
+                                        </span>
+                                        <span class="font-xl text-brand fw-bolder" th:if="${OrderMain.paymentMethod}=='ONLINE_PAYMENT'">
+                                              Online Payment
+                                        </span>
+                                        <span class="font-xl text-brand fw-bolder" th:if="${OrderMain.paymentMethod}=='WALLET_PAYMENT'">
+                                              Wallet Payment
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="h6">Payment Date</th>
+                                    <td colspan="2">
+                                        <span class="font-xl text-brand fw-bolder" th:text="${#dates.format(Payment.date,'dd-MMM-yyyy')}"></span>
+                                    </td>
+                                </tr>
+<!--                                <tr>
+                                    <th class="h6">Offers Applied</th>
+                                    <td colspan="2">No Offer Applied</td>
+                                </tr>-->
+                            </table>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        <input type="hidden" th:value="${OrderMain.id}" id="order-main-id">
+        </div>
+    </main>
+
+<th:block th:replace="~{Fragments/UserFragments.html::footer}"></th:block>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+<script th:src="@{/assets/js/vendor/jquery-migrate-3.3.0.min.js}"></script>
+<script th:src="@{/assets/js/plugins/jquery.countdown.min.js}"></script>
+<script th:src="@{/assets/js/plugins/jquery.theia.sticky.js}"></script>
+<script th:src="@{/assets/js/vendor/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/assets/js/plugins/jquery.syotimer.min.js}"></script>
+<script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
+<script th:src="@{/assets/js/plugins/jquery.elevatezoom.js}"></script>
+<script th:src="@{/assets/js/plugins/jquery.vticker-min.js}"></script>
+<script th:src="@{/assets/js/plugins/perfect-scrollbar.js}"></script>
+<script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
+<script th:src="@{/assets/js/plugins/magnific-popup.js}"></script>
+<script th:src="@{/assets/js/plugins/images-loaded.js}"></script>
+<script th:src="@{/assets/js/plugins/select2.min.js}"></script>
+<script th:src="@{/assets/js/plugins/counterup.js}"></script>
+<script th:src="@{/assets/js/plugins/jquery-ui.js}"></script>
+<script th:src="@{/assets/js/plugins/waypoints.js}"></script>
+<script th:src="@{/assets/js/plugins/scrollup.js}"></script>
+<script th:src="@{/assets/js/plugins/isotope.js}"></script>
+<script th:src="@{/assets/js/plugins/slick.js}"></script>
+<script th:src="@{/assets/js/plugins/wow.js}"></script>
+<script th:src="@{/assets/js/AjaxFile.js}"></script>
+<script th:src="@{/assets/js/shop.js}"></script>
+<script th:src="@{/assets/js/main.js}"></script>
+<script>
+    $('#pay-now-btn').on('click',function (e){
+        e.stopPropagation()
+        e.preventDefault()
+        window.location.href='/online-payment?orderId='+$('#order-id').val()
+    })
+</script>
+</body>
+</html>

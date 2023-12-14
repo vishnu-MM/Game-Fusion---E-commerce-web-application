@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
@@ -18,7 +19,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -138,26 +138,36 @@ public class AuthenticationController {
     }
 
     @PostMapping("/forget-password/verify")
-    public String verifyMailForResetPassword(@RequestParam("username") String username,Model model) {
+    public String verifyMailForResetPassword(@RequestParam("username") String username,Model model,Authentication authentication) {
         if (!userService.isExistsByUsername(username)) {
             return "User/page-forget-password";
         }
         otpService.sendOTP(userService.findByUsername(username));
         model.addAttribute("username",username);
-        return "User/page-otp-verification0";
+        if (authentication != null)
+            return "User/page-otp-verification0";
+        return "User/page-otp-verification";
+    }
+
+    @GetMapping("/resent-otp")
+    @ResponseBody
+    public ResponseEntity<Void> resentOTP(@RequestParam("username") String username) {
+        otpService.sendOTP(userService.findByUsername(username));
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/verify-otp")
-    public String verifyOTPForResetPassword(@RequestParam("otp") String otp,
-                                            @RequestParam("username") String username,
-                                            Model model) {
+    public String verifyOTPForResetPassword(@RequestParam("otp") String otp, @RequestParam("username") String username,
+                                            Model model,Authentication authentication) {
         String msg = otpService.verifyOTP(username, otp);
         if (msg.equals("SUCCESS")) {
             return "redirect:/update-password/"+username;
         }
         getError(model, msg);
         model.addAttribute("username",username);
-        return "User/page-otp-verification0";
+        if (authentication != null)
+            return "User/page-otp-verification0";
+        return "User/page-otp-verification";
     }
 
     @GetMapping("/update-password/{username}")

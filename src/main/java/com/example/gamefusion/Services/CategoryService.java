@@ -2,8 +2,6 @@ package com.example.gamefusion.Services;
 
 import com.example.gamefusion.Dto.CategoryDto;
 import com.example.gamefusion.Dto.PaginationInfo;
-import com.example.gamefusion.Entity.Category;
-
 import java.util.List;
 
 public interface CategoryService {

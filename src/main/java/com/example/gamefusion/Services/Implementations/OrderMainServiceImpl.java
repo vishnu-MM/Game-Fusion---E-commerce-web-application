@@ -55,6 +55,12 @@ public class OrderMainServiceImpl implements OrderMainService {
     }
 
     @Override
+    public List<OrderMainDto> findOrderByUser(UserDto userDto) {
+        return repository.findByUser( conversionUtil.dtoToEntity(userDto) )
+               .stream().map(conversionUtil::entityToDto).toList();
+    }
+
+    @Override
     public PaginationInfo findOrderByStatus(String status, Integer pageNo, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by("date").descending());
         Page<OrderMain> orderMainPage = repository.findByStatus(status,pageable);

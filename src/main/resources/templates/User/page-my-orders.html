@@ -6,6 +6,8 @@
 </style>
 <body>
 <th:block th:replace="~{Fragments/UserFragments.html::header}"></th:block>
+<th:block th:replace="~{Fragments/UserFragments.html::referral-modal}"></th:block>
+
 <main class="main">
     <div class="page-header breadcrumb-wrap">
         <div class="container">
@@ -133,8 +135,7 @@
                                     </button>
                                 </form>
                             </div>
-                            <div th:if="${#strings.equals(order.status, 'DELIVERED')} and ${PaymentInfo.paymentStatus}"
-                                 class=" p-1">
+                            <div th:if="${#strings.equals(order.status, 'DELIVERED')} and ${PaymentInfo.paymentStatus}" class=" p-1">
                                 <form method="get" th:action="@{/download-invoice/{orderID}(orderID = ${order.id})}">
                                     <button class="btn btn-success d-flex center_icon">
                                         <i class="material-icons md-cloud_download pe-2"></i><span>Download Invoice</span>
@@ -179,6 +180,7 @@
     </section>
 </main>
 <th:block th:replace="~{Fragments/UserFragments.html::footer}"></th:block>
+<script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script th:src="@{/assets/js/vendor/jquery-migrate-3.3.0.min.js}"></script>
 <script th:src="@{/assets/js/plugins/jquery.countdown.min.js}"></script>

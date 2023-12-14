@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 public class OrderController {
@@ -117,34 +118,34 @@ public class OrderController {
     }
 
     @GetMapping("/my-orders")
-    public String orderSummary(@RequestParam(name = "pageNo", defaultValue = "0", required = false) Integer pageNo,
-                               @RequestParam(name = "pageSize", defaultValue = "1", required = false ) Integer pageSize,
-                               Model model, Principal principal) {
-        UserDto userDto = userService.findByUsername(principal.getName());
-        List<OrderSub> orderSubList = new ArrayList<>();
-        PaginationInfo orderMainDtoPage = null;
-        PaymentDto paymentDto = null;
-        AddressDto addressDto = null;
-        OrderMainDto orderMainDto;
-
-        if (orderMainService.isExistsByUser(userDto)) {
-            orderMainDtoPage = orderMainService.findOrderByUser(userDto, pageNo, pageSize);
-            orderMainDto = (OrderMainDto) orderMainDtoPage.getContents().get(0);
-            paymentDto = paymentService.findByOrderMain(orderMainDto);
-            orderSubList = getOrderSubList(orderMainDto);
-            addressDto = addressService.findById(orderMainDto.getAddressId());
-        }
-
-        model.addAttribute("OrderSubDetails",orderSubList);
-        model.addAttribute("OrderDetails",orderMainDtoPage);
-        model.addAttribute("PaymentInfo",paymentDto);
-        model.addAttribute("Address",addressDto);
-        return "User/page-my-orders";
+    public String orderSummary(Model model, Principal principal) {
+        UserDto user = userService.findByUsername(principal.getName());
+        List<OrderMainDto> orderMainList = orderMainService.findOrderByUser(user);
+        model.addAttribute("OrderMain",orderMainList);
+        model.addAttribute("Products",orderSubService.findByOrder(orderMainList));
+        model.addAttribute("Address",addressService.findByOrder(orderMainList));
+        model.addAttribute("Payment",paymentService.findByOrder(orderMainList));
+        return "User/My-Orders";
     }
 
-    private List<OrderSub> getOrderSubList(OrderMainDto orderMainDto) {
-        return orderSubService.findOrderByOrder(orderMainDto)
-                .stream().map(conversionUtil::dtoToEntity).toList();
+    @GetMapping("/order-details")
+    public String getOrderDetails(@RequestParam("orderId") Integer orderId,Principal principal, Model model) {
+        if (!orderMainService.isExistsByID(orderId))
+            return "redirect:/";
+        OrderMainDto orderMainDto = orderMainService.findOrderById(orderId);
+        UserDto userDto = userService.findByUsername(principal.getName());
+
+        if (!Objects.equals(orderMainDto.getUserId(), userDto.getId()))
+            return "redirect:/";
+
+        Boolean isExist = orderHistoryService.isExistsByOrderId(orderId);
+        model.addAttribute("OrderMain",orderMainDto);
+        model.addAttribute("OrderHistory",(isExist) ? orderHistoryService.findByOrderId(orderId) : null);
+        model.addAttribute("Payment",paymentService.findByOrderMain(orderMainDto));
+        model.addAttribute("Products",orderSubService.findByOrder(orderMainDto));
+        model.addAttribute("Address",addressService.findById(orderMainDto.getAddressId()));
+        return "User/page-order-details";
+
     }
 
     @PutMapping("/cancel-order/{orderID}")

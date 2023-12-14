@@ -2,11 +2,8 @@ package com.example.gamefusion.Entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
 import java.util.Date;
 
 @Data

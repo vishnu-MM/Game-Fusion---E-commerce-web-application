@@ -3,6 +3,8 @@ package com.example.gamefusion.Services.Implementations;
 import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
 import com.example.gamefusion.Configuration.ExceptionHandlerConfig.EntityNotFound;
 import com.example.gamefusion.Configuration.UtilityClasses.PaymentMethodUtil;
+import com.example.gamefusion.Dto.PaymentDto;
+import com.example.gamefusion.Entity.Payment;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.example.gamefusion.Repository.PaymentRepository;
 import com.example.gamefusion.Services.PaymentService;
@@ -13,6 +15,10 @@ import com.example.gamefusion.Dto.PaymentDto;
 import com.example.gamefusion.Entity.Payment;
 import java.time.LocalDate;
 import java.sql.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -44,6 +50,17 @@ public class PaymentServiceImpl implements PaymentService {
         paymentDto.setDate(Date.valueOf(LocalDate.now()));
         paymentDto.setPaymentStatus(paymentOption == 1);
         return save(paymentDto);
+    }
+
+    @Override
+    public Map<Integer, PaymentDto> findByOrder(List<OrderMainDto> orderMainList) {
+        Map<Integer, PaymentDto> response = new HashMap<>();
+        for (OrderMainDto order: orderMainList) {
+            OrderMain orderMain = conversionUtil.dtoToEntity(order);
+            if (repository.existsByOrderMain(orderMain))
+                response.put(order.getId(), conversionUtil.entityToDto(repository.findByOrderMain(orderMain)));
+        }
+        return response;
     }
 
     @Override

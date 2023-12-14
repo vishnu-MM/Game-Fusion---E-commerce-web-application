@@ -2,8 +2,64 @@
 <html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org">
 <th:block th:replace="~{Fragments/UserFragments.html::head-tag}"></th:block>
 <body>
-<th:block th:replace="~{Fragments/UserFragments.html::header}"></th:block>
-<th:block th:replace="~{Fragments/UserFragments.html::mobile-view}"></th:block>
+<header th:fragment="header" class="header-area header-style-4 header-height-2">
+    <!-- TOP NAV BAR WITH PROFILE -->
+    <div class="header-top header-top-ptb-1 d-none d-lg-block">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-xl-1 col-lg-3">
+                    <div class="dropdown nav-item">
+                        <a class="dropdown-toggle" id="dropdownAccount" aria-expanded="false">
+                            <img class="img-xs rounded-circle" th:src="@{/assets/admin-assets/imgs/people/avatar-2-admin.png}" alt="User">
+                        </a>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-item"><i class="material-icons md-person"></i><span></span><span id="name"></span></div>
+                            <div class="dropdown-item"><i class="material-icons md-email"></i><span></span><span id="email"></span></div>
+                            <div class="dropdown-item"><i class="material-icons md-phone_android"></i><span></span><span id="phone"></span></div>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" th:href="@{/my-orders}" ><i class="material-icons md-shopping_bag"></i>My Orders</a>
+                            <a class="dropdown-item" th:href="@{/user/my-wallet}" ><i class="material-icons md-money"></i>My Wallet</a>
+                            <a class="dropdown-item" th:href="@{/user/my-address}"><i class="material-icons md-receipt"></i>My Address</a>
+                            <a class="dropdown-item" id="editProfileLink" th:href="@{/user/edit-profile}"><i class="material-icons md-person_outline"></i>Edit Profile</a>
+                            <a class="dropdown-item" th:href="@{/forget-password}"><i class="material-icons md-lock"></i>Forget Password</a>
+
+                            <a data-bs-toggle="modal" data-bs-target="#referralModal" class="dropdown-item" id="invite-link">
+                                <i class="material-icons md-share"></i>Invite a friend</a>
+
+                            <div class="dropdown-divider"></div>
+                            <form id="logoutForm" th:action="@{/logout}" method="post">
+                                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+                                <button class="dropdown-item btn btn-outline-success-light font-lg" type="submit">
+                                    <i class="material-icons md-exit_to_app "></i>  Logout
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-8 col-lg-6">
+                    <div class="text-center">
+                        <div id="news-flash" class="d-inline-block">
+                            <ul>
+                                <li>Get great devices up to 50% off View details</li>
+                                <li>Supper Value Deals - Save more with coupons</li>
+                                <li>Trendy 25silver jewelry, save up 35% off today Shop now</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3">
+                    <div class="header-info">
+                        <ul>
+                            <li><i class="fi-rs-smartphone"></i> <a href="#">(+01) - 2345 - 6789</a></li>
+                            <li><i class="fi-rs-marker"></i><a  th:href="@{User/page-contact.html}">Our location</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- TOP NAV BAR WITH PROFILE ENDS -->
+</header>
     <main class="main">
         <section class="mt-50 mb-50">
             <div class="container">
@@ -104,6 +160,9 @@
 
     <th:block th:replace="~{Fragments/UserFragments.html::footer}" ></th:block>
     <!-- Vendor JS-->
+    <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
     <script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
@@ -128,9 +187,6 @@
     <script th:src="@{/assets/js/main.js}"></script>
     <script th:src="@{/assets/js/shop.js}"></script>
     <script th:src="@{/assets/js/AjaxFile.js}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script th:src="@{/assets/js/Payment-RazerPay.js}"></script>
 </body>
 </html>

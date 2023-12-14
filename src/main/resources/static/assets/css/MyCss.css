@@ -92,3 +92,11 @@
 .search-result-item:hover {
     background-color: #f4f4f4;
 }
+.logo span{
+    color: #05A882;
+    font-weight: bolder;
+    font-size: xxx-large;
+}
+.logo h3{
+    font-family: "Cascadia Mono", serif;
+}

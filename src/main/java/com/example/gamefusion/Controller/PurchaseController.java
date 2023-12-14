@@ -68,7 +68,7 @@ public class PurchaseController {
         OrderMainDto orderMainDto = orderMainService.findOrderById(orderId);
 
         if (paymentService.isPaymentSuccess(orderMainDto))
-            return "redirect:/my-orders";
+            return "redirect:/order-details?orderId="+orderId;
 
         List<OrderSubDto> orderSubDtoList = orderSubService.findOrderByOrder(orderMainDto);
         AddressDto addressDto = addressService.findById(orderMainDto.getAddressId());
@@ -116,9 +116,11 @@ public class PurchaseController {
 
     @GetMapping("/payment-status-confirmation/{orderId}")
     @ResponseBody
-    public Boolean getPaymentStatus(@PathVariable Integer orderId) {
-        OrderMainDto orderMainDto = orderMainService.findOrderById(orderId);
-        return paymentService.isPaymentSuccess(orderMainDto);
+    public ResponseEntity<Boolean> getPaymentStatus(@PathVariable Integer orderId) {
+        if (!orderMainService.isExistsByID(orderId))
+            return ResponseEntity.badRequest().build();
+        return new ResponseEntity<>(
+            paymentService.isPaymentSuccess( orderMainService.findOrderById(orderId) ), HttpStatus.OK);
     }
 
     @GetMapping("/verify-payment")

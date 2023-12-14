@@ -26,6 +26,9 @@ public interface OrderMainService {
     Map<String, Integer> getOrderCountByWeek(LocalDate startDate, LocalDate endDate);
     Map<String, Integer> getOrderCountByYear(LocalDate startDate, LocalDate endDate);
     PaginationInfo findOrderByUser(UserDto userDto,Integer pageNo, Integer pageSize);
+
+    List<OrderMainDto> findOrderByUser(UserDto userDto);
+
     PaginationInfo findOrderByStatus(String status, Integer pageNo, Integer pageSize);
     Map<String, Integer> getOrderCountByMonth(LocalDate startDate, LocalDate endDate);
     PaginationInfo findAllBetweenDay(Integer pageNo, Integer pageSize, Date startDate, Date endDate);

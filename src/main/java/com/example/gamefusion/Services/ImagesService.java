@@ -1,8 +1,6 @@
 package com.example.gamefusion.Services;
 
 import com.example.gamefusion.Dto.ImagesDto;
-import com.example.gamefusion.Entity.Images;
-
 import java.util.List;
 
 public interface ImagesService {

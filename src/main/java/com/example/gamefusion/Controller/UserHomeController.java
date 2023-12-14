@@ -1,24 +1,26 @@
 package com.example.gamefusion.Controller;
 
-import com.example.gamefusion.Configuration.UtilityClasses.PageToListUtil;
 import com.example.gamefusion.Dto.*;
+import com.example.gamefusion.Entity.User;
 import com.example.gamefusion.Services.*;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
 import java.security.Principal;
+import java.sql.Date;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.sql.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -54,11 +56,10 @@ public class UserHomeController {
     @GetMapping("/home")
     public String home(Model model,
                        @RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
-                       @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize,
-                       Principal principal) {
-        PaginationInfo info = productService.getAllActiveProducts(pageNo,pageSize);
-        model.addAttribute("ProductPage",info);
+                       @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize ) {
+        model.addAttribute("ProductPage",productService.getAllActiveProducts(pageNo,pageSize));
         model.addAttribute("CategoryList",categoryService.getAll());
+        model.addAttribute("BrandList",brandService.getAll());
         return "User/index-home";
     }
 
@@ -69,11 +70,109 @@ public class UserHomeController {
         PaginationInfo paginationInfo = null;
         if (categoryService.isCategoryExist(categoryId) && categoryService.isCategoryActive(categoryId)) {
             CategoryDto categoryDto = categoryService.findById(categoryId);
-            paginationInfo = productService.getAllActiveProductsFromCategory(categoryDto, pageNo, pageSize);
-            model.addAttribute("CategoryList",categoryService.getAll());
-            model.addAttribute("ID",categoryId);
+            if (productService.getCountByCategory(categoryDto) > 0)
+                paginationInfo = productService.getAllActiveProductsFromCategory(categoryDto, pageNo, pageSize);
         }
+        model.addAttribute("ID",categoryId);
+        model.addAttribute("CategoryList",categoryService.getAll());
+        model.addAttribute("BrandList",brandService.getAll());
         model.addAttribute( "ProductDetails", paginationInfo);
+        return "User/page-category-products";
+    }
+
+    @GetMapping("/brand-filter/{id}")
+    public String getProductOfaSingleBrand(@PathVariable("id") Long brandId, Model model,
+                                           @RequestParam(value = "pageNo", defaultValue = "0", required = false ) Integer pageNo,
+                                           @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize ) {
+        PaginationInfo paginationInfo = null;
+        if (brandService.existsById(brandId) && brandService.isActive(brandId)) {
+            BrandDto brandDto = brandService.findById(brandId);
+            if (productService.getCountByBrand(brandDto) > 0)
+                paginationInfo = productService.getAllActiveProductsFromBrand(brandDto, pageNo, pageSize);
+        }
+        model.addAttribute("ID",brandId);
+        model.addAttribute("CategoryList",categoryService.getAll());
+        model.addAttribute("BrandList",brandService.getAll());
+        model.addAttribute( "ProductDetails", paginationInfo);
+        return "User/page-brand-products";
+    }
+
+    @GetMapping("/check/product-filer-brand")
+    @ResponseBody
+    public ResponseEntity<Boolean> checkBrandPriceFilter(@RequestParam("brandId") Long brandId,
+                                                            @RequestParam("minPrice")Integer minPrice,
+                                                            @RequestParam("maxPrice")Integer maxPrice){
+        if (brandService.existsById(brandId) && brandService.isActive(brandId)) {
+            int count = productService.getCountByBrandPriceFilter(brandService.findById(brandId), minPrice, maxPrice);
+            return new ResponseEntity<>((count > 0), HttpStatus.OK);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/product-filer-brand")
+    public String getProductOfaSingleBrand(Model model, @RequestParam("brandId") Long brandId,
+                                           @RequestParam("maxPrice")Integer maxPrice, @RequestParam("minPrice")Integer minPrice,
+                                           @RequestParam(value = "pageNo", defaultValue = "0", required = false ) Integer pageNo,
+                                           @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize) {
+        PaginationInfo paginationInfo = null;
+        BrandDto brandDto = brandService.findById(brandId);
+        int productCount = productService.getCountByBrand(brandDto);
+        if (brandService.existsById(brandId) && brandService.isActive(brandId) && (productCount > 0)) {
+            paginationInfo = productService.filterByPriceAndBrand(brandDto,minPrice,maxPrice,pageNo,pageSize);
+            model.addAttribute("ID",brandId);
+        }
+        model.addAttribute("CategoryList",categoryService.getAll());
+        model.addAttribute("BrandList",brandService.getAll());
+        model.addAttribute( "ProductDetails", paginationInfo);
+        return "User/page-brand-products";
+    }
+
+    @GetMapping("/check/product-filer-category")
+    @ResponseBody
+    public ResponseEntity<Boolean> checkCategoryPriceFilter(@RequestParam("categoryId") Long categoryId,
+                                                            @RequestParam("minPrice")Integer minPrice,
+                                                            @RequestParam("maxPrice")Integer maxPrice){
+        if (categoryService.isCategoryExist(categoryId) && categoryService.isCategoryActive(categoryId)) {
+            int count = productService.getCountByCategoryPriceFilter(categoryService.findById(categoryId), minPrice,
+                    maxPrice);
+            return new ResponseEntity<>((count > 0), HttpStatus.OK);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/product-filer-category")
+    public String getProductFilterByCategoryAndPrice(Model model, @RequestParam("categoryId") Long categoryId,
+                                           @RequestParam("maxPrice")Integer maxPrice, @RequestParam("minPrice")Integer minPrice,
+                                           @RequestParam(value = "pageNo", defaultValue = "0", required = false ) Integer pageNo,
+                                           @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize) {
+        PaginationInfo paginationInfo = null;
+        if (categoryService.isCategoryExist(categoryId) && categoryService.isCategoryActive(categoryId)) {
+            CategoryDto categoryDto = categoryService.findById(categoryId);
+            if (productService.getCountByCategory(categoryDto) > 0 )
+                paginationInfo = productService.filterByPriceAndCategory(categoryDto,minPrice,maxPrice,pageNo,pageSize);
+        }
+        model.addAttribute("ID",categoryId);
+        model.addAttribute("CategoryList",categoryService.getAll());
+        model.addAttribute( "ProductDetails", paginationInfo);
+        model.addAttribute("BrandList",categoryService.getAll());
+        return "User/page-category-products";
+    }
+
+
+
+    @GetMapping("/check/product-filer")
+    @ResponseBody
+    public ResponseEntity<Boolean> checkPriceFilter(@RequestParam("minPrice")Integer minPrice, @RequestParam("maxPrice")Integer maxPrice){
+        return new ResponseEntity<>((productService.getCountByPriceFilter(minPrice, maxPrice) > 0), HttpStatus.OK);
+    }
+
+    @GetMapping("/product-filer")
+    public String getProductFilterPrice(Model model, @RequestParam("maxPrice")Integer maxPrice, @RequestParam("minPrice")Integer minPrice,
+                                        @RequestParam(value = "pageNo", defaultValue = "0", required = false ) Integer pageNo,
+                                        @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize) {
+        model.addAttribute("ProductPage",productService.filterByPrice(minPrice, maxPrice, pageNo, pageSize));
+        model.addAttribute("CategoryList",categoryService.getAll());
+        model.addAttribute("BrandList",brandService.getAll());
         return "User/page-category-products";
     }
 
@@ -109,10 +208,10 @@ public class UserHomeController {
             model.addAttribute("UserDetails",userDto);
             return "User/page-edit-profile";
         }
-//        User user = userService.update(userDto);
-//
-//        authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), authentication.getAuthorities());
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
+        User user = userService.update(userDto);
+
+        authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), authentication.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         return "redirect:/user/home";
     }
 
@@ -130,8 +229,7 @@ public class UserHomeController {
     }
 
     @PostMapping("/otp-validation/verify")
-    public ResponseEntity<String> validateOTP(@RequestParam("OTP") String otp,
-                                              @RequestParam("Email") String email) {
+    public ResponseEntity<String> validateOTP(@RequestParam("OTP") String otp, @RequestParam("Email") String email) {
         String msg = otpService.verifyOTP(email, otp);
         if (msg.equals("SUCCESS")) return new ResponseEntity<>(msg,HttpStatus.OK);
         return new ResponseEntity<>(msg,HttpStatus.BAD_REQUEST);
@@ -155,9 +253,9 @@ public class UserHomeController {
     }
 
     @PostMapping("/add-address/save")
-    public String saveNewAddress(@ModelAttribute("NewAddress") @Valid AddressDto newAddress, BindingResult result,
-                                 Principal principal, Model model) {
-        if (result.hasErrors()) {
+    public String saveNewAddress(@ModelAttribute("NewAddress") @Valid AddressDto newAddress,
+                                 BindingResult result, Principal principal, Model model ) {
+        if ( result.hasErrors() ) {
             UserDto user = userService.findByUsername(principal.getName());
             model.addAttribute("User",user);
             return "User/page-add-address";
@@ -167,7 +265,6 @@ public class UserHomeController {
         addressService.save(newAddress);
         return "redirect:/user/my-address";
     }
-
 
     @DeleteMapping("/delete-address")
     public String deleteAddress(@RequestParam("addressId") Integer addressId) {

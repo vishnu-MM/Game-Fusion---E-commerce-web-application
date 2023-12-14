@@ -29,14 +29,52 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("update Product p set p.status = true where p.id = ?1")
     void unBlockProduct(Long id);
 
-    Integer countAllByBrand(Brand brand);
-    Page<Product> findByStatus(boolean status, Pageable pageable);
+    Page<Product> findByStatusAndCategoryStatusAndBrandStatus(
+        Boolean status, Boolean category_status, Boolean brand_status, Pageable pageable
+    );
+
+    //* PRODUCT SEARCH
     List<Product> searchAllByNameContainsIgnoreCase(String name);
-    Page<Product> searchAllByNameContainsIgnoreCaseAndStatus(String name, Boolean status,Pageable pageable);
-    Page<Product> searchAllByCategory_NameContainsIgnoreCaseAndStatus(String name, Boolean status,Pageable pageable);
-    Page<Product> searchAllByPriceAndStatus(Integer name, Boolean status,Pageable pageable);
-    Page<Product> findByStatusAndCategoryStatus(boolean product_status,boolean Category_status, Pageable pageable);
-    Page<Product> findByBrandAndStatusAndCategoryStatus(Brand brand, Boolean status, Boolean brandStatus,Pageable pageable);
-    Page<Product> findByCategoryAndStatusAndCategoryStatus(Category category, Boolean status, Boolean categoryStatus,Pageable pageable);
+    Page<Product> searchAllByNameContainsIgnoreCaseAndStatusAndCategoryStatusAndBrandStatus(
+        String name, Boolean status, Boolean categoryStatus, Boolean brandStatus, Pageable pageable
+    );
+    Page<Product> searchAllByCategoryNameContainsIgnoreCaseAndStatusAndCategoryStatusAndBrandStatus(
+        String categoryName, Boolean status, Boolean categoryStatus, Boolean brandStatus, Pageable pageable
+    );
+    Page<Product> searchAllByBrandNameContainsIgnoreCaseAndStatusAndCategoryStatusAndBrandStatus(
+        String brand_name, Boolean status, Boolean category_status, Boolean brand_status, Pageable pageable
+    );
+
+    //* FILTER PRODUCTS BY CATEGORY
+    Integer countAllByCategoryAndBrandStatusAndCategoryStatusAndStatus(
+        Category category, Boolean brandStatus, Boolean categoryStatus, Boolean status
+    );
+    Page<Product> findByCategoryAndBrandStatusAndCategoryStatusAndStatus(
+        Category category, Boolean status, Boolean categoryStatus, Boolean brandStatus, Pageable pageable
+    );
+
+    //* FILTER PRODUCTS BY CATEGORY AND PRICE BETWEEN MIN & MAX
+    Integer countAllByBrandAndBrandStatusAndCategoryStatusAndStatusAndPriceBetween(
+        Brand brand, Boolean brandStatus, Boolean categoryStatus, Boolean status, int minPrice, int maxPrice
+    );
+    Page<Product> findByBrandAndBrandStatusAndCategoryStatusAndStatusAndPriceBetween(
+        Brand brand, Boolean brandStatus, Boolean categoryStatus, Boolean status, int minPrice, int maxPrice, Pageable pageable
+    );
+
+    //* FILTER PRODUCTS BY BRAND
+    Integer countAllByBrandAndBrandStatusAndCategoryStatusAndStatus(
+        Brand brand, Boolean brand_status, Boolean category_status, Boolean status
+    );
+    Page<Product> findByBrandAndBrandStatusAndCategoryStatusAndStatus(
+        Brand brand, Boolean brand_status, Boolean category_status, Boolean status, Pageable pageable
+    );
+
+    //* FILTER PRODUCTS BY BRAND AND PRICE BETWEEN MIN & MAX
+    Integer countAllByCategoryAndBrandStatusAndCategoryStatusAndStatusAndPriceBetween(
+        Category category, Boolean brandStatus, Boolean categoryStatus, Boolean status, int minPrice, int maxPrice
+    );
+    Page<Product> findByCategoryAndBrandStatusAndCategoryStatusAndStatusAndPriceBetween(
+        Category category, Boolean brandStatus, Boolean categoryStatus, Boolean status, int minPrice, int maxPrice, Pageable pageable
+    );
 }
 
