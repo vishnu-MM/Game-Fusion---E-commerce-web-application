@@ -27,14 +27,15 @@
 <body>
     <header th:fragment="header" class="header-area header-style-4 header-height-2">
         <!-- TOP NAV BAR WITH PROFILE -->
-        <div class="header-top header-top-ptb-1 d-none d-lg-block">
+        <div class="header-top header-top-ptb-1">
             <div class="container">
                 <div class="row align-items-center">
-                    <div class="col-xl-1 col-lg-3">
+                    <div class="col-xl-2 col-lg-2">
                         <div class="dropdown nav-item">
-                            <a class="dropdown-toggle" id="dropdownAccount" aria-expanded="false">
-                                <img class="img-xs rounded-circle" th:src="@{/assets/admin-assets/imgs/people/avatar-2-admin.png}" alt="User">
-                            </a>
+                            <div class="row d-flex align-items-center border border-dark rounded px-3 py-1" id="dropdownAccount" aria-expanded="false">
+                                <div class="col-10 p-0"><span class="fw-bolder">My Profile</span></div>
+                                <div class="col-2 p-0"><i class="material-icons md-person_outline"></i></div>
+                            </div>
                             <div class="dropdown-menu">
                                 <div class="dropdown-item"><i class="material-icons md-person"></i><span></span><span id="name"></span></div>
                                 <div class="dropdown-item"><i class="material-icons md-email"></i><span></span><span id="email"></span></div>
@@ -59,7 +60,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-8 col-lg-6">
+                    <div class="col-xl-7 col-lg-7">
                         <div class="text-center">
                             <div id="news-flash" class="d-inline-block">
                                 <ul>
@@ -160,9 +161,7 @@
                     <a href="#"><img th:src="@{/assets/imgs/theme/New-logo.svg}" alt="logo"></a>
                 </div>
                 <div class="mobile-menu-close close-style-wrap close-style-position-inherit">
-                    <button class="close-style search-close">
-                        <i class="icon-top"></i> <i class="icon-bottom"></i>
-                    </button>
+                    <button class="close-style search-close"><i class="icon-top"></i> <i class="icon-bottom"></i></button>
                 </div>
             </div>
             <div class="mobile-header-content-area">
@@ -175,9 +174,7 @@
                 </div>
                 <div class="mobile-menu-wrap mobile-header-border">
                     <div class="main-categori-wrap mobile-header-border">
-                        <a class="categori-button-active-2" href="#">
-                            <span class="fi-rs-apps"></span>Browse Categories
-                        </a>
+                        <a class="categori-button-active-2" href="#"><span class="fi-rs-apps"></span>Browse Categories</a>
                         <div class="categori-dropdown-wrap categori-dropdown-active-small">
                             <ul>
                                 <li><a th:href="@{User/shop-grid-right.html}"><i class="evara-font-dress"></i>Women's Clothing</a></li>

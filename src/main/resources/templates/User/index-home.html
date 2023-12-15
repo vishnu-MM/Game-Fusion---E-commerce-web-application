@@ -12,7 +12,7 @@
         <section class="product-tabs pt-25 pb-20 wow fadeIn animated">
             <div class="container">
                 <div class="row">
-                    <div class="col-lg-3">
+                    <div class="col-lg-3 d-none d-lg-block">
                         <div class="widget-category mb-30">
                             <h5 class="section-title style-1 mb-30 wow fadeIn animated">Price Range</h5>
                             <ul class="categories">
@@ -50,7 +50,7 @@
                                                         </span>
                                                         <span th:unless="${#lists.isEmpty(product.imageIds)}">
                                                             <img class="default-img" th:src="@{/images/{imgId}(imgId=${product.imageIds[0]})}" alt="">
-                                                            </span>
+                                                        </span>
                                                     </a>
                                                 </div>
                                                 <div class="product-action-1">
