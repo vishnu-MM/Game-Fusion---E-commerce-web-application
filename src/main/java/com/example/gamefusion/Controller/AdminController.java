@@ -492,6 +492,16 @@ public class AdminController {
         return "redirect:/dashboard/cancel-order-request";
     }
 
+    @GetMapping("/reject-cancel")
+    public String rejectCancelRequest(@RequestParam("OrderId") Integer orderId) {
+        if (!adminService.isOrderExists(orderId))
+            return "redirect:/dashboard/cancel-order-request";
+
+        OrderMainDto orderMainDto = adminService.rejectCancelRequest(orderId);
+        adminService.saveOrderHistory(orderMainDto);
+        return "redirect:/dashboard/cancel-order-request";
+    }
+
     //* REPORT
 
     @GetMapping("/view-sales-report")

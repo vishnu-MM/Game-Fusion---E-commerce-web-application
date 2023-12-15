@@ -89,6 +89,8 @@ public interface AdminService {
     PaginationInfo getCancelRequest(Integer pageNo, Integer pageSize);
     CategoryOfferDto saveCategoryOffer(CategoryOfferDto categoryOfferDto);
 
+    OrderMainDto rejectCancelRequest(Integer orderId);
+
     //? Search
     List<UserDto> searchUser(String search);
     List<BrandDto> searchBrand(String search);

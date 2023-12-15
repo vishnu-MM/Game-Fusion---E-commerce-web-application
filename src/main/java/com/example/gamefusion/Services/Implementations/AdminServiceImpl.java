@@ -3,7 +3,6 @@ package com.example.gamefusion.Services.Implementations;
 import com.example.gamefusion.Configuration.ExceptionHandlerConfig.EntityNotFound;
 import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
 import com.example.gamefusion.Configuration.UtilityClasses.OrderStatusUtil;
-import com.example.gamefusion.Configuration.UtilityClasses.PageToListUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.context.annotation.Lazy;
@@ -491,6 +490,16 @@ public class AdminServiceImpl implements AdminService {
        if (Objects.equals(status, String.valueOf(OrderStatusUtil.REQUEST_CANCEL)) ||
            Objects.equals(status, String.valueOf(OrderStatusUtil.REQUEST_REPLACE)) ) {
            return orderMainService.approveCancelRequest(orderId);
+       }
+       throw new RuntimeException("Invalid  Status to approve");
+    }
+
+    @Override
+    public OrderMainDto rejectCancelRequest(Integer orderId) {
+       String status = orderMainService.findOrderById(orderId).getStatus();
+       if (Objects.equals(status, String.valueOf(OrderStatusUtil.REQUEST_CANCEL)) ||
+           Objects.equals(status, String.valueOf(OrderStatusUtil.REQUEST_REPLACE)) ) {
+           return orderMainService.rejectCancelRequest(orderId);
        }
        throw new RuntimeException("Invalid  Status to approve");
     }

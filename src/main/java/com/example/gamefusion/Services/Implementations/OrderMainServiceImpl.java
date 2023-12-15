@@ -253,6 +253,13 @@ public class OrderMainServiceImpl implements OrderMainService {
     }
 
     @Override
+    public OrderMainDto rejectCancelRequest(Integer orderId) {
+        OrderMainDto orderMainDto = findOrderById(orderId);
+        orderMainDto.setStatus(String.valueOf(OrderStatusUtil.PENDING));
+        return save(orderMainDto);
+    }
+
+    @Override
     public OrderMainDto approveCancelRequest(Integer orderId) {
         OrderMainDto orderMainDto = findOrderById(orderId);
         UserDto userDto = userService.findById(orderMainDto.getUserId());
