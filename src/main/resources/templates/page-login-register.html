@@ -10,11 +10,10 @@
     <meta property="og:type" content="">
     <meta property="og:url" content="">
     <meta property="og:image" content="">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/alertifyjs/latest/css/alertify.min.css" />
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/imgs/theme/favicon.svg}">
     <link rel="stylesheet" th:href="@{/assets/css/main.css}">
     <link rel="stylesheet" th:href="@{/assets/css/signup-page.css}">
-    <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         .error-msg{ color: red; }
         .error-msg::before{
@@ -242,8 +241,8 @@
     </section>
 </main>
 <th:block th:replace="~{Fragments/UserFragments.html::footer}"></th:block>
-<script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
 <script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
 <script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
 <script th:src="@{/assets/js/vendor/jquery-migrate-3.3.0.min.js}"></script>
@@ -265,15 +264,13 @@
 <script th:src="@{/assets/js/plugins/jquery.theia.sticky.js}"></script>
 <script th:src="@{/assets/js/main.js}"></script>
 <script>
+    alertify.set('notifier', 'position', 'top-right');
     function checkPasswordMatch() {
-        alertify.set('notifier', 'position', 'top-center');
         let password = document.getElementById("password-org").value;
         let confirmPassword = document.getElementById("confirm-password").value;
-        if (password !== confirmPassword) {
-            alertify.error("Your Password and Confirm Password do not match. Please try again.");
-            return false;
-        }
-        return true;
+        if (password === confirmPassword) return true;
+        alertify.error("Your Password and Confirm Password doesn't match.\n Please try again.");
+        return false;
     }
 </script>
 </body>

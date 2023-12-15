@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/alertifyjs/latest/css/alertify.min.css" />
     <link rel="shortcut icon" type="image/x-icon" th:href="@{/assets/imgs/theme/favicon.svg}" />
     <link rel="stylesheet" th:href="@{/assets/css/main.css}" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
   </head>
   <body>
     <header class="header-area header-style-5">
@@ -70,7 +73,7 @@
                     </ul>
                   </li>
                   <li>
-                    <i class="fi-rs-user"></i><a th:href="@{User/page-login-register.html}">Log In / Sign Up</a>
+                    <i class="fi-rs-user"></i><a th:href="@{../page-login-register.html}">Log In / Sign Up</a>
                   </li>
                 </ul>
               </div>
@@ -310,7 +313,7 @@
                       <li><a th:href="@{User/page-contact.html}">Contact</a></li>
                       <li><a th:href="@{User/page-account.html}">My Account</a></li>
                       <li>
-                        <a th:href="@{User/page-login-register.html}">login/register</a>
+                        <a th:href="@{../page-login-register.html}">login/register</a>
                       </li>
                       <li>
                         <a th:href="@{User/page-purchase-guide.html}">Purchase Guide</a>
@@ -331,20 +334,24 @@
             <div class="header-action-right">
               <div class="search-style-2">
                 <form action="#">
-                  <select class="select-active">
-                    <option>Search in</option>
-                    <option>Women's Clothing</option>
-                    <option>Men's Clothing</option>
-                    <option>Cellphones</option>
-                    <option>Computer & Office</option>
-                    <option>Consumer Electronics</option>
-                    <option>Jewelry & Accessories</option>
-                    <option>Home & Garden</option>
-                    <option>Luggage & Bags</option>
-                    <option>Shoes</option>
-                    <option>Mother & Kids</option>
-                  </select>
-                  <input type="text" placeholder="Search for items…" />
+                  <label>
+                    <select class="select-active">
+                      <option>Search in</option>
+                      <option>Women's Clothing</option>
+                      <option>Men's Clothing</option>
+                      <option>Cellphones</option>
+                      <option>Computer & Office</option>
+                      <option>Consumer Electronics</option>
+                      <option>Jewelry & Accessories</option>
+                      <option>Home & Garden</option>
+                      <option>Luggage & Bags</option>
+                      <option>Shoes</option>
+                      <option>Mother & Kids</option>
+                    </select>
+                  </label>
+                  <label>
+                    <input type="text" placeholder="Search for items…" />
+                  </label>
                 </form>
               </div>
               <div class="header-action-2">
@@ -449,7 +456,9 @@
         <div class="mobile-header-content-area">
           <div class="mobile-search search-style-3 mobile-header-border">
             <form action="#">
-              <input type="text" placeholder="Search for items…" />
+              <label>
+                <input type="text" placeholder="Search for items…" />
+              </label>
               <button type="submit"><i class="fi-rs-search"></i></button>
             </form>
           </div>
@@ -672,7 +681,7 @@
                     <li><a th:href="@{User/page-contact.html}">Contact</a></li>
                     <li><a th:href="@{User/page-account.html}">My Account</a></li>
                     <li>
-                      <a th:href="@{User/page-login-register.html}">login/register</a>
+                      <a th:href="@{../page-login-register.html}">login/register</a>
                     </li>
                     <li>
                       <a th:href="@{User/page-purchase-guide.html}">Purchase Guide</a>
@@ -701,7 +710,7 @@
               <a th:href="@{User/page-contact.html}"> Our location </a>
             </div>
             <div class="single-mobile-header-info">
-              <a th:href="@{User/page-login-register.html}">Log In / Sign Up </a>
+              <a th:href="@{../page-login-register.html}">Log In / Sign Up </a>
             </div>
             <div class="single-mobile-header-info">
               <a href="#">(+01) - 2345 - 6789 </a>
@@ -750,6 +759,7 @@
                     <div class="form-group"><p>OTP has been sent via Email to <span th:text="${username}"></span></p></div>
                     <div class="form-group" th:text="${error}"></div>
                     <div class="form-group">
+                      <label for="otpField"></label>
                       <input type="text" name="otp" id="otpField" placeholder="Enter Verification Code"/>
                     </div>
                     <div class="form-group">
@@ -766,15 +776,22 @@
     </main>
     <input type="hidden" id="username" th:value="${username}">
     <th:block th:replace="~{Fragments/UserFragments.html::footer}"></th:block>
-
     <div th:if="${Success}">
       <script th:inline="text">
-        alert('Registration Success, Please login with your credentials');
-        window.location.href = '/login-or-registration';
+        Swal.fire({
+          title: 'Registration Success',
+          text: 'You can login with your credentials Now',
+          icon: 'success',
+          showCancelButton: true,
+          confirmButtonText: 'Yes',
+          cancelButtonText: 'No, cancel',
+        }).then((result) => {
+          if (result.isConfirmed) window.location.href = '/login-or-registration'
+          else window.location.href = '/'
+        });
       </script>
     </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+
     <script th:src="@{/assets/js/vendor/modernizr-3.6.0.min.js}"></script>
     <script th:src="@{/assets/js/vendor/jquery-3.6.0.min.js}"></script>
     <script th:src="@{/assets/js/vendor/jquery-migrate-3.3.0.min.js}"></script>
@@ -813,7 +830,7 @@
                   else alertify.error("Unable to send New OTP")
                   button.prop('disabled', false)
                 })
-                .catch(error => {
+                .catch(() => {
                   alertify.error("Unable to send New OTP")
                   button.prop('disabled', false)
                 })

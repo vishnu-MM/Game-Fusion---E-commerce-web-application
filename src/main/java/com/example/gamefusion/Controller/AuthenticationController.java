@@ -65,7 +65,7 @@ public class AuthenticationController {
             session.setAttribute("Referral",referralID);
 
         model.addAttribute("NewUser", new UserDto());
-        return "User/page-login-register";
+        return "page-login-register";
     }
 
     @PostMapping("/user-registration/verify")
@@ -76,7 +76,7 @@ public class AuthenticationController {
                                 "User with this email is already exist");
 
         if (result.hasErrors())
-            return "User/page-login-register";
+            return "page-login-register";
 
         session.setAttribute("UserDetails",userDto);
         return "redirect:/sent-otp";
@@ -102,6 +102,7 @@ public class AuthenticationController {
 
         if (!msg.equals("SUCCESS")) {
             getError(model, msg);
+            System.out.println("Literally Error"+msg);
             return "User/page-otp-verification";
         }
 

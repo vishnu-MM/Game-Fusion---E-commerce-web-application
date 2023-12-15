@@ -75,6 +75,8 @@ public class OTPServiceImpl implements OTPService {
 
     @Override
     public String verifyOTP(String recipient, String enteredOtp) {
+        if (otpUtil == null)
+            return "NO-OTP-REQUEST-FOUNT";
         if (!recipient.equals(otpUtil.username()))
             return "USER-NOT-FOUNT";
         if (System.currentTimeMillis() - otpUtil.timeOfCreation() > OTP_VALIDITY_DURATION)
