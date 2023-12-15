@@ -17,6 +17,7 @@ public class UserDto {
     @NotBlank(message = " First Name cannot be blank")
     private String firstName;
     private String lastName;
+    @Size(min = 10, message = "Enter a valid phone number")
     @NotBlank(message = "Phone cannot be blank")
     private String phone;
     @NotBlank(message = "Email cannot be blank")
