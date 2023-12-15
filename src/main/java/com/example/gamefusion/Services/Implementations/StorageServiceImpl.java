@@ -74,18 +74,13 @@ public class StorageServiceImpl implements StorageService {
 @Override
 @Transactional
 public List<String> uploadImagesToFileSystem(List<MultipartFile> files, Product product) {
-    String FOLDER_PATH = "static/Images/";
-    Resource resource = new ClassPathResource(FOLDER_PATH);
-
+    String FOLDER_PATH = "~/Game-Fusion---E-commerce-web-application/src/main/resources/static/Images/";
     List<String> filePaths = new ArrayList<>();
 
-    try {
-        InputStream inputStream = resource.getInputStream();
-        String absolutePath = new File(inputStream.toString()).getAbsolutePath();
+    for (MultipartFile file : files) {
+        String filePath = FOLDER_PATH + file.getOriginalFilename();
 
-        for (MultipartFile file : files) {
-            String filePath = absolutePath + File.separator + file.getOriginalFilename();
-
+        try {
             Images img = Images.builder()
                     .name(file.getOriginalFilename())
                     .type(file.getContentType())
@@ -93,24 +88,16 @@ public List<String> uploadImagesToFileSystem(List<MultipartFile> files, Product 
                     .build();
             img.setProduct(product);
             imagesRepository.save(img);
-
-            try (OutputStream outputStream = new FileOutputStream(filePath)) {
-                outputStream.write(file.getBytes());
-            }
-
+            file.transferTo(new File(filePath));
             filePaths.add("File uploaded successfully: " + filePath);
+        } catch ( Exception ex) {
+            filePaths.add("Error uploading the file: " + ex.getMessage());
+            log.error(ex.getMessage());
         }
-    } catch (IOException e) {
-        filePaths.add("Error uploading the file: " + e.getMessage());
-        log.error(e.getMessage());
-    } catch (Exception ex) {
-        filePaths.add("An error occurred: " + ex.getMessage());
-        log.error(ex.getMessage());
-    }
 
+    }
     return filePaths;
 }
-
 
     @Override
     public byte[] downloadImageFromFileSystem(Long id) throws IOException {
