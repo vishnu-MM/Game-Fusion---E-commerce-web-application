@@ -3,6 +3,7 @@ package com.example.gamefusion.Services.Implementations;
 import com.example.gamefusion.Configuration.ExceptionHandlerConfig.EntityNotFound;
 import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
 import com.example.gamefusion.Configuration.UtilityClasses.OrderStatusUtil;
+import com.example.gamefusion.Configuration.UtilityClasses.PageToListUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.context.annotation.Lazy;
@@ -262,6 +263,11 @@ public class AdminServiceImpl implements AdminService {
             }
             default -> throw new RuntimeException();
         }
+    }
+
+    @Override
+    public PaginationInfo getPurchaseReport(Integer pageNo, Integer pageSize) {
+        return orderSubService.findAll(pageNo,pageSize);
     }
 
     @Override

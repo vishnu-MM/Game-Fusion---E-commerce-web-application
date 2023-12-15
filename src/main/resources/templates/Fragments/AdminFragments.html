@@ -14,7 +14,6 @@
     <link th:href="@{/assets/admin-assets/css/main.css}" rel="stylesheet" type="text/css" />
 </head>
 <body>
-
 <aside class="navbar-aside" id="offcanvas_aside" th:fragment="navbar-aside">
     <div class="aside-top">
         <a href="#" class="brand-wrap">
@@ -59,6 +58,11 @@
             <li class="menu-item ">
                 <a class="menu-link" th:href="@{/dashboard/view-sales-report}">
                        <i class="icon material-icons md-pie_chart"></i><span class="text">Sales Report</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a class="menu-link" th:href="@{/dashboard/purchase-report}">
+                    <i class="icon material-icons md-bar_chart"></i><span class="text">Purchase Report</span>
                 </a>
             </li>
             <li class="menu-item">

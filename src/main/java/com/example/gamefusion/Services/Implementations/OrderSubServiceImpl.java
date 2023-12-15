@@ -1,6 +1,7 @@
 package com.example.gamefusion.Services.Implementations;
 
 import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
+import com.example.gamefusion.Dto.PaginationInfo;
 import com.example.gamefusion.Entity.OrderMain;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.example.gamefusion.Repository.OrderSubRepository;
@@ -8,6 +9,10 @@ import com.example.gamefusion.Services.OrderSubService;
 import com.example.gamefusion.Dto.OrderMainDto;
 import com.example.gamefusion.Dto.OrderSubDto;
 import com.example.gamefusion.Entity.OrderSub;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import com.example.gamefusion.Dto.CartDto;
 import com.example.gamefusion.Entity.Cart;
@@ -25,6 +30,16 @@ public class OrderSubServiceImpl implements OrderSubService {
                                EntityDtoConversionUtil conversionUtil) {
         this.conversionUtil = conversionUtil;
         this.repository = repository;
+    }
+
+    @Override
+    public PaginationInfo findAll(Integer pageNo, Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNo,pageSize, Sort.by("id").descending());
+        Page<OrderSub> page = repository.findAll(pageable);
+        return new PaginationInfo(
+            page.getContent(), pageNo, pageSize, page.getTotalElements(),
+            page.getTotalPages(), page.isLast(), page.hasNext()
+        );
     }
 
     @Override

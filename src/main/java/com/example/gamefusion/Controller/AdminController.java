@@ -185,6 +185,12 @@ public class AdminController {
         return "redirect:/dashboard/view-categories";
     }
 
+    @GetMapping("/search-category")
+    @ResponseBody
+    public ResponseEntity<List<CategoryDto>> searchCategoryController(@RequestParam("search") String search) {
+        return new ResponseEntity<>(adminService.searchCategory(search), HttpStatus.OK);
+    }
+
     //* PRODUCT MANAGEMENT
 
     @GetMapping("/view-products")
@@ -295,6 +301,12 @@ public class AdminController {
     private void productCommonAttributes(Model model) {
         model.addAttribute("CategoryList", adminService.getAllCategory());
         model.addAttribute("brandList", adminService.getAllBrands());
+    }
+
+    @GetMapping("/search-product")
+    @ResponseBody
+    public ResponseEntity<List<ProductDto>> searchProductController(@RequestParam("search") String search) {
+        return new ResponseEntity<>(adminService.searchProduct(search), HttpStatus.OK);
     }
 
     //* BRAND MANAGEMENT
@@ -426,7 +438,61 @@ public class AdminController {
         return "redirect:/dashboard/view-orders";
     }
 
-    //* SALES REPORT
+    @GetMapping("/cancel-order-request/count")
+    @ResponseBody
+    public Integer getCancelOrderRequestCount() {
+        return adminService.getCancelOrderRequestCount();
+    }
+
+    @GetMapping("/cancel-order-request")
+    public String getCancelOrderRequest(Model model,
+                                        @RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
+                                        @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize) {
+
+        PageToListUtil<OrderMain> conversionUtil = new PageToListUtil<>();
+        PaginationInfo paginationInfo = adminService.getCancelRequest(pageNo, pageSize);
+        Map<Integer, PaymentDto> paymentInfo = adminService.getPaymentInfoByOrder(conversionUtil.convert(paginationInfo));
+
+        model.addAttribute("OrderMainList", paginationInfo);
+        model.addAttribute("paymentInfo", paymentInfo);
+        return "Admin/page-view-orders-cancel-request";
+    }
+
+    @GetMapping("/order-details/{orderId}")
+    public String getOrderDetails(@PathVariable Integer orderId, Model model) {
+        if (!adminService.isOrderExists(orderId))
+            return "redirect:/dashboard";
+
+        OrderMainDto orderMainDto = adminService.getOrderById(orderId);
+        List<OrderSubDto> orderSub = adminService.findOrderSubByMain(orderId);
+        AddressDto addressDto = adminService.getUserAddress(orderMainDto.getAddressId());
+        PaymentDto paymentDto = adminService.getPaymentInfoByOrder(orderMainDto);
+
+        Map<Integer, ProductDto> orderProducts = new HashMap<>();
+        for (OrderSubDto osd : orderSub)
+            orderProducts.put(osd.getId(), adminService.getProduct(osd.getProductId()));
+
+        model.addAttribute("OrderHistory", adminService.findOrderHistory(orderId));
+        model.addAttribute("OrderMainDto", orderMainDto);
+        model.addAttribute("Products", orderProducts);
+        model.addAttribute("PaymentInfo", paymentDto);
+        model.addAttribute("OrderSubDto", orderSub);
+        model.addAttribute("Address", addressDto);
+
+        return "Admin/page-view-orders-details";
+    }
+
+    @GetMapping("/approve-cancel")
+    public String approveCancelRequest(@RequestParam("OrderId") Integer orderId) {
+        if (!adminService.isOrderExists(orderId))
+            return "redirect:/dashboard/cancel-order-request";
+
+        OrderMainDto orderMainDto = adminService.approveCancelRequest(orderId);
+        adminService.saveOrderHistory(orderMainDto);
+        return "redirect:/dashboard/cancel-order-request";
+    }
+
+    //* REPORT
 
     @GetMapping("/view-sales-report")
     public String viewSalesReport(Model model,
@@ -452,8 +518,32 @@ public class AdminController {
         return "Admin/page-view-sales_report";
     }
 
+    @GetMapping("/purchase-report")
+    public String purchaseReport(@RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
+                                 @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize,
+                                 @RequestParam(value = "startDate", required = false) String startDate,
+                                 @RequestParam(value = "endDate", required = false) String endDate, Model model){
+        model.addAttribute("Report",adminService.getPurchaseReport(pageNo,pageSize));
+        return "Admin/page-view-purchase_report";
+    }
+
     private static Boolean isValidDate(String dateString) {
         return dateString == null || Objects.equals(dateString, "") || dateString.trim().isEmpty();
+    }
+
+    @GetMapping("/sales-report/download")
+    public void exportToExcel(HttpServletResponse response) {
+        response.setContentType("application/octet-stream");
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+        String currentDateTime = dateFormatter.format(new java.util.Date());
+
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=users_" + currentDateTime + ".xlsx";
+        response.setHeader(headerKey, headerValue);
+
+        List<OrderMain> orderMainList = adminService.getAllOrders();
+        SalesReportExcelExporter excelExporter = new SalesReportExcelExporter(orderMainList);
+        excelExporter.export(response);
     }
 
     //* COUPON MANAGEMENT
@@ -523,86 +613,5 @@ public class AdminController {
             adminService.deleteCoupon(couponId);
         }
         return "redirect:/dashboard/view-coupons";
-    }
-
-    @GetMapping("/cancel-order-request/count")
-    @ResponseBody
-    public Integer getCancelOrderRequestCount() {
-        return adminService.getCancelOrderRequestCount();
-    }
-
-    @GetMapping("/cancel-order-request")
-    public String getCancelOrderRequest(Model model,
-                                        @RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
-                                        @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize) {
-
-        PageToListUtil<OrderMain> conversionUtil = new PageToListUtil<>();
-        PaginationInfo paginationInfo = adminService.getCancelRequest(pageNo, pageSize);
-        Map<Integer, PaymentDto> paymentInfo = adminService.getPaymentInfoByOrder(conversionUtil.convert(paginationInfo));
-
-        model.addAttribute("OrderMainList", paginationInfo);
-        model.addAttribute("paymentInfo", paymentInfo);
-        return "Admin/page-view-orders-cancel-request";
-    }
-
-    @GetMapping("/order-details/{orderId}")
-    public String getOrderDetails(@PathVariable Integer orderId, Model model) {
-        if (!adminService.isOrderExists(orderId))
-            return "redirect:/dashboard";
-
-        OrderMainDto orderMainDto = adminService.getOrderById(orderId);
-        List<OrderSubDto> orderSub = adminService.findOrderSubByMain(orderId);
-        AddressDto addressDto = adminService.getUserAddress(orderMainDto.getAddressId());
-        PaymentDto paymentDto = adminService.getPaymentInfoByOrder(orderMainDto);
-
-        Map<Integer, ProductDto> orderProducts = new HashMap<>();
-        for (OrderSubDto osd : orderSub)
-            orderProducts.put(osd.getId(), adminService.getProduct(osd.getProductId()));
-
-        model.addAttribute("OrderHistory", adminService.findOrderHistory(orderId));
-        model.addAttribute("OrderMainDto", orderMainDto);
-        model.addAttribute("Products", orderProducts);
-        model.addAttribute("PaymentInfo", paymentDto);
-        model.addAttribute("OrderSubDto", orderSub);
-        model.addAttribute("Address", addressDto);
-
-        return "Admin/page-view-orders-details";
-    }
-
-    @GetMapping("/approve-cancel")
-    public String approveCancelRequest(@RequestParam("OrderId") Integer orderId) {
-        if (!adminService.isOrderExists(orderId))
-            return "redirect:/dashboard/cancel-order-request";
-
-        OrderMainDto orderMainDto = adminService.approveCancelRequest(orderId);
-        adminService.saveOrderHistory(orderMainDto);
-        return "redirect:/dashboard/cancel-order-request";
-    }
-
-    @GetMapping("/sales-report/download")
-    public void exportToExcel(HttpServletResponse response) {
-        response.setContentType("application/octet-stream");
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-        String currentDateTime = dateFormatter.format(new java.util.Date());
-
-        String headerKey = "Content-Disposition";
-        String headerValue = "attachment; filename=users_" + currentDateTime + ".xlsx";
-        response.setHeader(headerKey, headerValue);
-
-        List<OrderMain> orderMainList = adminService.getAllOrders();
-        SalesReportExcelExporter excelExporter = new SalesReportExcelExporter(orderMainList);
-        excelExporter.export(response);
-    }
-
-    @GetMapping("/search-product")
-    @ResponseBody
-    public ResponseEntity<List<ProductDto>> searchProductController(@RequestParam("search") String search) {
-        return new ResponseEntity<>(adminService.searchProduct(search), HttpStatus.OK);
-    }
-
-    @GetMapping("/search-category")
-    @ResponseBody
-    public ResponseEntity<List<CategoryDto>> searchCategoryController(@RequestParam("search") String search) {
-        return new ResponseEntity<>(adminService.searchCategory(search), HttpStatus.OK);
     }
 }

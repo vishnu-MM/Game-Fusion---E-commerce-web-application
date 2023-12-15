@@ -191,16 +191,12 @@ public class EntityDtoConversionUtil {
     public OrderSub dtoToEntity(OrderSubDto orderSubDto) {
         OrderSub orderSub = mapper.map(orderSubDto,OrderSub.class);
         orderSub.setOrderMain(
-                orderMainRepository.findById(
-                        orderSub.getOrderMain().getId()
-                ).orElse(null)
+            orderMainRepository.findById( orderSub.getOrderMain().getId() ).orElse(null)
         );
         orderSub.setProduct(
-                productRepository.findById(
-                        orderSub.getProduct().getId()
-                ).orElse(null)
+            productRepository.findById( orderSub.getProduct().getId() ).orElse(null)
         );
-         return orderSub;
+        return orderSub;
     }
     public Payment dtoToEntity(PaymentDto paymentDto) {
         Payment payment = mapper.map(paymentDto,Payment.class);

@@ -67,6 +67,7 @@ public interface AdminService {
 
     //? Sales Report
     Map<String,Integer> filterGraphBasedOnDate(String filterBy);
+    PaginationInfo getPurchaseReport(Integer pageNo, Integer pageSize);
     PaginationInfo filterOrderByStatus(Integer pageNo, Integer pageSize, Integer statusFilter);
     PaginationInfo filterOrderByDate(Integer pageNo, Integer pageSize,String startDate, String endDate);
     PaginationInfo filterOrderByDayAndStatus(Integer pageNo, Integer pageSize, Date date, Integer statusFilter);

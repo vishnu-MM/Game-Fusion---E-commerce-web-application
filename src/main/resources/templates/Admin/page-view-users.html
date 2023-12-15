@@ -21,12 +21,7 @@
                 showCancelButton: true,
                 confirmButtonText: 'Yes, Block',
                 cancelButtonText: 'No, cancel',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // If the user confirms, submit the form
-                    form.submit();
-                }
-            });
+            }).then( (result) => { if (result.isConfirmed) { form.submit() } });
         }
     </script>
 </head>
@@ -38,8 +33,7 @@
             <img th:src="@{/assets/admin-assets/imgs/theme/New-logo.svg}" class="logo" alt="Evara Dashboard">
         </a>
         <div>
-            <button class="btn btn-icon btn-aside-minimize"><i class="text-muted material-icons md-menu_open"></i>
-            </button>
+            <button class="btn btn-icon btn-aside-minimize"><i class="text-muted material-icons md-menu_open"></i></button>
         </div>
     </div>
     <nav>
