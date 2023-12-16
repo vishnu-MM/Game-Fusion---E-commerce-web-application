@@ -120,7 +120,7 @@
                     <h2 class="content-title card-title">Order Details</h2>
                     <p>Whole data about this order</p>
                 </div>
-                <div th:if="${#strings.equals(OrderMainDto.status, 'REQUEST_REPLACE') or #strings.equals(OrderMainDto.status, 'REQUEST_CANCEL')}">
+                <div th:if="${#strings.equals(OrderMainDto.status, 'REQUEST_RETURN') or #strings.equals(OrderMainDto.status, 'REQUEST_CANCEL')}">
                     <a id="btn-approve" class="btn btn-success px-5"><span>Approve</span></a>
                     <a id="btn-reject" class="btn btn-danger px-5"><span>Reject</span></a>
                 </div>
@@ -230,7 +230,7 @@
                                                         <span th:if="${history.orderStatus}=='RETURNED'">Order Returned</span>
                                                         <span th:if="${history.orderStatus}=='CANCELED'">Order Cancelled</span>
                                                         <span th:if="${history.orderStatus}=='REQUEST_CANCEL'">Requested for Cancellation</span>
-                                                        <span th:if="${history.orderStatus}=='REQUEST_REPLACE'">Requested for Replacement</span>
+                                                        <span th:if="${history.orderStatus}=='REQUEST_RETURN'">Requested for Replacement</span>
                                                         <i class="material-icons md-trending_flat text-brand ml-15 d-inline-block"></i>
                                                     </h6>
                                                 </div>

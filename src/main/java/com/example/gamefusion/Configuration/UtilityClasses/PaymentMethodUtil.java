@@ -15,13 +15,12 @@ public enum PaymentMethodUtil {
 
     public static String getPaymentMethodByValue(Integer value) {
         for (PaymentMethodUtil method : PaymentMethodUtil.values()) {
-            if (method.value.equals(value)) {
-                return method.toString();
-            }
+            if (method.value.equals(value)) return method.toString();
         }
         throw new EntityNotFound("Valid Payment Method is Not found");
     }
-    public Boolean isValidPaymentMethod(Integer value) {
+
+    public static Boolean isValidPaymentMethod(Integer value) {
         for (PaymentMethodUtil method : PaymentMethodUtil.values()) {
             if (method.value.equals(value)) return true;
         }

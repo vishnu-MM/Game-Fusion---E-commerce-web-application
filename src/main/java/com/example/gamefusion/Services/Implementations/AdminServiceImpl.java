@@ -485,20 +485,27 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public PaginationInfo getReturnRequest(Integer pageNo, Integer pageSize) {
+        return orderMainService.findOrderByStatus(String.valueOf(OrderStatusUtil.REQUEST_RETURN), pageNo, pageSize);
+    }
+
+    @Override
     public OrderMainDto approveCancelRequest(Integer orderId) {
        String status = orderMainService.findOrderById(orderId).getStatus();
-       if (Objects.equals(status, String.valueOf(OrderStatusUtil.REQUEST_CANCEL)) ||
-           Objects.equals(status, String.valueOf(OrderStatusUtil.REQUEST_REPLACE)) ) {
+       if ( Objects.equals(status, String.valueOf(OrderStatusUtil.REQUEST_CANCEL)) ) {
            return orderMainService.approveCancelRequest(orderId);
        }
-       throw new RuntimeException("Invalid  Status to approve");
+       else if ( Objects.equals(status, String.valueOf(OrderStatusUtil.REQUEST_RETURN)) )
+           return orderMainService.approveReturnRequest(orderId);
+
+        throw new RuntimeException("Invalid  Status to approve");
     }
 
     @Override
     public OrderMainDto rejectCancelRequest(Integer orderId) {
        String status = orderMainService.findOrderById(orderId).getStatus();
        if (Objects.equals(status, String.valueOf(OrderStatusUtil.REQUEST_CANCEL)) ||
-           Objects.equals(status, String.valueOf(OrderStatusUtil.REQUEST_REPLACE)) ) {
+           Objects.equals(status, String.valueOf(OrderStatusUtil.REQUEST_RETURN)) ) {
            return orderMainService.rejectCancelRequest(orderId);
        }
        throw new RuntimeException("Invalid  Status to approve");

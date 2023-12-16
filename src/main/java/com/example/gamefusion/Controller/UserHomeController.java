@@ -180,19 +180,15 @@ public class UserHomeController {
     public ResponseEntity<UserDto> showUserProfile(Principal principal) {
         String username = principal.getName();
         UserDto user = userService.findByUsername(username);
-        if (user != null) {
-            return ResponseEntity.ok(user);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        if (user != null) return ResponseEntity.ok(user);
+        else return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/edit-profile")
     public String showEditProfileForm(Principal principal, Model model){
         String username = principal.getName();
-        if( username != null  && userService.isExistsByUsername(username)) {
+        if( username != null  && userService.isExistsByUsername(username))
             model.addAttribute("UserDetails", userService.findByUsername(username));
-        }
         return "User/page-edit-profile";
     }
 

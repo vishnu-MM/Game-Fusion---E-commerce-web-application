@@ -82,6 +82,8 @@ public interface AdminService {
     PaginationInfo getAllCoupons(Integer pageNo, Integer pageSize);
     PaginationInfo filterByExpiryStatus(Integer pageNo, Integer pageSize);
 
+    PaginationInfo getReturnRequest(Integer pageNo, Integer pageSize);
+
     //? Category Offer
     OrderMainDto approveCancelRequest(Integer orderId);
     CategoryOfferDto getCategoryOffer(Long categoryId);

@@ -458,6 +458,20 @@ public class AdminController {
         return "Admin/page-view-orders-cancel-request";
     }
 
+    @GetMapping("/order-return-request")
+    public String getOrderReturnRequest(Model model,
+                                        @RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
+                                        @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize) {
+
+        PageToListUtil<OrderMain> conversionUtil = new PageToListUtil<>();
+        PaginationInfo paginationInfo = adminService.getReturnRequest(pageNo, pageSize);
+        Map<Integer, PaymentDto> paymentInfo = adminService.getPaymentInfoByOrder(conversionUtil.convert(paginationInfo));
+
+        model.addAttribute("OrderMainList", paginationInfo);
+        model.addAttribute("paymentInfo", paymentInfo);
+        return "Admin/page-view-orders-cancel-request";
+    }
+
     @GetMapping("/order-details/{orderId}")
     public String getOrderDetails(@PathVariable Integer orderId, Model model) {
         if (!adminService.isOrderExists(orderId))
@@ -531,8 +545,7 @@ public class AdminController {
     @GetMapping("/purchase-report")
     public String purchaseReport(@RequestParam(value = "pageNo", defaultValue = "0", required = false) Integer pageNo,
                                  @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize,
-                                 @RequestParam(value = "startDate", required = false) String startDate,
-                                 @RequestParam(value = "endDate", required = false) String endDate, Model model){
+                                  Model model){
         model.addAttribute("Report",adminService.getPurchaseReport(pageNo,pageSize));
         return "Admin/page-view-purchase_report";
     }

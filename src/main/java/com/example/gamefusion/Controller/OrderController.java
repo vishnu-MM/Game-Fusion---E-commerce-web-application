@@ -88,8 +88,7 @@ public class OrderController {
 
         if (cart == null || cart.isEmpty())
             return "redirect:/cart-products";
-        if (addressId == null || paymentOption==null || addressService.isExistById(addressId) ||
-            PaymentMethodUtil.CASH_ON_DELIVERY.isValidPaymentMethod(paymentOption))
+        if (addressId == null || paymentOption==null )
             return "redirect:/checkout-page";
 
         Integer totalAmount = cartService.totalAmount(cart);
@@ -158,6 +157,15 @@ public class OrderController {
     private String cancelOrder(@PathVariable("orderID") Integer orderId) {
         if (orderMainService.isExistsByID(orderId)) {
             OrderMainDto orderMainDto = orderMainService.requestCancelOrder(orderId);
+            orderHistoryService.save(orderMainDto);
+        }
+        return "redirect:/my-orders";
+    }
+
+    @PutMapping("/return-order/{orderID}")
+    private String returnOrder(@PathVariable("orderID") Integer orderId) {
+        if (orderMainService.isExistsByID(orderId)) {
+            OrderMainDto orderMainDto = orderMainService.requestReturnOrder(orderId);
             orderHistoryService.save(orderMainDto);
         }
         return "redirect:/my-orders";

@@ -253,6 +253,13 @@ public class OrderMainServiceImpl implements OrderMainService {
     }
 
     @Override
+    public OrderMainDto requestReturnOrder(Integer orderId) {
+        OrderMainDto orderMainDto = findOrderById(orderId);
+        orderMainDto.setStatus(String.valueOf(OrderStatusUtil.REQUEST_RETURN));
+        return save(orderMainDto);
+    }
+
+    @Override
     public OrderMainDto rejectCancelRequest(Integer orderId) {
         OrderMainDto orderMainDto = findOrderById(orderId);
         orderMainDto.setStatus(String.valueOf(OrderStatusUtil.PENDING));
@@ -264,6 +271,26 @@ public class OrderMainServiceImpl implements OrderMainService {
         OrderMainDto orderMainDto = findOrderById(orderId);
         UserDto userDto = userService.findById(orderMainDto.getUserId());
         orderMainDto.setStatus(String.valueOf(OrderStatusUtil.CANCELED));
+
+        if (!Objects.equals(orderMainDto.getPaymentMethod(), String.valueOf(PaymentMethodUtil.CASH_ON_DELIVERY))) {
+            WalletDto walletDto = new WalletDto();
+            walletDto.setUserId(userDto.getId());
+            walletDto.setDateTime(Date.valueOf(LocalDate.now()));
+            walletDto.setTransactionType("Credit");
+            walletDto.setAmount(orderMainDto.getAmount());
+            walletDto.setDescription("Refund for order " + orderMainDto.getOrderId());
+            walletService.save(walletDto);
+        }
+
+        incrementQuantity(orderMainDto);
+        return save(orderMainDto);
+    }
+
+    @Override
+    public OrderMainDto approveReturnRequest(Integer orderId) {
+        OrderMainDto orderMainDto = findOrderById(orderId);
+        UserDto userDto = userService.findById(orderMainDto.getUserId());
+        orderMainDto.setStatus(String.valueOf(OrderStatusUtil.RETURNED));
 
         if (!Objects.equals(orderMainDto.getPaymentMethod(), String.valueOf(PaymentMethodUtil.CASH_ON_DELIVERY))) {
             WalletDto walletDto = new WalletDto();

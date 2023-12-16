@@ -18,10 +18,12 @@ public interface OrderMainService {
     OrderMainDto findOrderById(Integer orderId);
     OrderMainDto save(OrderMainDto orderMainDto);
     OrderMainDto requestCancelOrder(Integer orderId);
+    OrderMainDto requestReturnOrder(Integer orderId);
     OrderMainDto rejectCancelRequest(Integer orderId);
     void decrementQuantity(OrderMainDto orderMainDto);
     void incrementQuantity(OrderMainDto orderMainDto);
     OrderMainDto approveCancelRequest(Integer orderId);
+    OrderMainDto approveReturnRequest(Integer orderId);
     List<OrderMainDto> findOrderByUser(UserDto userDto);
     PaginationInfo findAll(Integer pageNo, Integer pageSize);
     PaginationInfo findAllFilterByDay(Integer pageNo, Integer pageSize, Date date);

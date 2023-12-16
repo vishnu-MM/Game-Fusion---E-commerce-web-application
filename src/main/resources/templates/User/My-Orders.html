@@ -61,7 +61,7 @@
                         <span class="py-1 fw-bolder" th:text="'Order placed on '+${#dates.format(order.date,'dd-MMM-yy')}"></span>
                         <!--CURRENT ORDER STATUS-->
                         <span class="mx-3" th:if="${#strings.equals(order.status, 'PENDING')}" style="color: orange">Order Placed</span>
-                        <span class="mx-3" th:if="${#strings.equals(order.status, 'REQUEST_REPLACE')}" style="color:orange">Requested for Replacement</span>
+                        <span class="mx-3" th:if="${#strings.equals(order.status, 'REQUEST_RETURN')}" style="color:orange">Requested for Replacement</span>
                         <span class="mx-3" th:if="${#strings.equals(order.status, 'REQUEST_CANCEL')}" style="color:orange">Requested for Cancel</span>
                         <span class="mx-3" th:if="${#strings.equals(order.status, 'SHIPPED')}" style="color: yellow">Shipped</span>
                         <span class="mx-3" th:if="${#strings.equals(order.status, 'DELIVERED')}" style="color: green">Delivered</span>
