@@ -161,7 +161,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Integer getCountByPriceFilter(Integer minPrice, Integer maxPrice) {
-        return null;
+        return repository.countAllByBrandStatusAndCategoryStatusAndStatusAndPriceBetween(
+            true, true, true, minPrice, maxPrice
+        );
     }
 
     @Override
@@ -217,7 +219,16 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public PaginationInfo filterByPrice(Integer minPrice, Integer maxPrice, Integer pageNo, Integer pageSize) {
-        return null;
+        Pageable pageable = PageRequest.of(pageNo,pageSize);
+        Page<Product> page = repository.findByBrandStatusAndCategoryStatusAndStatusAndPriceBetween(
+            true, true, true, minPrice, maxPrice, pageable
+        );
+        List<ProductDto> listOfProductDto = page.getContent().stream().map(conversionUtil::entityToDto).toList();
+
+        return new PaginationInfo(
+            listOfProductDto, pageNo, pageSize, page.getTotalElements(),
+            page.getTotalPages(), page.isLast(), page.hasNext()
+        );
     }
 
     @Override

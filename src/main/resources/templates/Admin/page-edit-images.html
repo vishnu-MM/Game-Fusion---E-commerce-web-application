@@ -153,7 +153,8 @@
                                                 <!-- ADD NEW IMAGE-->
                                                     <input type="hidden" id="productId" th:value="${Product.id}">
                                                     <img th:src="@{/assets/admin-assets/imgs/theme/upload.svg}" alt="">
-                                                    <input class="form-control" type="file" id="imageFiles" name="imageFiles"required="required" accept="image/*">
+                                                    <input class="form-control" type="file" id="imageFiles"
+                                                           name="imageFiles" required="required" accept=".jpg, .jpeg, .png" max="200MB">
                                                 </div>
                                             </div>
                                         </div>

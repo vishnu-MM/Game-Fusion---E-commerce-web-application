@@ -2,6 +2,7 @@ package com.example.gamefusion.Controller;
 
 import com.example.gamefusion.Configuration.UtilityClasses.EntityDtoConversionUtil;
 import com.example.gamefusion.Configuration.UtilityClasses.PDFGenerator;
+import com.example.gamefusion.Configuration.UtilityClasses.PaymentMethodUtil;
 import com.example.gamefusion.Dto.*;
 import com.example.gamefusion.Entity.Cart;
 import com.example.gamefusion.Entity.OrderSub;
@@ -9,6 +10,7 @@ import com.example.gamefusion.Services.*;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,6 +21,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -83,8 +86,11 @@ public class OrderController {
         UserDto userDto = userService.findByUsername(principal.getName());
         List<CartDto> cart = cartService.findAvailableProductsByUser(userDto);
 
-        if (cart == null) return "redirect:/cart-products";
-        if (addressId == null || paymentOption==null) return "redirect:/checkout-page";
+        if (cart == null || cart.isEmpty())
+            return "redirect:/cart-products";
+        if (addressId == null || paymentOption==null || addressService.isExistById(addressId) ||
+            PaymentMethodUtil.CASH_ON_DELIVERY.isValidPaymentMethod(paymentOption))
+            return "redirect:/checkout-page";
 
         Integer totalAmount = cartService.totalAmount(cart);
 
@@ -180,7 +186,7 @@ public class OrderController {
 
         OrderMainDto orderMainDto = orderMainService.findOrderById(orderID);
         List<OrderSub> orderSubList = orderSubService.findOrderByOrder(orderMainDto)
-                .stream().map(conversionUtil::dtoToEntity).toList();
+                        .stream().map(conversionUtil::dtoToEntity).toList();
         PDFGenerator.generate(response,orderSubList,conversionUtil.dtoToEntity(orderMainDto));
     }
 

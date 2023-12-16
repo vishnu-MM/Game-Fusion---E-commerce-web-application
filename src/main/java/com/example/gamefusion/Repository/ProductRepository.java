@@ -45,6 +45,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         String brand_name, Boolean status, Boolean category_status, Boolean brand_status, Pageable pageable
     );
 
+    //* FILTER PRODUCTS BY PRICE BETWEEN MIN & MAX
+    Integer countAllByBrandStatusAndCategoryStatusAndStatusAndPriceBetween(
+        Boolean brandStatus, Boolean categoryStatus, Boolean status, int minPrice, int maxPrice
+    );
+    Page<Product> findByBrandStatusAndCategoryStatusAndStatusAndPriceBetween(
+        Boolean brandStatus, Boolean categoryStatus, Boolean status, int minPrice, int maxPrice, Pageable pageable
+    );
+
     //* FILTER PRODUCTS BY CATEGORY
     Integer countAllByCategoryAndBrandStatusAndCategoryStatusAndStatus(
         Category category, Boolean brandStatus, Boolean categoryStatus, Boolean status

@@ -21,4 +21,10 @@ public enum PaymentMethodUtil {
         }
         throw new EntityNotFound("Valid Payment Method is Not found");
     }
+    public Boolean isValidPaymentMethod(Integer value) {
+        for (PaymentMethodUtil method : PaymentMethodUtil.values()) {
+            if (method.value.equals(value)) return true;
+        }
+        return false;
+    }
 }

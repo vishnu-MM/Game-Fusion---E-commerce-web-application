@@ -238,7 +238,9 @@ public class UserHomeController {
     @GetMapping("/my-address")
     public String showUserAddress(Principal principal, Model model) {
         UserDto user = userService.findByUsername(principal.getName());
-        List<AddressDto> addressDtoList = addressService.findByUser(user.getId(), true);
+        List<AddressDto> addressDtoList = null;
+        if (addressService.isExistsByUser(user.getId()))
+            addressDtoList = addressService.findByUser(user.getId(), true);
         model.addAttribute("AddressList", addressDtoList);
         model.addAttribute("User", user);
         return "User/page-user-address";
