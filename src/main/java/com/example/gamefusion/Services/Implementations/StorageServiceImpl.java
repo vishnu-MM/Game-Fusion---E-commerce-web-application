@@ -96,7 +96,7 @@ public List<String> uploadImagesToFileSystem(List<MultipartFile> files, Product 
             imagesRepository.save(img);
             log.info("saved to DB");
             filePaths.add("File uploaded successfully: " + filePath);
-            log.info(filePaths);
+            log.info(String.join(", ", filePaths));
         } catch ( Exception ex) {
             filePaths.add("Error uploading the file: " + ex.getMessage());
             log.error(ex.getMessage());
