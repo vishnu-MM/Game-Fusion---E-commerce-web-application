@@ -76,9 +76,12 @@ public class StorageServiceImpl implements StorageService {
 public List<String> uploadImagesToFileSystem(List<MultipartFile> files, Product product) {
     String FOLDER_PATH = "/home/ubuntu/Images/";
     List<String> filePaths = new ArrayList<>();
-
+    log.info("before loop");
     for (MultipartFile file : files) {
+        log.info("inside loop");
         String filePath = FOLDER_PATH + file.getOriginalFilename();
+        log.info("filePath");
+        log.info(filePath);
 
         try {
             Images img = Images.builder()
@@ -86,10 +89,14 @@ public List<String> uploadImagesToFileSystem(List<MultipartFile> files, Product 
                     .type(file.getContentType())
                     .filePath(filePath)
                     .build();
+            log.info("img build");
+            file.transferTo(new File(filePath));
+            log.info("file transfer");
             img.setProduct(product);
             imagesRepository.save(img);
-            file.transferTo(new File(filePath));
+            log.info("saved to DB");
             filePaths.add("File uploaded successfully: " + filePath);
+            log.info(filePaths);
         } catch ( Exception ex) {
             filePaths.add("Error uploading the file: " + ex.getMessage());
             log.error(ex.getMessage());
