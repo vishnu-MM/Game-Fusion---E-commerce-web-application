@@ -74,7 +74,7 @@ public class StorageServiceImpl implements StorageService {
 @Override
 @Transactional
 public List<String> uploadImagesToFileSystem(List<MultipartFile> files, Product product) {
-    String FOLDER_PATH = "/home/ubuntu/var/lib/jenkins/workspace/test2/Game-Fusion---E-commerce-web-application/src/main/resources/static/Images";
+    String FOLDER_PATH = "/home/ubuntu/var/lib/jenkins/workspace/test2/Game-Fusion---E-commerce-web-application/src/main/resources/static/Images/";
     List<String> filePaths = new ArrayList<>();
 
     for (MultipartFile file : files) {
