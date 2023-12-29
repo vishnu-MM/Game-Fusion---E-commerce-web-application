@@ -38,66 +38,66 @@ public class StorageServiceImpl implements StorageService {
         this.brandLogoRepository = brandLogoRepository;
     }
 
-   @Override
-   @Transactional
-   public List<String> uploadImagesToFileSystem(List<MultipartFile> files, Product product) {
-       String FOLDER_PATH = "static/Images/";
-       Resource resource = new ClassPathResource(FOLDER_PATH);
+   // @Override
+   // @Transactional
+   // public List<String> uploadImagesToFileSystem(List<MultipartFile> files, Product product) {
+   //     String FOLDER_PATH = "static/Images/";
+   //     Resource resource = new ClassPathResource(FOLDER_PATH);
 
-       List<String> filePaths = new ArrayList<>();
+   //     List<String> filePaths = new ArrayList<>();
 
-       try {
-           String absolutePath = resource.getFile().getAbsolutePath();
-           for (MultipartFile file : files) {
-               String filePath = absolutePath + File.separator + file.getOriginalFilename();
+   //     try {
+   //         String absolutePath = resource.getFile().getAbsolutePath();
+   //         for (MultipartFile file : files) {
+   //             String filePath = absolutePath + File.separator + file.getOriginalFilename();
 
-               Images img = Images.builder()
-                       .name(file.getOriginalFilename())
-                       .type(file.getContentType())
-                       .filePath(filePath)
-                       .build();
-               img.setProduct(product);
-               imagesRepository.save(img);
-               file.transferTo(new File(filePath));
-               filePaths.add("File uploaded successfully: " + filePath);
-           }
-       } catch (IOException e) {
-           filePaths.add("Error uploading the file: " + e.getMessage());
-           log.error(e.getMessage());
-       } catch (Exception ex) {
-           filePaths.add("An error occurred: " + ex.getMessage());
-           log.error(ex.getMessage());
-       }
+   //             Images img = Images.builder()
+   //                     .name(file.getOriginalFilename())
+   //                     .type(file.getContentType())
+   //                     .filePath(filePath)
+   //                     .build();
+   //             img.setProduct(product);
+   //             imagesRepository.save(img);
+   //             file.transferTo(new File(filePath));
+   //             filePaths.add("File uploaded successfully: " + filePath);
+   //         }
+   //     } catch (IOException e) {
+   //         filePaths.add("Error uploading the file: " + e.getMessage());
+   //         log.error(e.getMessage());
+   //     } catch (Exception ex) {
+   //         filePaths.add("An error occurred: " + ex.getMessage());
+   //         log.error(ex.getMessage());
+   //     }
 
-       return filePaths;
-   }
-// @Override
-// @Transactional
-// public List<String> uploadImagesToFileSystem(List<MultipartFile> files, Product product) {
-//     String FOLDER_PATH = "/home/ubuntu/var/lib/jenkins/workspace/test2/Game-Fusion---E-commerce-web-application/src/main/resources/static/Images/";
-//     List<String> filePaths = new ArrayList<>();
+   //     return filePaths;
+   // }
+@Override
+@Transactional
+public List<String> uploadImagesToFileSystem(List<MultipartFile> files, Product product) {
+    String FOLDER_PATH = "/home/ubuntu/Images/";
+    List<String> filePaths = new ArrayList<>();
 
-//     for (MultipartFile file : files) {
-//         String filePath = FOLDER_PATH + file.getOriginalFilename();
+    for (MultipartFile file : files) {
+        String filePath = FOLDER_PATH + file.getOriginalFilename();
 
-//         try {
-//             Images img = Images.builder()
-//                     .name(file.getOriginalFilename())
-//                     .type(file.getContentType())
-//                     .filePath(filePath)
-//                     .build();
-//             img.setProduct(product);
-//             imagesRepository.save(img);
-//             file.transferTo(new File(filePath));
-//             filePaths.add("File uploaded successfully: " + filePath);
-//         } catch ( Exception ex) {
-//             filePaths.add("Error uploading the file: " + ex.getMessage());
-//             log.error(ex.getMessage());
-//         }
+        try {
+            Images img = Images.builder()
+                    .name(file.getOriginalFilename())
+                    .type(file.getContentType())
+                    .filePath(filePath)
+                    .build();
+            img.setProduct(product);
+            imagesRepository.save(img);
+            file.transferTo(new File(filePath));
+            filePaths.add("File uploaded successfully: " + filePath);
+        } catch ( Exception ex) {
+            filePaths.add("Error uploading the file: " + ex.getMessage());
+            log.error(ex.getMessage());
+        }
 
-//     }
-//     return filePaths;
-// }
+    }
+    return filePaths;
+}
 
     @Override
     public byte[] downloadImageFromFileSystem(Long id) throws IOException {
