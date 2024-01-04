@@ -23,9 +23,9 @@ import java.util.Map;
 
 @Controller
 public class PurchaseController {
-    @Value("${rzp_key_id}")
+//    @Value("${rzp_key_id}")
     private String key;
-    @Value("${rzp_key_secret}")
+//    @Value("${rzp_key_secret}")
     private String secretKey;
 
     private final UserService userService;
@@ -59,6 +59,8 @@ public class PurchaseController {
         this.userCouponsService = userCouponsService;
         this.orderHistoryService = orderHistoryService;
         this.categoryOfferService = categoryOfferService;
+        this.key = System.getenv("RZP_KEY_ID");
+        this.secretKey = System.getenv("RZP_KEY_SECRET_ID");
     }
 
     @GetMapping("/online-payment")

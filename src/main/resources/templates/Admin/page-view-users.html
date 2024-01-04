@@ -157,10 +157,10 @@
                         <div class="col-lg-2 col-sm-2 col-4 ">
                             <form th:method="PUT" th:action="@{/dashboard/block-unblock-user/{userId}(userId=${user.id})}" onsubmit="return false;">
                                 <!-- Add an event handler for button click -->
-                                <button type="button" class="rounded-pill alert-success" th:if="${user.isActive}" th:text="${user.isActive}" onclick="confirmBlock(this.form)">
+                                <button type="button" class="rounded-pill alert-success" th:if="${user.isActive}" onclick="confirmBlock(this.form)">
                                     Active
                                 </button>
-                                <button type="button" class="rounded-pill alert-danger" th:if="${!user.isActive}" th:text="${user.isActive}" onclick="confirmBlock(this.form)">
+                                <button type="button" class="rounded-pill alert-danger" th:if="${!user.isActive}"  onclick="confirmBlock(this.form)">
                                     Blocked
                                 </button>
                             </form>

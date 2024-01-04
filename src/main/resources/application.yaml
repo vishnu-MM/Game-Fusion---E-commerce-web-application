@@ -1,0 +1,29 @@
+spring:
+# DB CONNECTION CONFIG
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+# MAIL SENDER CONNECTION CONFIG
+  mail:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          ssl:
+            trust: "*"
+# TO ENABLE PUT METHOD THROUGH HIDDEN FIELDS (_METHOD)
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+# MULTI PART FILE CONFIG
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+referral_url: https://vishnumm.cloud/login-or-registration
