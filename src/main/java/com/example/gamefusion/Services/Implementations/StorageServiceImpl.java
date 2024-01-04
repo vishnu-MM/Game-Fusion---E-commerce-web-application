@@ -38,47 +38,50 @@ public class StorageServiceImpl implements StorageService {
         this.brandLogoRepository = brandLogoRepository;
     }
 
-//    @Override
-//    @Transactional
-//    public List<String> uploadImagesToFileSystem(List<MultipartFile> files, Product product) {
-//        String FOLDER_PATH = "static/Images/";
-//        Resource resource = new ClassPathResource(FOLDER_PATH);
-//
-//        List<String> filePaths = new ArrayList<>();
-//
-//        try {
-//            String absolutePath = resource.getFile().getAbsolutePath();
-//            for (MultipartFile file : files) {
-//                String filePath = absolutePath + File.separator + file.getOriginalFilename();
-//
-//                Images img = Images.builder()
-//                        .name(file.getOriginalFilename())
-//                        .type(file.getContentType())
-//                        .filePath(filePath)
-//                        .build();
-//                img.setProduct(product);
-//                imagesRepository.save(img);
-//                file.transferTo(new File(filePath));
-//                filePaths.add("File uploaded successfully: " + filePath);
-//            }
-//        } catch (IOException e) {
-//            filePaths.add("Error uploading the file: " + e.getMessage());
-//            log.error(e.getMessage());
-//        } catch (Exception ex) {
-//            filePaths.add("An error occurred: " + ex.getMessage());
-//            log.error(ex.getMessage());
-//        }
-//
-//        return filePaths;
-//    }
+   // @Override
+   // @Transactional
+   // public List<String> uploadImagesToFileSystem(List<MultipartFile> files, Product product) {
+   //     String FOLDER_PATH = "static/Images/";
+   //     Resource resource = new ClassPathResource(FOLDER_PATH);
+
+   //     List<String> filePaths = new ArrayList<>();
+
+   //     try {
+   //         String absolutePath = resource.getFile().getAbsolutePath();
+   //         for (MultipartFile file : files) {
+   //             String filePath = absolutePath + File.separator + file.getOriginalFilename();
+
+   //             Images img = Images.builder()
+   //                     .name(file.getOriginalFilename())
+   //                     .type(file.getContentType())
+   //                     .filePath(filePath)
+   //                     .build();
+   //             img.setProduct(product);
+   //             imagesRepository.save(img);
+   //             file.transferTo(new File(filePath));
+   //             filePaths.add("File uploaded successfully: " + filePath);
+   //         }
+   //     } catch (IOException e) {
+   //         filePaths.add("Error uploading the file: " + e.getMessage());
+   //         log.error(e.getMessage());
+   //     } catch (Exception ex) {
+   //         filePaths.add("An error occurred: " + ex.getMessage());
+   //         log.error(ex.getMessage());
+   //     }
+
+   //     return filePaths;
+   // }
 @Override
 @Transactional
 public List<String> uploadImagesToFileSystem(List<MultipartFile> files, Product product) {
-    String FOLDER_PATH = "/home/ubuntu/Game-Fusion---E-commerce-web-application/src/main/resources/static/Images";
+    String FOLDER_PATH = "/home/ubuntu/Images/";
     List<String> filePaths = new ArrayList<>();
-
+    log.info("before loop");
     for (MultipartFile file : files) {
+        log.info("inside loop");
         String filePath = FOLDER_PATH + file.getOriginalFilename();
+        log.info("filePath");
+        log.info(filePath);
 
         try {
             Images img = Images.builder()
@@ -86,10 +89,14 @@ public List<String> uploadImagesToFileSystem(List<MultipartFile> files, Product 
                     .type(file.getContentType())
                     .filePath(filePath)
                     .build();
+            log.info("img build");
+            file.transferTo(new File(filePath));
+            log.info("file transfer");
             img.setProduct(product);
             imagesRepository.save(img);
-            file.transferTo(new File(filePath));
+            log.info("saved to DB");
             filePaths.add("File uploaded successfully: " + filePath);
+            log.info(String.join(", ", filePaths));
         } catch ( Exception ex) {
             filePaths.add("Error uploading the file: " + ex.getMessage());
             log.error(ex.getMessage());
